@@ -1,2 +1,2 @@
 # desktop-client-practice
-Qt, GTK, MFC, WPF... desktop client framework practice
+Qt, GTK, MFC, WPF, CEF, Electron... desktop client framework practice
