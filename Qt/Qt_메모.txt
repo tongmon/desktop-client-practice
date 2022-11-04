@@ -1,0 +1,194 @@
+Qt 메모
+
+- 빌드 관련
+qmake와 CMake 방식 두개가 가장 추천되는데 간단한 것은 qmake다.
+내가 배운 강의에서는 CMake가 빌드 표준으로 자리잡고 있기 때문에 CMake를 추천한다.
+CMake가 다 좋은데 약간의 귀찮은 것은 파일을 추가하면 해당 파일이 추가되었는지 CMakeLists.txt에 알려줘야 한다는 것이다.
+예를 들어 dog.h, dog.cpp가 추가되었다면 CMakeLists.txt 내에 있는 add_executable 항목에 dog.h, dog.cpp를 추가해주고 세이브해줘야 정상적으로 QtCreator 파일 탭에 보인다.
+CMake가 qmake보다 좋은 점은 3rd party 라이브러리를 추가하기가 용이하다는 것이다. 엥간한 오픈 소스 라이브러리들은 CMake로 라이브러리를 추가하는 메뉴얼을 제공하지만 qmake에 관련된 메뉴얼은 거의 없다.
+
+- 주석 관련
+
+/*! 라는 Doxygen이라는 외부 주석 관리 프로그램과 연관된 특수 주석이 Qt에는 존재한다.
+Qt Creator에서 /*!를 하고 엔터를 치는 순간 함수 이름, 함수 인자, 반환값 등에 관련해서 손쉽게 주석을 달 수 있도록 구조를 만들어 준다.
+
+- qFatal()
+이 녀석이 수행되면 앱을 강제 종료함. 더이상 앱을 수행하기 어렵다고 판단될 때 사용함.
+ex) qFatal("App have to shut down!");
+
+- QOjbect
+모든 Qt 클래스는 기본적으로 QObject를 상속하고 있다. 그리고 QObject를 상속해서 사용할 때 반드시 클래스 내부에 Q_OBJECT 매크로를 선언해야 QObject의 기능을 정상적으로 이용할 수 있다. QObject를 상속한 클래스들은 Signals and Slots이라는 시스템 사용이 가능하다. (QOjbect끼리 메시지 주고 받는 것이 용이해진다.)
+QObject는 복사가 안된다. 동적 할당을 하거나 복사를 하지 않고 사용할 수 밖에 없다.
+예를 들어 QObject GetObject() { QObject object; return object; } 이러한 함수 작성이 불가능하다는 것이다.
+이렇게 QObject와 같이 자신이 만든 다른 클래스에서도 복사가 되는 것을 막으려면 Q_DISABLE_COPY(클래스 이름)을 Q_OBJECT 매크로를 선언하듯 해주면 된다. (자매품으로 Q_DISABLE_MOVE, Q_DISABLE_COPY_MOVE도 있다...)
+QOjbect 상속하는 모든 자식 클래스들은 스마트 포인터를 사용한 것과 같이 자동 메모리 해제 기능을 이용할 수가 있게 된다.
+밑의 예시를 보자.
+
+class Cat : public QObject
+{
+	Q_OBJECT
+public:
+	Cat(QObject *parent = nullptr) : QObject(parent) {};
+	~Cat() {};
+};
+
+class Dog : public QObject
+{
+	Q_OBJECT
+public:
+	Dog(QObject *parent = nullptr) : QObject(parent) {};
+	~Dog() {};
+};
+
+int main(int argc, char *argv[])
+{
+	QCoreApplication app(argc, argv);
+	Cat *myCat = new Cat(&app);
+	Dog *myDog = new Dog(&app);
+	
+	Cat *yourCat = new Cat(&app);
+	Dog *yourDog = new Dog(&yourCat);
+	delete yourCat;
+	
+	return app.exec();
+}
+
+이러한 상황에서 app 실행이 종료가 되는 시점에 이에 붙어 있던 QObject들을 모두 하나씩 보면서 동적 할당을 해제해주기 때문에 따로 delete를 해줄 필요가 없다.
+위 예제에서는 지금 app이 myCat과 myDog의 parent로 위치하기 때문에 따로 할당 해제에 신경을 쓸 필요가 없다.
+yourCat을 delete를 해주면 이 녀석에 딸려있던 yourDog까지 같이 할당 해제가 된다.
+
+- Signals and Slots
+단순히 말하면 C++의 CallBack 함수이다. MFC나 Win32에서 메시징 시스템이라고 생각하면 쉽다.
+순수 C++로 구현한 예시들은 밑 링크에 있다.
+https://stackoverflow.com/questions/14189440/c-callback-using-class-member
+https://stackoverflow.com/questions/2298242/callback-functions-in-c
+하지만 사용하기 불편하고 환경에 따라 변형해서 사용해야 한다.
+이를 Qt가 쓰레드 안정적이고 범용적이고 사용하기 쉬운 인터페이스로 만들어 놓은 것이다.
+밑은 그 예시다.
+
+class Cat : public QObject
+{
+	Q_OBJECT
+public:
+	Cat(QObject *parent = nullptr) : QObject(parent) {};
+	~Cat() {};
+	
+signals:	
+	
+public slots:
+	void Run() { qInfo() << "Run!"; }
+};
+
+class Dog : public QObject
+{
+	Q_OBJECT
+public:
+	Dog(QObject *parent = nullptr) : QObject(parent) {};
+	~Dog() {};
+	
+signals:
+	void Bark();
+};
+
+int main(int argc, char *argv[])
+{
+	QCoreApplication app(argc, argv);
+	
+    Dog myDog(&app);
+    Cat myCat(&app);
+	
+	QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run);
+	
+	emit myDog.Bark();
+	
+	QObject::disconnect(&myDog, &Dog::Bark, &myCat, &Cat::Run);
+	
+	return app.exec();
+}
+
+위의 상황에서 myDog의 Bark() 함수를 호출하면 자동적으로 myCat의 Run()함수도 호출된다. 즉 signal을 보내면 slot이 반응하는 것이다.
+connect() 함수를 이용해서 singal과 slot을 연결한다.
+connect() 함수는 많은 옵션이 있는데 default 옵션은 AutoConnection이다. 
+이러한 경우 QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run); QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run); 두 번 쓰여지면 Bark() 한번에 Run()이 두번 실행되게 된다. 이를 해결하려면 QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run, Qt::UniqueConnection); 이렇게 connection 옵션을 마지막에 넣어주면 된다. (다른 옵션도 많으니 Qt document에서 찾아보자.)
+signal을 보낼 때는 꼭 emit myDog.Bark();와 같이 emit을 붙이고 signal 함수를 호출해야 한다.
+signals에 정의된 함수들은 선언만 해야하며 slots에 있는 함수는 선언과 구현을 모두 해야한다.
+하나의 signal에 여러개의 slot이 연결될 수 있다.
+연결을 끊을 때는 disconnect() 함수를 이용하면 된다.
+
+- Q_PROPERY
+C#에서 잘 쓰이는 프로퍼티 바인딩을 Qt에서 C++에서도 사용할 수 있게 해놓은 것이다.
+기본적인 형태은 다음과 같다.
+Q_PROPERY(type name READ name WRITE setname NOTIFY nameChanged)
+처음부터 각각 type -> 바인딩할 변수 타입, name -> 바인딩할 변수 이름 / READ / name -> getter 함수 이름 / WRITE / setname -> setter 함수 이름 / NOTIFY / nameChanged -> 바인딩 변수에 변화가 생길 때 트리거 되는 함수 이름
+밑은 예시이다.
+
+class Dog : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(int Age READ GetAge WRITE SetAge NOTIFY AgeChanged)
+    Q_PROPERTY(QString Name READ GetName WRITE SetName NOTIFY NameChanged)
+
+    int m_nAge;
+    QString m_strName;
+
+public:
+    Dog(QObject *parent = nullptr) : QObject(parent)
+    {
+        connect(this, &Dog::NameChanged, this, &Dog::PrintWhenNameChanged);
+        connect(this, &Dog::AgeChanged, this, &Dog::PrintWhenAgeChanged);
+    };
+    ~Dog() {};
+
+    const QString& GetName() const { return m_strName; }
+    void SetName(const QString &str) { m_strName = str; emit NameChanged(); }
+
+    const int& GetAge() const { return m_nAge; }
+    void SetAge(const int &num) { m_nAge = num; emit AgeChanged(); }
+
+public slots:
+    void PrintWhenNameChanged() { qInfo() << "Name is Changed!"; }
+    void PrintWhenAgeChanged() { qInfo() << "Age is Changed!"; }
+
+signals:
+    void NameChanged();
+    void AgeChanged();
+};
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication app(argc, argv);
+
+    Dog *myDog = new Dog(&app);
+    QObject *myObject = myDog;
+
+    myDog->SetName("MeatBoy");
+    qInfo() << myDog->GetName();
+
+    myObject->setProperty("Name", "BandageGirl");
+    qInfo() << myObject->property("Name").toString();
+
+    myDog->SetAge(9);
+    qInfo() << myDog->GetAge();
+
+    myObject->setProperty("Age", "11");
+    qInfo() << myObject->property("Age").toInt();
+
+    return app.exec();
+}
+
+위 코드에서 Q_PROPERTY(QString Name READ GetName WRITE SetName NOTIFY NameChanged) 이렇게 선언한 것을 볼 수가 있다.
+주의할 점은 NOTIFY 부분인데 NOTIFY NameChanged를 했다고 해서 SetName 함수가 호출될 때 emit NameChanged() 해주는 것이 아니다. (단, QML에서는 emit을 자동으로 해준다고 한다.)
+따라서 C++에서 사용할 때는 SetName에 emit NameChanged()를 넣어줘야 한다.
+property 함수가 호출되면 알맞은 getter가 setProperty 함수가 호출되면 알맞은 setter가 실행된다.
+C++에서의 Q_PROPERTY 사용 의미는 주로 여러 개의 QObject를 일괄 처리할 때인데 잘보면 Age는 int인데 setProperty("Age", "11")로 스트링 형태로 넣어줘도 잘 처리되는 것을 볼 수 있다.
+Q_PROPERY와 signals and slots 기술은 Qt의 moc 파일 생성을 통해 작동하기 때문에 컴파일 도중 변경된 moc 파일을 적용하겠다고 물어보면 yes to all을 누르는 것이 좋다.
+
+- C++ vs Qt
+
+1. std::cout <-> qInfo() [또는 qDebug(), qCritical(), qWarning() 등등...]
+차이라면 버퍼를 비워주는 flush를 qInfo()에서는 인위적으로 해줄 필요가 없다. cout에서 endl을 많이 쓰면 안좋다는 말이 flush가 endl에서 같이 수행되기 때문인데 qInfo()에서는 endl을 사용할 필요가 없다.
+
+2. static_cast, dynamic_cast... 등등 표준 형변환 vs qobject_cast
+일단 qobject_cast는 QObject를 상속한 클래스에서만 사용이 가능하기에 나머지 상황에서는 표준 형변환을 써야한다.
+QObject를 상속한 클래스에서는 qobject_cast를 사용하는 것이 안전하다.
+
