@@ -1,0 +1,16 @@
+locales
+chrome_100_percent.pak
+chrome_200_percent.pak
+icudtl.dat
+resources.pak
+swiftshader
+chrome_elf.dll
+d3dcompiler_47.dll
+libcef.dll
+libEGL.dll
+libGLESv2.dll
+v8_context_snapshot.bin
+snapshot_blob.bin
+vk_swiftshader.dll
+vk_swiftshader_icd.json
+vulkan-1.dll

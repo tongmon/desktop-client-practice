@@ -1,0 +1,112 @@
+삽질하며 연구한 CEF를 VS2022에서 빌드하는 방법이다.
+
+1. https://cef-builds.spotifycdn.com/index.html 이리로 이동하여 자신이 사용하고자 하는 알맞은 버전을 다운로드한다. (당연히 표준 배포로...)
+
+2. 맞는 버전의 압축을 풀면 cef_binary_어쩌구저쩌구 폴더가 나올텐데 이 내부에 cmake, include 등의 폴더가 존재할 것이다. 이 곳에 build 폴더를 생성한다.
+
+3. cmd를 관리자 권한으로 열고 만들었던 build 폴더로 cd 명령을 통해 이동한다.
+
+4. 그 상태에서 cmake 명령을 수행하는데 명령은 다음과 같다. cmake -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off -G "Visual Studio 17" -A Win32 ..
+해당 명령을 분석해 보자면 -DCEF_RUNTIME_LIBRARY_FLAG=/MD 얘는 링크할 런타임 라이브러리를 지정하는 것인데 자신이 만드는 프로그램과 종류가 반드시 일치해야 한다.
+만약 자신이 만드는 프로젝트와 CEF 실행에 필요한 libcef_dll_wrapper.dll을 빌드하는 프로젝트가 "프로젝트 속성 >> 구성 속성 >> C/C++ >> 코드 생성 >> 런타임 라이브러리" 항목이 서로 다르다면 자신이 만드는 프로젝트에 CEF 기능을 추가할 수 없다. 
+/MT라면 -DCEF_RUNTIME_LIBRARY_FLAG를 추가로 지정해주지 않아도 /MT로 지정된다.
+-DUSE_SANDBOX=Off는 샌트박스 기능을 끄는 것으로 윈도우에서는 걍 꺼도 된다.
+-G "Visual Studio 17"은 vs2022로 빌드하겠다는 것인데 17이 2022버전이고 16이 2019버전이다. 따라서 이상해 할 것이 없다.
+-A Win32는 x86으로 빌드하겠다는 것이로 따로 지정안하면 x64로 빌드된다.
+마지막의 ..은 지금 현재 작업 폴더가 build인데 해당 위치 상위에 바로 CMAKE파일이 존재하니 한단계 위로 올라기기 위함이다.
+
+5. 해당 과정을 모두 수행하면 cef.sln이 생성된다. 해당 파일을 vs2022로 열고 libcef_dll_wrapper 프로젝트를 빌드하면 되는데 libcef_dll_wrapper 빌드할 때 프로젝트 속성이 잘 구성되어 있는지 한 번 보고 하는 것이 안전하다.
+
+6. 만약 C++20으로 cef를 빌드해야 하는 경우 한 가지 더 해줘야 빌드가 정상적으로 진행된다.
+include\base\cef_template_util.h에 존재하는 파일을 조금 수정해 주어야 하는데
+
+template <typename Functor, typename... Args>
+using invoke_result = std::result_of<Functor && (Args && ...)>;
+위의 코드 부분을
+
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+template <typename Functor, typename... Args>
+using invoke_result = std::invoke_result<Functor, Args...>;
+#else
+template <typename Functor, typename... Args>
+using invoke_result = std::result_of<Functor && (Args && ...)>;
+#endif
+위와 같이 바꿔야 C++20에서 빌드가 정상적으로 이루어진다.
+
+7. libcef_dll_wrapper 프로젝트가 모두 빌드되었다면 build\libcef_dll_wrapper\Debug 폴더에 libcef_dll_wrapper.lib 이 녀석이 생성되었을 것이다.
+이 녀석 말고도 CEF 기능을 수행하기 위해서는 추가적으로 Release와 Resources 폴더 내부에 있는 녀석 전부가 필요하다. (물론 디버그인 경우는 Release말고 Debug에 있는 녀석이 필요하다.) 진행 중인 프로젝트 폴더에 해당 녀석들을 풀어서 넣어주자. 그리고 tests\ceftests\resources\win 폴더에 들어 있는 compatibility.manifest와 ceftests.exe.manifest도 같은 곳에 넣어준다. 넣어준 뒤 ceftests.exe.manifest 이 녀석의 이름은 프로젝트이름.exe.manifest로 바꿔주어야 한다.
+각종 소스파일, 헤더파일이 포함된 include 폴더를 통째로 복사하여 프로젝트 폴더에 붙여 넣어준다.
+
+8. 해당 녀석들을 CEF 기능을 추가할 프로젝트 폴더에 넣어주었다면 빌드를 진행하면 되는데 여기서도 프로젝트 속성에서 설정해줘야 할 것이 있다.
+현재 진행하고 있는 프로젝트의 속성을 다음과 같이 설정해준다.
+구성 속성 >> 고급 >> MFC 사용 : 표준 Windows 라이브러리 사용 (MFC와 관련된 옵션으로 설정할 시 링크에러가 난다... 이유는 아직 모르겠다.)
+구성 속성 >> VC++ 디렉터리 >> 포함 디렉터리 : 붙여 넣었던 include 폴더로 지정한다. 보통 $(ProjectDir)include;$(IncludePath) 이렇게 설정될 것이다.
+구성 속성 >> VC++ 디렉터리 >> 라이브러리 디렉터리 : 프로젝트 폴더에 붙여 넣었던 (include 제외) 녀석들 중에 확장자가 .lib였던 녀석들이 있는 폴더의 경로를 지정해준다. 보통 $(ProjectDir)lib\Debug;$(LibraryPath) 이렇게 설정될 것이다. 릴리즈는 Debug만 Release로... (왠만하면 편하게 .lib 확장자인 애들을 꺼내서 하나의 폴더에 묶어 넣고 그 폴더 경로를 지정해주는 것이 좋다.)
+구성 속성 >> C/C++ >> 전처리기 >> 전처리기 정의 : 아래와 같이 추가해준다.
+
+Debug 모드인 경우...
+WIN32
+_WINDOWS
+__STDC_CONSTANT_MACROS
+__STDC_FORMAT_MACROS
+_WIN32
+UNICODE
+_UNICODE
+WINVER=0x0601
+_WIN32_WINNT=0x601
+NOMINMAX
+WIN32_LEAN_AND_MEAN
+_HAS_EXCEPTIONS=0
+CEF_USE_ATL
+_DEBUG
+DEBUG
+%(PreprocessorDefinitions)
+
+Release 모드인 경우...
+WIN32
+_WINDOWS
+__STDC_CONSTANT_MACROS
+__STDC_FORMAT_MACROS
+_WIN32
+UNICODE
+_UNICODE
+WINVER=0x0601
+_WIN32_WINNT=0x601
+NOMINMAX
+WIN32_LEAN_AND_MEAN
+_HAS_EXCEPTIONS=0
+CEF_USE_ATL
+_NDEBUG
+NDEBUG
+%(PreprocessorDefinitions)
+
+구성 속성 >> C/C++ >> 코드 생성 >> 런타임 라이브러리 : libcef_dll_wrapper 프로젝트 설정과 맞춰준다.
+구성 속성 >> C/C++ >> 코드 생성 >> 함수 수준 링크 사용 : libcef_dll_wrapper 프로젝트 설정과 맞춰준다.
+구성 속성 >> 링커 >> 입력 >> 추가 종속성 : 아래와 같이 추가해준다.
+comctl32.lib
+shlwapi.lib
+rpcrt4.lib
+libcef_dll_wrapper.lib
+libcef.lib
+구성 속성 >> 빌드 이벤트 >> 빌드 후 이벤트 >> 명령줄 : 아래와 같이 설정해준다.
+
+Debug 모드인 경우는 밑과 같이...
+setlocal
+mt.exe -nologo -manifest $(ProjectDir)cefsimple.exe.manifest $(ProjectDir)compatibility.manifest -outputresource:$(SolutionDir)/Debug/cefsimple.exe;#1
+
+Release 모드인 경우는 밑과 같이...
+setlocal
+mt.exe -nologo -manifest $(ProjectDir)cefsimple.exe.manifest $(ProjectDir)compatibility.manifest -outputresource:$(SolutionDir)/Release/cefsimple.exe;#1
+
+해당 명령어와 경로는 프로젝트 속성에 따라서 충분히 달라질 수 있다.
+따라서 밑의 링크들을 참고해서 경로를 재조정할 수 있어야 한다.
+https://docs.microsoft.com/en-us/cpp/build/reference/common-macros-for-build-commands-and-properties?redirectedfrom=MSDN&view=msvc-160
+https://docs.microsoft.com/ko-kr/cpp/build/how-to-embed-a-manifest-inside-a-c-cpp-application?view=msvc-170
+
+9. 모든 설정이 완료 되었으면 빌드를 해보자. 실행이 잘 될 것이다. 빌드가 위의 과정을 진행했는데도 안된다면 libcef_dll_wrapper 프로젝트의 속성과 현재 자신이 작업 중인 프로젝트의 속성 중에서 다른 것이 있는지 다시 보자... 예를 들면 C++ 버전이라던지, 전처리기, 명령줄 등등...
+
+참고 링크
+https://bitbucket.org/hlaux/cef/commits/52dd0ef0d8c614b1725d0720c4a8cdd98feb9c58
+https://bitbucket.org/chromiumembedded/cef/wiki/LinkingDifferentRunTimeLibraries
+https://www.magpcss.org/ceforum/viewtopic.php?f=6&t=17037
+그리고 무수한 삽질...
