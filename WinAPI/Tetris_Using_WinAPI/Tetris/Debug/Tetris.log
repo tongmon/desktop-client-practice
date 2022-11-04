@@ -1,5 +1,0 @@
-﻿  Tetris.cpp
-C:\Users\tongm\OneDrive\Documents\GitHub\C-Tetris\Tetris\Tetris.cpp(444,24): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\tongm\OneDrive\Documents\GitHub\C-Tetris\Tetris\Tetris.cpp(458,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\tongm\OneDrive\Documents\GitHub\C-Tetris\Tetris\Tetris.cpp(514,23): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-  Tetris.vcxproj -> C:\Users\tongm\OneDrive\Documents\GitHub\C-Tetris\Debug\Tetris.exe
