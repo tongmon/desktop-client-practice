@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name = "지역">
+        <item>서울</item>
+        <item>안양</item>
+        <item>수원</item>
+    </string-array>
+</resources>

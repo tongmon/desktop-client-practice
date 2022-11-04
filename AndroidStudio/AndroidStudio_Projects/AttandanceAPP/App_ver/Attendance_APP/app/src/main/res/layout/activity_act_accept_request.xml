@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Act_AcceptRequest">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/MyRequest_LinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#efeff0"
+            android:orientation="vertical"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp">
+
+            <!-- 로그인 유저 텍스트 -->
+            <LinearLayout
+                android:background="#15133e"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="right">
+
+                <ImageButton
+                    android:id="@+id/imageButton01"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_notibell_img" />
+
+                <ImageButton
+                    android:id="@+id/imageButton02"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="15dp"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_usertemp_img" />
+
+                <ImageButton
+                    android:id="@+id/imageButton03"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_logout_img"/>
+
+            </LinearLayout>
+
+            <!-- 메인 텍스트 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="받은 승인요청관리"
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="12dp"
+                    android:text="수락할 승인요청을 관리하세요."
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+            <!-- 메뉴 이동 경로 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:background="#d7d7d9"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_acceptrequest_menu_milestone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:textSize="14dp"
+                    android:text="메뉴 이동 경로"
+                    android:textColor="#828282"/>
+
+            </LinearLayout>
+
+            <!-- 년도 선택 스피너 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/spinner_shape">
+
+                    <Spinner
+                        android:id="@+id/spinner_annual_year_selector"
+                        android:layout_width="180dp"
+                        android:layout_height="35dp"
+                        android:textAlignment="textStart"
+                        android:background="@drawable/spinner_selector"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="#ffffff"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="7dp"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btn_accept_accept"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:text="승인"
+                        android:textSize="23dp"
+                        android:textColor="@color/white"
+                        android:backgroundTint="#5e5e5e"/>
+
+                    <Button
+                        android:id="@+id/btn_accept_reject"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="50dp"
+                        android:text="기각"
+                        android:textSize="23dp"
+                        android:textColor="@color/white"
+                        android:backgroundTint="#5e5e5e"/>
+
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TableLayout
+                        android:id="@+id/table_accept_request"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="0dp"
+                        android:stretchColumns="*">
+
+                    </TableLayout>
+                </HorizontalScrollView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

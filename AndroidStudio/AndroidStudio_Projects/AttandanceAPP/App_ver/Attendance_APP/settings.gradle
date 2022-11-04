@@ -1,0 +1,13 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://naver.jfrog.io/artifactory/maven/' }
+    }
+}
+rootProject.name = "Attendance_APP"
+include ':app'

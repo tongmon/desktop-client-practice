@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/DashBoard_Scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Act_DashBoard">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+        <LinearLayout
+            android:id="@+id/DashBoard_LinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#efeff0"
+            android:orientation="vertical"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp">
+
+            <!-- 로그인 유저 텍스트 -->
+            <LinearLayout
+                android:background="#15133e"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="right">
+
+                <ImageButton
+                    android:id="@+id/imgbtn_dash_alert"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_notibell_img" />
+
+                <ImageButton
+                    android:id="@+id/imageButton02"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="15dp"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_usertemp_img" />
+
+                <ImageButton
+                    android:id="@+id/imageButton03"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_logout_img"/>
+
+            </LinearLayout>
+
+            <!-- 메인 텍스트 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="개인 대시보드"
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="12dp"
+                    android:text="나의 근무상황을 확인할 수 있습니다."
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+            <!-- 메뉴 이동 경로 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:background="#d7d7d9"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_dashboard_menu_milestone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:textSize="14dp"
+                    android:text="메뉴 이동 경로"
+                    android:textColor="#828282"/>
+
+            </LinearLayout>
+
+            <!-- 일간 근무 현황 서브 텍스트 + 버튼 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:text="일간 근무 현황"
+                    android:textColor="@color/black"/>
+
+                <ImageButton
+                    android:id="@+id/imgbtn_dash_dailywork_refresh"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bck_buttonset"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="13dp"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_refresh_img" />
+
+                <ImageButton
+                    android:id="@+id/imgbtn_dash_dailywork_goleft"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bck_buttonset"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="13dp"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_left_img" />
+
+                <ImageButton
+                    android:id="@+id/imgbtn_dash_dailywork_goright"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bck_buttonset"
+                    android:layout_marginTop="10dp"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_right_img" />
+
+
+            </LinearLayout>
+
+            <!-- 큐브 인터페이스 -->
+
+            <!-- 일간 근무 전체 현황 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="vertical"
+                android:background="#ffffff"
+                android:paddingLeft="17dp"
+                android:paddingRight="17dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <TextView
+                    android:id="@+id/DailyWork_Summary_Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="일간 근무 전체 현황"
+                    android:textSize="15dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/img_attentimg"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:padding="0dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/status_attend_img"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="3dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/text_status_current_main"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="정상근무"
+                            android:textStyle="bold"
+                            android:textSize="25dp"
+                            android:textColor="#828282"/>
+
+                        <TextView
+                            android:id="@+id/text_date_main"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2021년 10월 25일 월요일 오전 9시 35분"
+                            android:textSize="15dp"
+                            android:textColor="#828282"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 상태, 출근 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="2"
+                android:layout_height="120dp"
+                android:orientation="horizontal"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="7dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <!-- 상태 -->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="17dp"
+                    android:paddingRight="17dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:background="#ffffff">
+
+                    <TextView
+                        android:id="@+id/text_status_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="상태"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/text_status_current"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:text="정상근무"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                </LinearLayout>
+
+                <!-- 출근 -->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="10dp"
+                    android:paddingLeft="17dp"
+                    android:paddingRight="17dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:background="#ffffff">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text_arrivetime_arrive"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="출근"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/text_arrivetime_unit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="(시/분/초)"
+                            android:textColor="#d1d1d1"
+                            android:textSize="13dp"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/text_arrivetime_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="07:41:40"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                    <TextView
+                        android:id="@+id/text_arrivetime_settingtime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center"
+                        android:text="근무시작시각: 08:00:00"
+                        android:textSize="15dp"
+                        android:textColor="#828282"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 퇴근, 연장근로상태 -->
+            <LinearLayout
+                android:layout_weight="2"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="horizontal"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="7dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <!-- 퇴근 -->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="17dp"
+                    android:paddingRight="17dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:background="#ffffff">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text_offtime_arrive"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="퇴근"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/text_offtime_unit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="(시/분/초)"
+                            android:textColor="#d1d1d1"
+                            android:textSize="13dp"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/text_offtime_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="07:41:40"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                    <TextView
+                        android:id="@+id/text_offtime_settingtime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center"
+                        android:text="근무종료시각: 08:00:00"
+                        android:textSize="15dp"
+                        android:textColor="#828282"/>
+
+                </LinearLayout>
+
+                <!-- 연장근로상태 -->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="17dp"
+                    android:paddingRight="17dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="#ffffff">
+
+                    <TextView
+                        android:id="@+id/text_extend_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="연장근로상태"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/text_extend_current"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:text="미신청"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 소정근로, 연장근로 -->
+            <LinearLayout
+                android:layout_weight="2"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="horizontal"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="7dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <!-- 소정근로 -->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="17dp"
+                    android:paddingRight="17dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:background="#ffffff">
+
+                    <TextView
+                        android:id="@+id/text_originwork_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="소정근로"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/text_originwork_current"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="14dp"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text_originwork_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="진행률"
+                            android:textSize="12dp"
+                            android:textColor="#828282"/>
+
+                        <TextView
+                            android:id="@+id/text_originwork_percentage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="0%"
+                            android:textSize="12dp"
+                            android:textColor="#828282"/>
+
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progress_originwork"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginTop="4dp"
+                        android:max="100"
+                        android:progress="0"/>
+
+                </LinearLayout>
+
+                <!-- 연장근로 -->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="17dp"
+                    android:paddingRight="17dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="#ffffff">
+
+                    <TextView
+                        android:id="@+id/text_extendwork_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="연장근로"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/text_extendwork_current"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="14dp"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text_extendwork_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="진행률"
+                            android:textSize="12dp"
+                            android:textColor="#828282"/>
+
+                        <TextView
+                            android:id="@+id/text_extendwork_percentage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="0%"
+                            android:textSize="12dp"
+                            android:textColor="#828282"/>
+
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progress_extendwork"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginTop="4dp"
+                        android:max="100"
+                        android:progress="0"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 기간 근무 현황 서브 텍스트 + 버튼 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:text="기간 근무 현황"
+                    android:textColor="@color/black"/>
+
+                <ImageButton
+                    android:id="@+id/imageButton04"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bck_buttonset"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="13dp"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_refresh_img" />
+
+                <ImageButton
+                    android:id="@+id/imageButton05"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bck_buttonset"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="13dp"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_left_img" />
+
+                <ImageButton
+                    android:id="@+id/imageButton06"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bck_buttonset"
+                    android:layout_marginTop="10dp"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_right_img" />
+
+
+            </LinearLayout>
+
+            <!-- 전체 근무 현황 ProgressBar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="vertical"
+                android:background="#ffffff"
+                android:paddingLeft="17dp"
+                android:paddingRight="17dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_wholework_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전체 근무 현황"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/text_wholework_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="#828282"
+                        android:text="(2021-10-25 ~ 2021-10-31)"
+                        android:textSize="13dp"/>
+
+                    <TextView
+                        android:id="@+id/text_wholework_unit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="표준근로시간제"
+                        android:textColor="#828282"
+                        android:textSize="13dp"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_wholework_progresstitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="소정근로시간"
+                        android:textSize="13dp"
+                        android:textColor="#828282"/>
+
+                    <TextView
+                        android:id="@+id/text_wholework_progressunit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="40시간"
+                        android:gravity="right"
+                        android:textSize="13dp"
+                        android:textStyle="bold"
+                        android:textColor="#828282"/>
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress_bigger_originwork"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="3dp"
+                    android:progressTint="#3d95fa"/>
+
+                <TextView
+                    android:id="@+id/text_wholework_progresspercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="- ( 20% ) 8시간"
+                    android:textSize="13dp"
+                    android:textColor="#828282"/>
+
+            </LinearLayout>
+
+            <!-- 전체 근무 상세 현황 표 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#ffffff"
+                android:paddingLeft="17dp"
+                android:paddingRight="17dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp">
+
+                <TextView
+                    android:id="@+id/text_wholedetailwork_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전체 근무 상세 현황"
+                    android:textSize="15dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TableLayout
+                        android:id="@+id/table_whole_attendState"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        android:stretchColumns="*">
+
+                    </TableLayout>
+                </HorizontalScrollView>
+
+                <!-- 이미지 버튼(인덱싱용) -->
+                <!-- <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/imgbtn_dash_wholework_goleft"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/bck_buttonset"
+                        android:padding="7dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/btn_left_img" />
+
+                    <TextView
+                        android:id="@+id/imgbtn_dash_wholework_curpage"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/bck_buttonset"
+                        android:textColor="@color/black"
+                        android:text="1"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:gravity="center"/>
+
+                    <ImageButton
+                        android:id="@+id/imgbtn_dash_wholework_goright"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/bck_buttonset"
+                        android:padding="7dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/btn_right_img"/>
+
+                </LinearLayout> -->
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

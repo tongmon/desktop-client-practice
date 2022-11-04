@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Act_SubWorkManager">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#3f3f3f"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIME MANAGE"
+            android:textStyle="bold"
+            android:textSize="55dp"
+            android:textColor="#727272"/>
+
+        <Button
+            android:id="@+id/WorkSchedule_Button"
+            android:layout_marginTop="40dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="근로일정관리"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+        <Button
+            android:id="@+id/MyRequest_Button"
+            android:layout_marginTop="10dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="내 승인요청관리"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+        <Button
+            android:id="@+id/AcceptRequest_Button"
+            android:layout_marginTop="10dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="받은 승인요청관리"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+        <Button
+            android:id="@+id/WorkPerformance_Button"
+            android:layout_marginTop="10dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="근로실적조회"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+        <Button
+            android:id="@+id/Annual_Button"
+            android:layout_marginTop="10dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="연차현황"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

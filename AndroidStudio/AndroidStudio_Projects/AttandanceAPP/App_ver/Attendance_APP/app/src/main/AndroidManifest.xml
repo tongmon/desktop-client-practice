@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.attendance_app">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_cushion_pass"
+        android:label="CushionPass"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_cushion_pass_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Design.NoActionBar"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="m">
+        <activity
+            android:name=".Act_Map"
+            android:exported="false" />
+
+        <activity
+            android:name=".Act_RequestInfo"
+            android:exported="false" />
+        <activity
+            android:name=".Act_LoginView"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Act_Annual"
+            android:exported="false" />
+        <activity
+            android:name=".Act_WorkPerformance"
+            android:exported="false" />
+        <activity
+            android:name=".Act_AcceptRequest"
+            android:exported="false" />
+        <activity
+            android:name=".Act_MyRequest"
+            android:exported="false" />
+        <activity
+            android:name=".Act_WorkScheduler"
+            android:exported="false" />
+        <activity
+            android:name=".Act_SubWorkManager"
+            android:exported="false" />
+        <activity
+            android:name=".Act_DashBoard"
+            android:exported="false" />
+        <activity
+            android:name=".Act_MainMenu"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="0s6aaxotsc" />
+
+    </application>
+
+</manifest>

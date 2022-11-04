@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Act_RequestInfo">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#3f3f3f"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="근로 신청"
+            android:textColor="#727272"
+            android:textSize="60dp"
+            android:textStyle="bold"
+            android:layout_marginBottom="40dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_shape_request">
+
+            <Spinner
+                android:id="@+id/spinner_request_type_selector"
+                android:layout_width="280dp"
+                android:layout_height="40dp"
+                android:textAlignment="textStart"
+                android:backgroundTint="@color/white"
+                android:background="@drawable/spinner_selector"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_request_location"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="위치: -"
+            android:textColor="#727272"
+            android:textSize="25dp"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/DayStart_Button"
+            android:layout_marginTop="15dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="시작 날짜: -"
+            android:textSize="25dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+        <Button
+            android:id="@+id/DayEnd_Button"
+            android:layout_marginTop="15dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="종료 날짜: -"
+            android:textSize="25dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+        <EditText
+            android:layout_marginTop="15dp"
+            android:layout_width="280dp"
+            android:layout_height="50dp"
+            android:id="@+id/etext_expression_Input"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:hint="신청 사유"
+            android:gravity="center"
+            android:backgroundTint="@color/black"
+            android:layout_below="@+id/emailInput" />
+
+        <Button
+            android:id="@+id/request_Button"
+            android:layout_marginTop="15dp"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:text="신청"
+            android:textSize="25dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#5e5e5e"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
