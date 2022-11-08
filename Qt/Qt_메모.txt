@@ -22,6 +22,7 @@ QObject는 복사가 안된다. 동적 할당을 하거나 복사를 하지 않�
 예를 들어 QObject GetObject() { QObject object; return object; } 이러한 함수 작성이 불가능하다는 것이다.
 이렇게 QObject와 같이 자신이 만든 다른 클래스에서도 복사가 되는 것을 막으려면 Q_DISABLE_COPY(클래스 이름)을 Q_OBJECT 매크로를 선언하듯 해주면 된다. (자매품으로 Q_DISABLE_MOVE, Q_DISABLE_COPY_MOVE도 있다...)
 QOjbect 상속하는 모든 자식 클래스들은 스마트 포인터를 사용한 것과 같이 자동 메모리 해제 기능을 이용할 수가 있게 된다.
+QObject는 템플릿 클래스와 같이 사용할 수 없다.
 밑의 예시를 보자.
 
 class Cat : public QObject
@@ -56,6 +57,8 @@ int main(int argc, char *argv[])
 이러한 상황에서 app 실행이 종료가 되는 시점에 이에 붙어 있던 QObject들을 모두 하나씩 보면서 동적 할당을 해제해주기 때문에 따로 delete를 해줄 필요가 없다.
 위 예제에서는 지금 app이 myCat과 myDog의 parent로 위치하기 때문에 따로 할당 해제에 신경을 쓸 필요가 없다.
 yourCat을 delete를 해주면 이 녀석에 딸려있던 yourDog까지 같이 할당 해제가 된다.
+주의할 점은 Q_OBJECT 매크로가 주석에 있던 실제 코드로 작성이 되었던 해당 파일에 QObject가 사용된 것으로 Qt Creator가 인식을 하고 그 파일에 대한 moc 파일을 생성하려고 시도를 하니 이를 유념하면서 코드를 작성해야 한다.
+예를 들어 main.cpp에 Q_OBJECT 글자가 적히면 main에 대한 moc는 생성이 안되기에 컴파일이 안된다.
 
 - Signals and Slots
 단순히 말하면 C++의 CallBack 함수이다. MFC나 Win32에서 메시징 시스템이라고 생각하면 쉽다.
@@ -68,26 +71,33 @@ https://stackoverflow.com/questions/2298242/callback-functions-in-c
 
 class Cat : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	Cat(QObject *parent = nullptr) : QObject(parent) {};
-	~Cat() {};
-	
-signals:	
-	
+    Cat(QObject *parent = nullptr) : QObject(parent) {};
+    ~Cat() {};
+
+signals:
+    void Calling(QString strName);
+
 public slots:
-	void Run() { qInfo() << "Run!"; }
+    void Run() { qInfo() << sender() << "is Bark! so Run!"; }
 };
 
 class Dog : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	Dog(QObject *parent = nullptr) : QObject(parent) {};
-	~Dog() {};
-	
+    Dog(QObject *parent = nullptr) : QObject(parent) {};
+    ~Dog() {};
+
 signals:
-	void Bark();
+    void Bark();
+
+public slots:
+    void Hearing(QString strName)
+    {
+        qInfo() << "Dog hears Cat is calling" << strName;
+    }
 };
 
 int main(int argc, char *argv[])
@@ -97,21 +107,27 @@ int main(int argc, char *argv[])
     Dog myDog(&app);
     Cat myCat(&app);
 	
-	QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run);
+    QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run);
+    QObject::connect(&myCat, &Cat::Calling, &myDog, &Dog::Hearing);
 	
 	emit myDog.Bark();
 	
 	QObject::disconnect(&myDog, &Dog::Bark, &myCat, &Cat::Run);
 	
+	emit myCat.Calling("doggy");
+	
 	return app.exec();
 }
 
 위의 상황에서 myDog의 Bark() 함수를 호출하면 자동적으로 myCat의 Run()함수도 호출된다. 즉 signal을 보내면 slot이 반응하는 것이다.
+singal의 함수 인자가 QString이라면 이에 반응하는 slot의 함수 인자도 QString으로 동일해야 한다. 즉 연결할 signal과 slot의 함수 인자 형식을 맞춰줘야 한다.
 connect() 함수를 이용해서 singal과 slot을 연결한다.
 connect() 함수는 많은 옵션이 있는데 default 옵션은 AutoConnection이다. 
 이러한 경우 QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run); QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run); 두 번 쓰여지면 Bark() 한번에 Run()이 두번 실행되게 된다. 이를 해결하려면 QObject::connect(&myDog, &Dog::Bark, &myCat, &Cat::Run, Qt::UniqueConnection); 이렇게 connection 옵션을 마지막에 넣어주면 된다. (다른 옵션도 많으니 Qt document에서 찾아보자.)
 signal을 보낼 때는 꼭 emit myDog.Bark();와 같이 emit을 붙이고 signal 함수를 호출해야 한다.
 signals에 정의된 함수들은 선언만 해야하며 slots에 있는 함수는 선언과 구현을 모두 해야한다.
+slots에 구현된 함수는 일반 함수처럼 사용할 수 있다. 
+slots에 구현된 함수 내부에서는 sender()라는 함수를 사용할 수 있는데 signal을 보낸 QObject의 주소를 반환한다.
 하나의 signal에 여러개의 slot이 연결될 수 있다.
 연결을 끊을 때는 disconnect() 함수를 이용하면 된다.
 
@@ -183,6 +199,50 @@ property 함수가 호출되면 알맞은 getter가 setProperty 함수가 호출
 C++에서의 Q_PROPERTY 사용 의미는 주로 여러 개의 QObject를 일괄 처리할 때인데 잘보면 Age는 int인데 setProperty("Age", "11")로 스트링 형태로 넣어줘도 잘 처리되는 것을 볼 수 있다.
 Q_PROPERY와 signals and slots 기술은 Qt의 moc 파일 생성을 통해 작동하기 때문에 컴파일 도중 변경된 moc 파일을 적용하겠다고 물어보면 yes to all을 누르는 것이 좋다.
 
+- Qt에서의 예외처리
+C++에서와 동일한데 qWarning()을 같이 사용하는 것이 권장된다.
+밑은 코드 예시이다.
+
+class CustomException : public std::exception
+{
+private:
+    const char* m_strMessage;
+public:
+    CustomException(const char* strMsg)
+    {
+        m_strMessage = strMsg;
+    }
+    const char* what() const throw()
+    {
+        return m_strMessage;
+    }
+};
+
+bool DivideSomething(int nNumer, int nDenom, int& nRet)
+{
+    try {
+        if(!nDenom)
+            throw CustomException("Can't divide number by zero!");
+        nRet = nNumer/nDenom;
+    }
+    catch (CustomException& e) {
+        qWarning() << e.what();
+        return false;
+    }
+    return true;
+}
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication app(argc, argv);
+
+    int nRet = 0;
+    DivideSomething(5, 0, nRet);
+    return app.exec();
+}
+
+위 코드 처럼 예외처리 클래스를 따로 정의해서 해도 되고 그냥 throw QString("Error!");처럼 문자열 자체를 던져버려도 된다.
+
 - C++ vs Qt
 
 1. std::cout <-> qInfo() [또는 qDebug(), qCritical(), qWarning() 등등...]
@@ -192,3 +252,12 @@ Q_PROPERY와 signals and slots 기술은 Qt의 moc 파일 생성을 통해 작�
 일단 qobject_cast는 QObject를 상속한 클래스에서만 사용이 가능하기에 나머지 상황에서는 표준 형변환을 써야한다.
 QObject를 상속한 클래스에서는 qobject_cast를 사용하는 것이 안전하다.
 
+3. int, long, long long... vs qint8, qint16, qint32...
+OS별로 코드를 따로 짜고 싶지 않다면 qint형을 사용하는 것이 편하다.
+
+4. QString vs std::string
+Qt에서는 QString을 사용하는 것이 좋다.
+std::string에서는 지원하지 않는 split, arg, asprintf 등의 편의 기능을 QString은 가지고 있다. 또한 QString은 wchar과 char를 유동적으로 지원한다.
+
+5. delete vs qDeleteAll
+크기가 큰 배열, 구조체 묶음 등을 동적 할당 해제하는 경우에는 qDeleteAll이 편하다.
