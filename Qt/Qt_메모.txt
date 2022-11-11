@@ -1,5 +1,9 @@
 Qt 메모
 
+- 개발 환경 관련
+Qt Creator에서는 기본적으로 Qml Designer 기능이 꺼져있는데 이를 키려면 Help >> About Plugins >> Qt Quick >> QmlDesigner 를 활성화시키고 Qt Creator를 재시작하면 된다.
+Qt Creator의 텍스트 에디터는 Visual Studio와 좀 달라 불편한데 Edit >> Preferences >> Text Editor로 가서 Behavior 탭의 Typing 항목의 Tab key performs auto-indent를 Always로 설정해주면 좀 편해진다.
+
 - 빌드 관련
 qmake와 CMake 방식 두개가 가장 추천되는데 간단한 것은 qmake다.
 내가 배운 강의에서는 CMake가 빌드 표준으로 자리잡고 있기 때문에 CMake를 추천한다.
@@ -59,6 +63,8 @@ int main(int argc, char *argv[])
 yourCat을 delete를 해주면 이 녀석에 딸려있던 yourDog까지 같이 할당 해제가 된다.
 주의할 점은 Q_OBJECT 매크로가 주석에 있던 실제 코드로 작성이 되었던 해당 파일에 QObject가 사용된 것으로 Qt Creator가 인식을 하고 그 파일에 대한 moc 파일을 생성하려고 시도를 하니 이를 유념하면서 코드를 작성해야 한다.
 예를 들어 main.cpp에 Q_OBJECT 글자가 적히면 main에 대한 moc는 생성이 안되기에 컴파일이 안된다.
+QObject를 상속하면 생기는 setParent(QObject *), parent() 멤버 함수들로 부모를 설정하거나 획득할 수 있다.
+children() 멤버 함수로 자식들 리스트를 가져올 수도 있다.
 
 - Signals and Slots
 단순히 말하면 C++의 CallBack 함수이다. MFC나 Win32에서 메시징 시스템이라고 생각하면 쉽다.
@@ -243,6 +249,57 @@ int main(int argc, char *argv[])
 
 위 코드 처럼 예외처리 클래스를 따로 정의해서 해도 되고 그냥 throw QString("Error!");처럼 문자열 자체를 던져버려도 된다.
 
+- QSettings
+앱 설정을 위한 ini 파일에 관련된 클래스이다.
+밑의 예시와 같이 쓰인다.
+
+QCoreApplication::setOrganizationName("Company Name"); // QSetting이 저장될 경로에 쓰인다. 보통 회사 이름이나 개인 프로젝트의 경우 자신의 닉네임을 적는다.
+QCoreApplication::setOrganizationDomain("Company Domain"); // QSetting에 쓰일 회사 도메인을 적는다.
+QCoreApplication::setApplicationName("App Name"); // QSetting이 저장될 경로에 쓰인다. 어플리케이션 이름을 적으면 된다.
+
+QSettings settings; // 각 플랫폼마다 존재하는 시스템 폴더에 위에서 설정된 setOrganizationName, setOrganizationDomain, setApplicationName 이 조합된 폴더를 생성하여 ini 파일이 이미 있다면 읽어오고 없다면 새로 저장한다.
+
+QSettings settings(filename, QSettings::Format::IniFormat); // 지정된 filename으로 ini 형식의 파일을 저장한다. 보통 이 방식을 많이 사용한다. 참고로 QCoreApplication::applicationDirPath() 함수는 현재 어플리케이션이 가동되고 있는 폴더 위치를 반환해준다.
+
+settings.setValue("Section_01/Key_01", 1); // [Section_01]에 Key_01 값을 1로 설정한다.
+int nKeyValue = settings.value("Section_01/Key_01").toInt(); // [Section_01]에 Key_01 값을 int로 가져온다.
+settings.setValue("Section_02/Key_02", "Name");
+QString strKeyValue = settings.value("Section_02/Key_02", "Default Value").toString(); // [Section_02]에 Key_02 값을 가져오는데 해당 값이 없다면 default value로 지정된 "Default Value" 스트링을 가져온다.
+settings.setValue("Section_03/Key_03", true);
+bool bKeyValue = settings.value("Section_03/Key_03").toBool();
+
+위의 상태에서 ini 파일은 다음과 같이 저장된다.
+[Section_01]
+Key_01=1
+
+[Section_02]
+Key_02=Name
+
+[Section_03]
+Key_03=true
+
+"Section_01/Key_01" 이렇게 "섹션/키"로 구성하여 함수 인자에 넘기는 방법도 있지만 그룹핑을 사용하는 방식도 있다.
+
+settings.beginGroup("Section_04");
+settings.setValue("Key_04", 'A');
+char chVar = settings.value("Key_04", 'a').toChar();
+settings.endGroup();
+
+위의 방식에서 주의할 점은 꼭 endGroup을 통해 그룹 지정을 해제해주어야 한다.
+ini에서 값을 가져오기만 하는 경우는 따로 저장이나 동기 함수를 호출할 필요가 없지만 ini 값을 변경하는 경우는 settings.sync(); 함수로 ini 파일의 변경을 적용해야 한다.
+
+Section과 각 Key값을 순회하고 싶다면 다음과 같이 for문을 사용한다.
+
+// 그룹 순회
+for (QString& group : settings.childGroup) {
+	settings.beginGroup(group);
+	// 키 순회
+	for (QString& key : settings.childKeys()) {
+	
+	}
+	settings.endGroup();	
+}
+
 - C++ vs Qt
 
 1. std::cout <-> qInfo() [또는 qDebug(), qCritical(), qWarning() 등등...]
@@ -261,3 +318,47 @@ std::string에서는 지원하지 않는 split, arg, asprintf 등의 편의 기�
 
 5. delete vs qDeleteAll
 크기가 큰 배열, 구조체 묶음 등을 동적 할당 해제하는 경우에는 qDeleteAll이 편하다.
+특히나 리스트 구조가 아닌 경우 사용하기 용이한데 밑은 그 예시이다.
+QMap<QString, int*> map;
+for (int i = 0; i < 5; i++)
+	map.insert(QString::number(i), new int(i));
+qDeleteAll(map);
+위와 같이 qDeleteAll만 하면 비선형 구조도 알아서 동적 할당된 5개의 int*를 해제해준다.
+
+6. std::unique_ptr vs QScopedPointer / std::shared_ptr vs QSharedPointer
+QScopedPointer, QSharedPointer는 std::move를 지원하지 않는다. 반면 표준 스마트포인터는 지원한다. 그냥 표준 스마트 포인터를 써라.
+
+7. std::vector vs QList, QVector
+QList와 QVector는 Qt6에서는 동일해졌고 Qt5에서는 약간 다르긴 하지만 그냥 그게 그거라고 보면 된다.
+std::vector와 QList 둘 다 거기서 거기긴 한데 QList에 붙어있는 기능이 좀 더 많다.
+QList는 밑과 같은 표현이 가능하다.
+QList lstNum; 
+lstNum << 1 << 2 << 3;
+이러면 lstNum에는 1, 2, 3이 들어있는 것이다.
+그 외의 sliced(), count(), removeAll() 등 표준 std::vector를 이용해서 직접 구현해야 하는 내용들이 QList에는 이미 구현이 되어 있다.
+
+8. std::unordered_set vs QSet
+얘도 거기서 거기인데 QList 같이 operator << 이게 재정의되어 있기 때문에 좀 더 편하긴 하다.
+그리고 unordered_set 같은 경우는 비교를 할 때 setVar.find(2) != setVar.end() 이렇게 찾아야하는데 QSet에서는 setVar.contains(2) 로 끝난다.
+
+9. std::unordered_map vs QMap
+QMap이 좀 더 편하다.
+예를 들어 key와 value 묶음을 따로 얻고 싶다면 C++에서는 밑의 방식을 사용한다.
+std::unordered_map<std::string, int> map;
+std::vector<std::string> keys(map.size());
+transform(map.begin(), map.end(), keys.begin(), key_selector);
+std::vector<int> values(map.size());
+transform(map.begin(), map.end(), values.begin(), value_selector);
+반면 Qt에서는 다음과 같다.
+QMap<QString, int> map;
+QList keys = map.keys();
+QList values = map.values();
+그리고 QSet과 같이 contains() 함수로 end() iterator 비교 없이 key 유무를 간단하게 확인할 수 있다.
+또 value()라는 함수의 특이한 기능이 있는데 map.value(key, default value) 로 사용할 수 있는데 map에서 주어진 key가 존재하면 해당 key의 묶인 value 값을, 존재하지 않으면 default value 값을 리턴하는 함수이다.
+
+10. std::vector<std::string> vs QStringList
+그냥 QStringList 써라. 만약 QList<QString>을 사용하고 싶은 경우에도 QStringList 써라.
+QStringList는 직접 구현하기 귀찮은 기능들이 많이 구현되어 있다.
+strlst.replaceInStrings("a", "@"); 를 사용하면 QStringList 내의 모든 스트링에 포함된 'a'는 '@'로 교체된다.
+strlst.join(","); 를 사용하면 QStringList 내의 모든 스트링이 ,를 사용하여 하나의 스트링으로 정렬된다. ex) { "눈사람", "나무" } -> "눈사람, 나무"
+filter("r")를 사용하면 QStringList 내에서 'r'이 포함된 문자열만 반환된다.
