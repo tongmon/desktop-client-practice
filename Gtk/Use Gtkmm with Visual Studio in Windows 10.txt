@@ -19,6 +19,8 @@
 
 9. 혹시 모르니 pacman -S --needed base-devel mingw-w64-x86_64-toolchain 명령어를 수행하여 빌드 관련된 다른 툴들을 깔기 위해 목록에 나온 것들을 전부 설치한다.(그냥 엔터치면 전체 설치가 될 것이다.)
 
+10. 만약 "set by the XDG_DATA_HOME and XDG_DATA_DIRS" 라는 문구가 설치 뒤에 뜬다면 export XDG_DATA_HOME=$XDG_DATA_HOME:c/msys64/mingw64/share와 export XDG_DATA_DIRS=$XDG_DATA_DIRS:c/msys64/mingw64/share 명령으로 환경변수를 설정해주자.
+
 10. 고급 시스템 설정 보기에 들어가 고급 탭을 선택하고 환경 변수를 설정해줘야 한다. 사용자 변수 항목에 Path를 편집하여 "C:\msys64\mingw64\bin" 경로를 넣어주고 적용한다. (혹시 모르니 재부팅을 해주면 좋을 것이다.)
 
 10. 이제 vcpkg를 설치해야 하는데 난 git으로 파일을 잘 안따오니 그냥 https://github.com/microsoft/vcpkg 여기서 code를 누르고 Downlode ZIP 옵션을 선택하여 ZIP 파일 통째로 받은 뒤에 "C:\vcpkg" 경로를 만들고 거기에 압축 파일을 해제한다. (잘 해제했으면 "C:\vcpkg\.github" 이렇게 위치해 있을 것이다.)
