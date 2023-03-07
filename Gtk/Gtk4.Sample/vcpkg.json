@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "gtk4-sample",
+  "version": "1.0.0",
+  "dependencies": [],
+  "builtin-baseline": "8daf70c56ba9581f5251a5d4675eb771b6b34957"
+}
