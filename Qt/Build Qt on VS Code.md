@@ -1,6 +1,7 @@
 # VS Code에서 Qt 빌드하는 법  
 
 CMake와 VS Code를 사용하는 환경에서 Qt를 빌드하는 방법을 알아보자.  
+VS Code에서 CMake 빌드 환경 구축은 이미 되어있다는 가정 하에 설명한다.  
 해당 빌드 방법은 Windows 10 운영체제에서 Visual Studio 2022를 이용하여 테스트되었다.  
 &nbsp;  
 
@@ -12,11 +13,11 @@ Qt에는 다양한 모듈이 존재하는데 각 모듈마다 적용된 라이�
 Qt 모듈 리스트는 https://doc.qt.io/qt-5/qtmodules.html 에서 확인이 가능하다.  
 각 모듈마다 적용된 라이센스는 https://www.qt.io/product/features 에서 확인할 수 있다.  
 문제는 LGPLv3 라이센스의 설명이 난해하다는 것이다.   
-단순히 동적 링크를 하여 Qt 모듈들을 이용하면 소스 코드 공개의무가 없다고 생각하면 편하다.  
-정적 링크도 코드 공개 의무를 피해갈 수 있으나 Qt 관련 모듈 코드를 같이 배포해야 하는 등의 번거로움이 생긴다.  
+단순히 ```동적 링크를 하여 Qt 모듈들을 이용하면 소스 코드 공개의무가 없다```라고 생각하면 편하다.  
+정적 링크도 코드 공개 의무를 피해갈 수 있으나 obj 코드를 공개해야 하기에 껄끄럽다.  
 &nbsp;  
 
-## 사전 준비  
+## Qt 모듈 빌드   
 
 Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/qt-5/windows-building.html 에 적혀있다. (Linux: https://doc.qt.io/qt-5/linux-building.html / MacOS: https://doc.qt.io/qt-5/macos-building.html)  
 
@@ -25,7 +26,7 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
     다운 받은 파일은 보통 ```qt-everywhere-opensource-src-[Qt 버전].zip``` 이런 이름일 것이다.  
 
 2. Qt 모듈 사전 준비  
-    받은 파일을 ```C:\Qt\[Qt 버전]``` 폴더에 풀자. (폴더 경로 중 띄어쓰기만 없다면 다른 곳에 풀어도 된다.)  
+    받은 파일을 ```C:\Qt\[Qt 버전]``` 폴더에 풀자. (폴더 경로 중 띄어쓰기만 없다면 어떤 곳에 풀어도 상관없다.)  
     필자는 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로에 풀었다.  
     그러면 configure.bat 파일이 ```D:\Projects\Development\Qt\Qt-5.15.8\configure.bat``` 이렇게 위치한 형태가 갖춰질 것이다.  
     설명도 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로 기준으로 하겠다.  
@@ -63,7 +64,7 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
 4. 환경 변수 세팅  
     MSVC 컴파일러를 사용할 경우 ```D:\Projects\Development\Qt```에 qt5vars.cmd 파일을 만들어 준다.  
     cmd 파일 내용은 밑과 같다.  
-    ```cmd
+    ```batch
     CALL "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" amd64
     SET _ROOT=D:\Projects\Development\Qt\Qt-5.15.8
     SET PATH=%_ROOT%\qtbase\bin;%_ROOT%\gnuwin32\bin;%PATH%
@@ -102,13 +103,13 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
     * -platform   
     타겟 플랫폼 전용으로 빌드한다.  
         * win32-g++  
-            Gcc로 윈도우에서 컴파일
+            Gcc로 윈도우에서 컴파일  
 
         * win32-msvc  
-            MSVC로 윈도우에서 컴파일   
+            MSVC로 윈도우에서 컴파일 (설치된 MSVC 중 최신 버전을 알아서 선택해준다.)     
 
         * linux-clang  
-            Clang으로 리눅스에서 컴파일       
+            Clang으로 리눅스에서 컴파일  
     만약 Visual Studio 2022로 윈도우에서 Qt 모듈을 빌드하고 싶다면 ```-platform win32-msvc2022``` 옵션을 추가하면 된다.  
     이 외에도 많은 플랫폼을 지원한다.  
     자세한 내용은 https://doc.qt.io/qt-5/supported-platforms.html 링크를 참고하자.  
@@ -133,4 +134,345 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
 7. 빌드 및 설치  
     열려있는 cmd 창에서 ```jom``` 명령어를 수행해 빌드를 진행한다.  
     빌드가 완료되면 ```jom install``` 명령어를 수행해 설치를 진행한다.  
+    GCC나 Clang 컴파일러를 사용 중이라면 환경 변수에 Path에 Qt 설치 경로 bin 폴더를 추가해줘야 한다.  
+    필자는 -prefix 옵션으로 설치 경로를 직접 지정해주었기에 ```D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 이 곳이 bin 폴더 위치가 되었다.  
     설치까지 완료했으면 컴퓨터를 재부팅한다.  
+&nbsp;  
+
+## Qt 활용 프로젝트 빌드  
+
+Qt가 모두 설치되었으면 Qt를 활용해야 한다.  
+VS Code에서 CMake를 이용한 프로젝트를 만들어보자.  
+필자가 사용하는 MSVC 컴파일러를 기반으로 설명하겠다.  
+다른 컴파일러를 사용중이라면 CMakePresets.json의 구성을 컴파일러에 맞게 수정해줘야 한다.  
+
+### Qml 프로젝트  
+
+Qml 프로젝트 구성은 밑과 같다.  
+```
+QtQuick.Project
+|- QmlDir
+    |- main.qml
+|- CMakeLists.txt
+|- CMakePresets.json
+|- main.cpp
+|- qml.qrc
+```
+
+* CMakeLists.txt  
+    CMakeLists.txt 파일만 잘 보면 다른 것들은 별 문제가 되지 않는다.  
+    ```cmake
+    cmake_minimum_required(VERSION 3.23)
+
+    # 프로젝트 이름
+    project("QtQuick.Project")
+
+    # Qt의 시그널 기능을 만들어주는 MOC 활성화  
+    set(CMAKE_AUTOMOC ON)
+
+    # Qt Widget 모듈과 .ui 파일을 사용한다면 밑 주석을 해제하자.  
+    # set(CMAKE_AUTOUIC ON)
+
+    # C++ 버전
+    set(CMAKE_CXX_STANDARD 17)
+
+    # Qt5Config.cmake 파일의 경로를 적어준다.  
+    set(Qt5_DIR "D:\\Projects\\Development\\Qt\\5.15.8-MSVC-x64-shared\\lib\\cmake\\Qt5")
+
+    # Qt 모듈 포함 (현재는 Quick, Qml만 포함)
+    find_package(Qt5 REQUIRED Quick Qml)
+
+    # 소스 파일들을 SRC_FILES 변수에 저장
+    file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
+
+    # CMake 함수 qt5_add_resources()를 통해 리소스 파일을 등록해줘야 함.  
+    # 리소스 파일들은 qrc 변수에 저장됨
+    qt5_add_resources(qrc qml.qrc)
+
+    # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
+    # 리소스 파일도 함께 넣어줘야 함
+    add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${qrc})
+
+    # 포함한 모듈들을 링크해준다.  
+    target_link_libraries(
+        ${CMAKE_PROJECT_NAME}
+        Qt5::Quick
+        Qt5::Qml
+    )
+    ```
+    Qt5_DIR 설정은 ```[Qt 설치 경로]/lib/cmake/[Qt5 or Qt6]```로 해주면 된다.  
+
+* CMakePresets.json
+    ```json
+    {
+        "version": 4,
+        "cmakeMinimumRequired": {
+            "major": 3,
+            "minor": 23,
+            "patch": 0
+        },
+        "configurePresets": [
+            {
+                "description": "윈도우 빌드 전용 / 컴파일 빌드 폴더와 설치 폴더 지정",
+                "name": "windows-base",
+                "hidden": true,
+                "binaryDir": "${sourceDir}/Build/${presetName}",
+                "installDir": "${sourceDir}/Installed/${presetName}",
+                "toolchainFile": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "condition": {
+                    "type": "equals",
+                    "lhs": "${hostSystemName}",
+                    "rhs": "Windows"
+                }
+            },
+            {
+                "description": "MSVC 컴파일러 사용",
+                "name": "msvc",
+                "hidden": true,
+                "generator": "Visual Studio 17 2022",
+                "inherits": "windows-base"
+            },
+            {
+                "description": "MSVC 컴파일러로 x64 빌드",
+                "name": "msvc-x64",
+                "displayName": "MSVC x64",
+                "inherits": "msvc",
+                "architecture": {
+                    "value": "x64",
+                    "strategy": "set"
+                },
+                "cacheVariables": {
+                    "VCPKG_TARGET_TRIPLET": "x64-windows-static",
+                    "CMAKE_CXX_FLAGS": "/MP /D_UNICODE /DUNICODE /D_CRT_SECURE_NO_WARNINGS /JMC /permissive- /EHsc",
+                    "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+                }
+            },
+            {
+                "description": "MSVC 컴파일러로 x86 빌드",
+                "name": "msvc-x86",
+                "displayName": "MSVC x86",
+                "inherits": "msvc",
+                "architecture": {
+                    "value": "Win32",
+                    "strategy": "set"
+                },
+                "cacheVariables": {
+                    "VCPKG_TARGET_TRIPLET": "x86-windows-static",
+                    "CMAKE_CXX_FLAGS": "/DWIN32 /MP /D_UNICODE /DUNICODE /D_CRT_SECURE_NO_WARNINGS /JMC /permissive- /EHsc",
+                    "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+                }
+            }
+        ],
+        "buildPresets": [
+            {
+                "name": "msvc-base-build-settings",
+                "hidden": true,
+                "nativeToolOptions": [
+                    "/maxcpucount",
+                    "/nologo",
+                    "/verbosity:minimal"
+                ]
+            },
+            {
+                "name": "msvc-x64-debug-build",
+                "displayName": "Debug Build",
+                "inherits": "msvc-base-build-settings",
+                "configuration": "Debug",
+                "configurePreset": "msvc-x64"
+            },
+            {
+                "name": "msvc-x64-release-build",
+                "displayName": "Release Build",
+                "inherits": "msvc-base-build-settings",
+                "configuration": "Release",
+                "configurePreset": "msvc-x64"
+            },
+            {
+                "name": "msvc-x86-debug-build",
+                "displayName": "Debug Build",
+                "inherits": "msvc-base-build-settings",
+                "configuration": "Debug",
+                "configurePreset": "msvc-x86"
+            },
+            {
+                "name": "msvc-x86-release-build",
+                "displayName": "Release Build",
+                "inherits": "msvc-base-build-settings",
+                "configuration": "Release",
+                "configurePreset": "msvc-x86"
+            }
+        ],
+        "testPresets": []
+    }
+    ```
+    보통의 MSVC 컴파일러 세팅이다.  
+    유의할 점은 빌드한 Qt가 shared인지 static인지에 따라 CMAKE_MSVC_RUNTIME_LIBRARY 옵션을 맞춰 설정해줘야 한다는 것이다.  
+    필자는 shared로 Qt를 빌드했기에 ```MultiThreaded$<$<CONFIG:Debug>:Debug>DLL```로 설정하였다.  
+
+* main.cpp
+    ```c++
+    #include <QDebug>
+    #include <QGuiApplication>
+    #include <QQmlApplicationEngine>
+
+    int main(int argc, char *argv[])
+    {
+        qDebug() << "tongstar";
+
+        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+        QGuiApplication app(argc, argv);
+
+        QQmlApplicationEngine engine;
+        const QUrl url(QStringLiteral("qrc:/QmlDir/main.qml"));
+        QObject::connect(
+            &engine, &QQmlApplicationEngine::objectCreated,
+            &app, [url](QObject *obj, const QUrl &objUrl)
+            {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1); },
+            Qt::QueuedConnection);
+        engine.load(url);
+
+        return app.exec();
+    }
+    ```
+    별 특이한 건 없고 main.qml 파일을 호출한다.  
+
+* qml.qrc
+    ```qrc
+    <RCC>
+        <qresource prefix="/">
+            <file>QmlDir/main.qml</file>
+        </qresource>
+    </RCC>
+    ```
+    qml 파일이 리소스로 등록되어 있다.  
+
+* main.qml
+    ```qml
+    import QtQuick 2.12
+    import QtQuick.Window 2.12
+    import QtQuick.Controls 2.12
+    import QtQuick.Layouts 1.12
+
+    Window {
+        visible: true
+        width: 500
+        minimumWidth: 200
+        height: 300
+        minimumHeight: 100
+        title: "CMake and Qt Quick"
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            Text {
+                id: txt
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "tongstar"
+                font.family: "Verdana"
+                font.pointSize: 30
+                wrapMode: Text.WordWrap
+            }
+
+            Button {
+                Layout.fillWidth: true
+                text: "some button"
+                onClicked: {
+                    txt.text = "Some random number: ".concat(Math.floor((Math.random() * 100) + 1))
+                }
+            }
+        }
+    }
+    ```
+    버튼을 누르면 랜덤한 숫자를 띄우는 예제이다.  
+
+자세한 내용은 같은 레포지토리 경로에 있는 QtQuick.Project를 확인해라.  
+
+#### 배포  
+
+Qt 프로젝트가 빌드 되었다고 하더라도 종속된 dll들이 같이 포함되지 않아서 실행이 안될 것이다.  
+Qt가 설치된 bin 폴더를 보자.  
+필자는 ```D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 인데 해당 폴더 안에 windeployqt.exe 파일이 있을 것이다.  
+요 녀석을 활용하여 배포할 수 있다.  
+cmd를 관리자 모드로 켜서 ```cd D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 명령어로 이동한다.  
+```windeployqt.exe [디버그: --debug, 릴리즈: --release] --qmldir [Qml 파일들이 위치한 폴더 경로] [실행 파일 경로]``` 명령어를 실행하면 실행 파일이 수행되기 위한 dll 들이 모두 실행 파일 위치에 복사된다.  
+필자는 ```windeployqt.exe --debug --qmldir D:\Projects\VSCode\QtQuick.Project\QmlDir D:\Projects\VSCode\QtQuick.Project\Build\msvc-x64\Debug\QtQuick.Project.exe```  명령을 수행했다.  
+이제 실행 파일이 담긴 폴더를 압축해서 배포하면 된다.  
+&nbsp;  
+
+### Widget 프로젝트  
+
+Qml 프로젝트와 별반 다르지 않기 때문에 다른 점만 설명하고 끝내겠다.  
+프로젝트 구성은 밑과 같다.  
+```
+QtWidget.Project
+|- CMakeLists.txt
+|- CMakePresets.json
+|- main.cpp
+|- mainwindow.cpp
+|- mainwindow.h
+|- mainwindow.ui
+```
+Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.  
+
+* CMakeLists.txt
+    ```cmake
+    cmake_minimum_required(VERSION 3.23)
+
+    # 프로젝트 이름
+    project("QtWidget.Project")
+
+    # Qt의 시그널 기능을 만들어주는 MOC 활성화  
+    set(CMAKE_AUTOMOC ON)
+
+    # .ui 파일과 소스 코드 연동을 위한 UIC 활성화
+    set(CMAKE_AUTOUIC ON)
+
+    # C++ 버전
+    set(CMAKE_CXX_STANDARD 17)
+
+    # Qt5Config.cmake 파일의 경로를 적어준다.  
+    set(Qt5_DIR "D:\\Projects\\Development\\Qt\\5.15.8-MSVC-x64-shared\\lib\\cmake\\Qt5")
+
+    # Qt 모듈 포함 (현재는 Widgets만 포함)
+    find_package(Qt5 REQUIRED Widgets)
+
+    # 소스 파일들을 SRC_FILES 변수에 저장
+    file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
+
+    # UI 파일들을 UI_FILES 변수에 저장
+    file(GLOB UI_FILES CONFIGURE_DEPENDS ./*.ui)
+
+    # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
+    # UI 파일도 함께 넣어줘야 함
+    add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${UI_FILES})
+
+    # 포함한 모듈들을 링크해준다.  
+    target_link_libraries(
+        ${CMAKE_PROJECT_NAME}
+        Qt5::Widgets
+    )
+    ```
+    Qml 프로젝트와 크게 다른 점은 .ui 파일에 대한 처리이다.  
+    .ui 파일을 연동하기 위해 CMAKE_AUTOUIC 옵션을 켜고 실행 파일 빌드 시에도 포함 시켰다.  
+
+* CMakePresets.json
+    Qml 프로젝트와 동일하다.  
+
+* main.cpp, mainwindow.cpp, mainwindow.h, mainwindow.ui
+    ui 구성과 소스 코드 로직은 생략한다.  
+
+자세한 내용은 같은 레포지토리 경로에 있는 QtWidget.Project에서 확인할 수 있다.  
+
+#### 배포  
+
+Qml 프로젝트와 별반 다르지 않고 --qmldir만 지정해주지 않을 뿐이다.  
+cmd를 관리자 모드로 켜서 ```cd D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 명령어로 이동한다.  
+```windeployqt.exe [디버그: --debug, 릴리즈: --release] [실행 파일 경로]``` 명령어를 실행하면 실행 파일이 수행되기 위한 dll 들이 모두 실행 파일 위치에 복사된다.  
+필자는 ```windeployqt.exe --debug D:\Projects\VSCode\QtWidget.Project\Build\msvc-x64\Debug\QtWidget.Project.exe``` 명령을 수행했다.  
+이제 실행 파일이 담긴 폴더를 압축해서 배포하면 된다.  
