@@ -39,6 +39,7 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
         https://visualstudio.microsoft.com/ko/ 링크에서 설치 파일 다운로드하고 설치 진행하자.  
 
     2. Jom  
+        Visual Studio의 nmake를 사용할 것이라면 건너뛰어도 된다.  
         https://download.qt.io/official_releases/jom/ 링크에서 최신 버전의 Jom을 다운로드 한다.  
         압출 풀고 나온 모든 녀석들을 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로에 풀어준다.  
         ```D:\Projects\Development\Qt\Qt-5.15.8\jom.exe``` 형태가 갖춰져야 한다.  
@@ -138,17 +139,21 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
     필자는 ```configure -debug-and-release -opensource -shared -confirm-license -platform win32-msvc2022 -prefix D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared``` 명령어를 수행하여 옵션 설정을 하겠다.  
     더 많은 옵션에 대한 정보는 ```configure -help```를 통해 알 수 있다.  
 
-7. 빌드 및 설치  
-    열려있는 cmd 창에서 ```jom``` 명령어를 수행해 빌드를 진행한다.  
-    빌드가 완료되면 ```jom install``` 명령어를 수행해 설치를 진행한다.  
+7. 빌드 및 설치 
+    jom을 사용할 것이라면 일반 cmd창을, nmake를 사용할 것이라면 ```Developer Command Prompt for [Visual Studio 버전]```을 열어서 작업하자.  
+    ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 코드 위치로 이동한다.  
+    ```jom``` (nmake 사용자는 ```nmake```) 명령어를 수행하여 빌드를 진행한다.  
+    빌드가 완료되면 ```jom install``` (nmake 사용자는 ```nmake install```) 명령어를 수행해 설치를 진행한다.  
     GCC나 Clang 컴파일러를 사용 중이라면 환경 변수에 Path에 Qt 설치 경로 bin 폴더를 추가해줘야 한다.  
     필자는 -prefix 옵션으로 설치 경로를 직접 지정해주었기에 ```D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 이 곳이 bin 폴더 위치가 되었다.  
     설치까지 완료했으면 컴퓨터를 재부팅한다.  
 
 8. 재빌드  
     만약 configure를 다른 옵션으로 설정하여 빌드를 수행하고 싶다면 Qt 소스 파일을 초기화해줘야 한다.  
-    cmd 창에서 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 파일 위치로 이동한 뒤 ```jom clean```을 해주면 다시 빌드가 가능하다.  
+    cmd 창에서 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 파일 위치로 이동한 뒤 ```jom clean``` (nmake 사용자는 ```nmake distclean```) 명령어를 수행하면 다시 빌드가 가능하다.  
     자신이 MSVC 컴파일러를 사용한다면 4번 부터, 그 외는 6번 절차부터 다시 진행해주면 된다.  
+    **개인적으로 느끼는 건데 한번 빌드된 소스 파일에 다양한 캐시 파일이 상주하고 있어서... clean 명령어를 수행해도 재빌드가 잘되는 것 같진 않다.**  
+    **그러니 그냥 소스 파일 날리고 다시 압축 풀어서 처음부터 빌드하는 것이 속편하다.**  
 &nbsp;  
 
 ## Qt 활용 프로젝트 빌드  
