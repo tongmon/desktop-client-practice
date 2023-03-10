@@ -15,6 +15,7 @@ Qt 모듈 리스트는 https://doc.qt.io/qt-5/qtmodules.html 에서 확인이 �
 문제는 LGPLv3 라이센스의 설명이 난해하다는 것이다.   
 단순히 ```동적 링크를 하여 Qt 모듈들을 이용하면 소스 코드 공개의무가 없다```라고 생각하면 편하다.  
 정적 링크도 코드 공개 의무를 피해갈 수 있으나 obj 코드를 공개해야 하기에 껄끄럽다.  
+Qt 라이센스에 관해 https://embeddeduse.com/2023/01/06/using-qt-5-15-and-qt-6-under-lgplv3/ 이곳에서 자세하게 정리해 놓았으니 확인해보자.  
 &nbsp;  
 
 ## Qt 모듈 빌드   
@@ -43,8 +44,10 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
         ```D:\Projects\Development\Qt\Qt-5.15.8\jom.exe``` 형태가 갖춰져야 한다.  
 
     3. Python  
+        Qt를 빌드할 때는 python2를 설치하는 것이 권장되는데 이유는 Qt WebEngine, Qt Pdf 모듈을 빌드할 때 python2가 필요하기 때문이다.  
+        그 외의 python 버전은 Qt WebEngine, Qt Pdf 모듈을 빌드하지 못한다.  
         https://www.python.org/ 링크에서 바로 설치해도 되지만 chocolate를 이용한 설치 방법이 좀 더 범용적이다.  
-        밑은 chocolate 설치 후 chocolate를 이용해 python을 설치하는 방법이다.  
+        밑은 chocolate 설치 후 chocolate를 이용해 python2을 설치하는 방법이다.  
 
         1. Microsoft Store에 들어가서 Windows Terminal을 설치해준다. (그냥 깔려져있는 Powershell을 이용해도 되지만 편의성을 위해서 설치해준다.)  
 
@@ -59,7 +62,11 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
 
         6. 설치가 끝났으면 Windows Terminal를 관리자 모드로 재시작해주고 PowerShell 탭을 띄우고 choco 명령어를 수행해 Chocolatey가 잘 설치되었는지 확인한다.  
 
-        7. ```choco install python```으로 python을 설치해준다.  
+        7. ```choco install python2```으로 python2를 설치해준다.  
+
+        8. 만약 python2 보다 상위 버전의 python이 이미 설치되어 있는 경우 python2의 환경 변수를 덮어씌우고 있어 ```python --version``` 명령어를 수행해도 이미 설치된 상위 버전의 python 버전으로 출력될 것이다.  
+            따라서 Qt 빌드 시에는 python2 보다 상위 버전의 python에서 설정한 환경 변수 Path를 잠시 빼주자.  
+            예를 들어 python 2.7.18 버전을 사용하고 싶은데 python 3.1.1 버전이 이미 설치되어 있다면 보통 환경 변수 path에 ```C:\Python311```, ```C:\Python311\Scripts\``` 요런 녀석들이 들어 있을텐데 저 두 경로를 Qt 빌드할 때 빼주자.  
 
 4. 환경 변수 세팅  
     MSVC 컴파일러를 사용할 경우 ```D:\Projects\Development\Qt```에 qt5vars.cmd 파일을 만들어 준다.  
@@ -137,6 +144,11 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
     GCC나 Clang 컴파일러를 사용 중이라면 환경 변수에 Path에 Qt 설치 경로 bin 폴더를 추가해줘야 한다.  
     필자는 -prefix 옵션으로 설치 경로를 직접 지정해주었기에 ```D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 이 곳이 bin 폴더 위치가 되었다.  
     설치까지 완료했으면 컴퓨터를 재부팅한다.  
+
+8. 재빌드  
+    만약 configure를 다른 옵션으로 설정하여 빌드를 수행하고 싶다면 Qt 소스 파일을 초기화해줘야 한다.  
+    cmd 창에서 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 파일 위치로 이동한 뒤 ```jom clean```을 해주면 다시 빌드가 가능하다.  
+    자신이 MSVC 컴파일러를 사용한다면 4번 부터, 그 외는 6번 절차부터 다시 진행해주면 된다.  
 &nbsp;  
 
 ## Qt 활용 프로젝트 빌드  
