@@ -10,20 +10,20 @@ VS Code에서 CMake 빌드 환경 구축은 이미 되어있다는 가정 하에
 Qt에는 다양한 모듈이 존재하는데 각 모듈마다 적용된 라이센스가 다르다.  
 오픈 소스 모듈이여도 GPLv3과 LGPLv3로 나뉜다.  
 따라서 코드 공개가 꺼려진다면 LGPLv3 라이센스가 적용된 모듈들만 사용하여 제품을 만들어야 한다.  
-Qt 모듈 리스트는 https://doc.qt.io/qt-5/qtmodules.html 에서 확인이 가능하다.  
-각 모듈마다 적용된 라이센스는 https://www.qt.io/product/features 에서 확인할 수 있다.  
+Qt 모듈 리스트는 [이곳](https://doc.qt.io/qt-5/qtmodules.html)에서 확인이 가능하다.  
+각 모듈마다 적용된 라이센스는 [이곳](https://www.qt.io/product/features)에서 확인할 수 있다.  
 문제는 LGPLv3 라이센스의 설명이 난해하다는 것이다.   
 단순히 ```동적 링크를 하여 Qt 모듈들을 이용하면 소스 코드 공개의무가 없다```라고 생각하면 편하다.  
 정적 링크도 코드 공개 의무를 피해갈 수 있으나 obj 코드를 공개해야 하기에 껄끄럽다.  
-Qt 라이센스에 관해 https://embeddeduse.com/2023/01/06/using-qt-5-15-and-qt-6-under-lgplv3/ 이곳에서 자세하게 정리해 놓았으니 확인해보자.  
+Qt 라이센스에 관해 [이곳](https://embeddeduse.com/2023/01/06/using-qt-5-15-and-qt-6-under-lgplv3/)에서 자세하게 정리해 놓았으니 확인해보자.  
 &nbsp;  
 
 ## Qt 모듈 빌드   
 
-Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/qt-5/windows-building.html 에 적혀있다. (Linux: https://doc.qt.io/qt-5/linux-building.html / MacOS: https://doc.qt.io/qt-5/macos-building.html)  
+Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://doc.qt.io/qt-5/windows-building.html)에 적혀있다. (Linux: [링크](https://doc.qt.io/qt-5/linux-building.html) / MacOS: [링크](https://doc.qt.io/qt-5/macos-building.html))  
 
 1. Qt 소스 코드 다운로드  
-    https://download.qt.io/archive/qt/ 링크에서 원하는 버전의 Qt를 다운로드 받는다. (굉장히 오래걸릴 것이다...)   
+    [이곳](https://download.qt.io/archive/qt/)에서 원하는 버전의 Qt를 다운로드 받는다. (굉장히 오래걸릴 것이다...)   
     다운 받은 파일은 보통 ```qt-everywhere-opensource-src-[Qt 버전].zip``` 이런 이름일 것이다.  
 
 2. Qt 모듈 사전 준비  
@@ -36,18 +36,18 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 https://doc.qt.io/q
     Visual Studio, Jom, Python을 설치해야 한다.  
 
     1. Visual Studio  
-        https://visualstudio.microsoft.com/ko/ 링크에서 설치 파일 다운로드하고 설치 진행하자.  
+        [이곳](https://visualstudio.microsoft.com/ko/)에서 설치 파일 다운로드하고 설치 진행하자.  
 
     2. Jom  
         Visual Studio의 nmake를 사용할 것이라면 건너뛰어도 된다.  
-        https://download.qt.io/official_releases/jom/ 링크에서 최신 버전의 Jom을 다운로드 한다.  
+        [이곳](https://download.qt.io/official_releases/jom/)에서 최신 버전의 Jom을 다운로드 한다.  
         압출 풀고 나온 모든 녀석들을 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로에 풀어준다.  
         ```D:\Projects\Development\Qt\Qt-5.15.8\jom.exe``` 형태가 갖춰져야 한다.  
 
     3. Python  
         Qt를 빌드할 때는 python2를 설치하는 것이 권장되는데 이유는 Qt WebEngine, Qt Pdf 모듈을 빌드할 때 python2가 필요하기 때문이다.  
         그 외의 python 버전은 Qt WebEngine, Qt Pdf 모듈을 빌드하지 못한다.  
-        https://www.python.org/ 링크에서 바로 설치해도 되지만 chocolate를 이용한 설치 방법이 좀 더 범용적이다.  
+        [이곳](https://www.python.org/)에서 바로 설치해도 되지만 chocolate를 이용한 설치 방법이 좀 더 범용적이다.  
         밑은 chocolate 설치 후 chocolate를 이용해 python2을 설치하는 방법이다.  
 
         1. Microsoft Store에 들어가서 Windows Terminal을 설치해준다. (그냥 깔려져있는 Powershell을 이용해도 되지만 편의성을 위해서 설치해준다.)  
