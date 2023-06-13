@@ -1,6 +1,6 @@
-# VS Code에서 Qt 빌드하는 법  
+# Build QT with VS Code, MSVC Compiler  
 
-CMake와 VS Code를 사용하는 환경에서 Qt를 빌드하는 방법을 알아보자.  
+CMake와 VS Code 그리고 MSVC 컴파일러를 사용하는 환경에서 Qt를 빌드하는 방법을 알아보자.  
 VS Code에서 CMake 빌드 환경 구축은 이미 되어있다는 가정 하에 설명한다.  
 해당 빌드 방법은 Windows 10 운영체제에서 Visual Studio 2022를 이용하여 테스트되었다.  
 &nbsp;  
@@ -12,8 +12,9 @@ Qt에는 다양한 모듈이 존재하는데 각 모듈마다 적용된 라이�
 따라서 코드 공개가 꺼려진다면 LGPLv3 라이센스가 적용된 모듈들만 사용하여 제품을 만들어야 한다.  
 Qt 모듈 리스트는 [이곳](https://doc.qt.io/qt-5/qtmodules.html)에서 확인이 가능하다.  
 각 모듈마다 적용된 라이센스는 [이곳](https://www.qt.io/product/features)에서 확인할 수 있다.  
+
 문제는 LGPLv3 라이센스의 설명이 난해하다는 것이다.   
-단순히 ```동적 링크를 하여 Qt 모듈들을 이용하면 소스 코드 공개의무가 없다```라고 생각하면 편하다.  
+단순히 ```동적 링크를 하여 Qt 모듈들을 이용하면 소스 코드 공개의무가 없다.```라고 생각하면 편하다.  
 정적 링크도 코드 공개 의무를 피해갈 수 있으나 obj 코드를 공개해야 하기에 껄끄럽다.  
 Qt 라이센스에 관해 [이곳](https://embeddeduse.com/2023/01/06/using-qt-5-15-and-qt-6-under-lgplv3/)에서 자세하게 정리해 놓았으니 확인해보자.  
 &nbsp;  
@@ -22,55 +23,64 @@ Qt 라이센스에 관해 [이곳](https://embeddeduse.com/2023/01/06/using-qt-5
 
 Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://doc.qt.io/qt-5/windows-building.html)에 적혀있다. (Linux: [링크](https://doc.qt.io/qt-5/linux-building.html) / MacOS: [링크](https://doc.qt.io/qt-5/macos-building.html))  
 
-1. Qt 소스 코드 다운로드  
+1. **Qt 소스 코드 다운로드**  
     [이곳](https://download.qt.io/archive/qt/)에서 원하는 버전의 Qt를 다운로드 받는다. (굉장히 오래걸릴 것이다...)   
     다운 받은 파일은 보통 ```qt-everywhere-opensource-src-[Qt 버전].zip``` 이런 이름일 것이다.  
 
-2. Qt 모듈 사전 준비  
+2. **Qt 모듈 사전 준비**  
     받은 파일을 ```C:\Qt\[Qt 버전]``` 폴더에 풀자. (폴더 경로 중 띄어쓰기만 없다면 어떤 곳에 풀어도 상관없다.)  
     필자는 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로에 풀었다.  
     그러면 configure.bat 파일이 ```D:\Projects\Development\Qt\Qt-5.15.8\configure.bat``` 이렇게 위치한 형태가 갖춰질 것이다.  
     설명도 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로 기준으로 하겠다.  
 
-3. 필요 항목 다운로드  
+3. **필요 항목 다운로드**  
     Visual Studio, Jom, Python을 설치해야 한다.  
 
-    1. Visual Studio  
+    1. **Visual Studio**  
         [이곳](https://visualstudio.microsoft.com/ko/)에서 설치 파일 다운로드하고 설치 진행하자.  
 
-    2. Jom  
+    2. **Jom**  
         Visual Studio의 nmake를 사용할 것이라면 건너뛰어도 된다.  
         [이곳](https://download.qt.io/official_releases/jom/)에서 최신 버전의 Jom을 다운로드 한다.  
         압출 풀고 나온 모든 녀석들을 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로에 풀어준다.  
         ```D:\Projects\Development\Qt\Qt-5.15.8\jom.exe``` 형태가 갖춰져야 한다.  
 
-    3. Python  
+    3. **Python**  
         Qt를 빌드할 때는 python2를 설치하는 것이 권장되는데 이유는 Qt WebEngine, Qt Pdf 모듈을 빌드할 때 python2가 필요하기 때문이다.  
         그 외의 python 버전은 Qt WebEngine, Qt Pdf 모듈을 빌드하지 못한다.  
         [이곳](https://www.python.org/)에서 바로 설치해도 되지만 chocolate를 이용한 설치 방법이 좀 더 범용적이다.  
         밑은 chocolate 설치 후 chocolate를 이용해 python2을 설치하는 방법이다.  
 
-        1. Microsoft Store에 들어가서 Windows Terminal을 설치해준다. (그냥 깔려져있는 Powershell을 이용해도 되지만 편의성을 위해서 설치해준다.)  
+        1. Windows Terminal 설치  
+            Microsoft Store에 들어가서 Windows Terminal을 설치해준다. (그냥 깔려져있는 Powershell을 이용해도 되지만 편의성을 위해서 설치해준다.)  
 
-        2. Windows Terminal에서 PowerShell 탭을 열고 ```$PSVersionTable``` 명령어를 수행한 뒤에 출력된 PSVersion이 3 이상인지 확인한다. (3이하라면 PowerShell을 업데이트해준다.)  
+        1. PowerShell 버전 확인  
+            Windows Terminal에서 PowerShell 탭을 열고 ```$PSVersionTable``` 명령어를 수행한 뒤에 출력된 PSVersion이 3 이상인지 확인한다. (3이하라면 PowerShell을 업데이트해준다.)  
 
-        3. .NET Framework 4.5 버전 이상이 설치되어 있는지 확인한다. (Visual Studio에서 ```.NET 테스크톱 개발``` 항목을 선택하면 알아서 최신버전의 .NET Framework를 설치해준다.)  
+        1. .NET Framework 설치  
+            .NET Framework 4.5 버전 이상이 설치되어 있는지 확인한다.  
+            Visual Studio에서 ```.NET 테스크톱 개발``` 항목을 선택하면 알아서 최신버전의 .NET Framework를 설치해준다.  
 
-        4. Windows Terminal을 관리자 모드로 열고 PowerShell 탭을 띄운후에 Get-ExecutionPolicy 명령어를 수행 후에 Restricted인지 확인한다.  
-        Restricted이라면 Set-ExecutionPolicy AllSigned 명령어를 추가적으로 수행해준다.  
+        1. ExecutionPolicy 확인  
+            Windows Terminal을 관리자 모드로 열고 PowerShell 탭을 띄운후에 Get-ExecutionPolicy 명령어를 수행 후에 Restricted인지 확인한다.  
+            Restricted이라면 Set-ExecutionPolicy AllSigned 명령어를 추가적으로 수행해준다.  
 
-        5. ```Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]       ::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))``` 명령어를 수행해 Chocolatey를 설치해준다.  
+        1. Chocolatey 설치  
+            ```Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]       ::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))``` 명령어를 수행해 Chocolatey를 설치해준다.  
 
-        6. 설치가 끝났으면 Windows Terminal를 관리자 모드로 재시작해주고 PowerShell 탭을 띄우고 choco 명령어를 수행해 Chocolatey가 잘 설치되었는지 확인한다.  
+        1. Chocolatey 설치 확인  
+            설치가 끝났으면 Windows Terminal를 관리자 모드로 재시작해주고 PowerShell 탭을 띄우고 choco 명령어를 수행해 Chocolatey가 잘 설치되었는지 확인한다.  
 
-        7. ```choco install python2```으로 python2를 설치해준다.  
+        1. python 버전 2 설치  
+            ```choco install python2```으로 python2를 설치해준다.  
 
-        8. 만약 python2 보다 상위 버전의 python이 이미 설치되어 있는 경우 python2의 환경 변수를 덮어씌우고 있어 ```python --version``` 명령어를 수행해도 이미 설치된 상위 버전의 python 버전으로 출력될 것이다.  
+        1. python 설치 버전 확인  
+            만약 python2 보다 상위 버전의 python이 이미 설치되어 있는 경우 python2의 환경 변수를 덮어씌우고 있어 ```python --version``` 명령어를 수행해도 이미 설치된 상위 버전의 python 버전으로 출력될 것이다.  
             따라서 Qt 빌드 시에는 python2 보다 상위 버전의 python에서 설정한 환경 변수 Path를 잠시 빼주자.  
             예를 들어 python 2.7.18 버전을 사용하고 싶은데 python 3.1.1 버전이 이미 설치되어 있다면 보통 환경 변수 path에 ```C:\Python311```, ```C:\Python311\Scripts\``` 요런 녀석들이 들어 있을텐데 저 두 경로를 Qt 빌드할 때 빼주자.  
 
-4. 환경 변수 세팅  
-    MSVC 컴파일러를 사용할 경우 ```D:\Projects\Development\Qt```에 qt5vars.cmd 파일을 만들어 준다.  
+4. **환경 변수 세팅**  
+    ```D:\Projects\Development\Qt```에 qt5vars.cmd 파일을 만들어 준다.  
     cmd 파일 내용은 밑과 같다.  
     ```batch
     CALL "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" amd64
@@ -83,10 +93,7 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     _ROOT 경로도 자신이 설치한 Qt 경로에 맞게 수정해준다.  
     맨 밑 두 줄은 수정 없이 그대로 놓아두면 된다.  
 
-    MSVC 이외의 GCC, Clang 컴파일러를 사용할 경우 qt5vars.cmd를 호출하는 대신 ```고급 시스템 설정 -> 환경 변수``` 로 이동하여 Path 항목에 Qt 라이브러리가 설치될 bin 경로를 추가하면 된다.  
-    Qt 라이브러리가 설치될 bin 경로는 라이브러리 세팅 단계의 -prefix 옵션에 따라 달라지므로 추후에 다루겠다.  
-
-5. qt5vars.cmd 수행  
+5. **qt5vars.cmd 수행**  
     cmd 창을 관리자 모드로 열고 ```%SystemRoot%\system32\cmd.exe /E:ON /V:ON /k D:\Projects\Development\Qt\qt5vars.cmd``` 명령을 수행한다.  
     ```
     **********************************************************************
@@ -97,7 +104,7 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     ```
     Visual Studio 2022에서는 정상적으로 되었다면 위와 같은 처리 텍스트가 뜬다.  
 
-6. 라이브러리 옵션 설정  
+6. **라이브러리 옵션 설정**  
     cmd 창에서 ```cd D:\Projects\Development\Qt\Qt-5.15.8``` 명령으로 현재 위치를 바꿔준다.  
     현재 상태에서 configure 명령을 통해 Qt 모듈들을 빌드하게 되는데 옵션이 많다.  
     필수적인 옵션 몇 가지를 보자.  
@@ -118,9 +125,9 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
 
         * linux-clang  
             Clang으로 리눅스에서 컴파일  
-    만약 Visual Studio 2022로 윈도우에서 Qt 모듈을 빌드하고 싶다면 ```-platform win32-msvc2022``` 옵션을 추가하면 된다.  
+    Visual Studio 2022로 윈도우에서 Qt 모듈을 빌드하고 싶다면 ```-platform win32-msvc2022``` 옵션을 추가하면 된다.  
     이 외에도 많은 플랫폼을 지원한다.  
-    자세한 내용은 https://doc.qt.io/qt-5/supported-platforms.html 링크를 참고하자.  
+    자세한 내용은 [이곳](https://doc.qt.io/qt-5/supported-platforms.html)을 참고하자.  
 
     * -nomake  
     빌드하기 싫은 모듈을 정할 수 있다.  
@@ -139,21 +146,17 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     필자는 ```configure -debug-and-release -opensource -shared -confirm-license -platform win32-msvc2022 -prefix D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared``` 명령어를 수행하여 옵션 설정을 하겠다.  
     더 많은 옵션에 대한 정보는 ```configure -help```를 통해 알 수 있다.  
 
-7. 빌드 및 설치 
+7. **빌드 및 설치**  
     jom을 사용할 것이라면 일반 cmd창을, nmake를 사용할 것이라면 ```Developer Command Prompt for [Visual Studio 버전]```을 열어서 작업하자.  
     ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 코드 위치로 이동한다.  
     ```jom``` (nmake 사용자는 ```nmake```) 명령어를 수행하여 빌드를 진행한다.  
     빌드가 완료되면 ```jom install``` (nmake 사용자는 ```nmake install```) 명령어를 수행해 설치를 진행한다.  
-    GCC나 Clang 컴파일러를 사용 중이라면 환경 변수에 Path에 Qt 설치 경로 bin 폴더를 추가해줘야 한다.  
-    필자는 -prefix 옵션으로 설치 경로를 직접 지정해주었기에 ```D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared\bin``` 이 곳이 bin 폴더 위치가 되었다.  
     설치까지 완료했으면 컴퓨터를 재부팅한다.  
 
-8. 재빌드  
-    만약 configure를 다른 옵션으로 설정하여 빌드를 수행하고 싶다면 Qt 소스 파일을 초기화해줘야 한다.  
-    cmd 창에서 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 파일 위치로 이동한 뒤 ```jom clean``` (nmake 사용자는 ```nmake distclean```) 명령어를 수행하면 다시 빌드가 가능하다.  
-    자신이 MSVC 컴파일러를 사용한다면 4번 부터, 그 외는 6번 절차부터 다시 진행해주면 된다.  
-    **개인적으로 느끼는 건데 한번 빌드된 소스 파일에 다양한 캐시 파일이 상주하고 있어서... clean 명령어를 수행해도 재빌드가 잘되는 것 같진 않다.**  
-    **그러니 그냥 소스 파일 날리고 다시 압축 풀어서 처음부터 빌드하는 것이 속편하다.**  
+8. **재빌드**  
+    QT의 configure 옵션을 바꾸고 싶은 경우가 있을 것이다.  
+    그럴때는 소스 파일 날리고 다시 압축 풀어서 처음부터 진행하자.  
+    cmd 창에서 소스 파일 위치인 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 이동해서 ```jom clean``` (nmake 사용자는 ```nmake distclean```) 명령어를 수행하는 법도 있긴한데 잔여 캐시 파일 때문인지 재빌드가 잘 안된다.  
 &nbsp;  
 
 ## Qt 활용 프로젝트 빌드  
