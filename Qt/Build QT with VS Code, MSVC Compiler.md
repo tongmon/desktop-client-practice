@@ -489,7 +489,7 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
     Qml 프로젝트와 크게 다른 점은 .ui 파일에 대한 처리이다.  
     .ui 파일을 연동하기 위해 CMAKE_AUTOUIC 옵션을 켜고 실행 파일 빌드 시에도 포함 시켰다.  
 
-* CMakePresets.json
+* CMakePresets.json  
     Qml 프로젝트와 동일하다.  
 
 * main.cpp  
