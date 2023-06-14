@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>178</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -32,6 +32,9 @@
       <property name="text">
        <string>tongstar</string>
       </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item>
@@ -50,6 +53,9 @@
       </property>
       <property name="text">
        <string>some button</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
       </property>
      </widget>
     </item>

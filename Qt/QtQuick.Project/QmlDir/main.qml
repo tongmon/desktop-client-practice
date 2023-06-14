@@ -20,7 +20,7 @@ Window {
             Layout.fillHeight: true
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            text: "ololo"
+            text: "tongstar"
             font.family: "Verdana"
             font.pointSize: 30
             wrapMode: Text.WordWrap

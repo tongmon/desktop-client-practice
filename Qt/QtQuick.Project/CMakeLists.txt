@@ -9,6 +9,9 @@ set(CMAKE_AUTOMOC ON)
 # Qt Widget 모듈과 .ui 파일을 사용한다면 밑 주석을 해제하자.  
 # set(CMAKE_AUTOUIC ON)
 
+# .qrc 파일을 자동으로 리소스 타겟에 포함 시키기 위해 사용
+set(CMAKE_AUTORCC ON)
+
 # C++ 버전
 set(CMAKE_CXX_STANDARD 17)
 
@@ -21,13 +24,16 @@ find_package(Qt5 REQUIRED Quick Qml)
 # 소스 파일들을 SRC_FILES 변수에 저장
 file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
 
-# CMake 함수 qt5_add_resources()를 통해 리소스 파일을 등록해줘야 함.  
-# 리소스 파일들은 qrc 변수에 저장됨
-qt5_add_resources(qrc qml.qrc)
+# qrc 파일들을 QRC_FILES 변수에 저장
+# CMAKE_AUTORCC 옵션이 꺼져있다면 밑 함수를 주석 처리하자.
+file(GLOB QRC_FILES CONFIGURE_DEPENDS ./*.qrc)
+
+# CMAKE_AUTORCC 옵션이 꺼져있다면 밑 함수를 주석 해제하자.
+# qt5_add_resources(QRC_FILES qml.qrc)
 
 # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
-# 리소스 파일도 함께 넣어줘야 함
-add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${qrc})
+# qrc 파일도 함께 넣어줘야 함
+add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${QRC_FILES})
 
 # 포함한 모듈들을 링크해준다.  
 target_link_libraries(

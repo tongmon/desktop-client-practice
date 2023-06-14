@@ -193,6 +193,9 @@ QtQuick.Project
     # Qt Widget 모듈과 .ui 파일을 사용한다면 밑 주석을 해제하자.  
     # set(CMAKE_AUTOUIC ON)
 
+    # .qrc 파일을 자동으로 리소스 타겟에 포함 시키기 위해 사용
+    set(CMAKE_AUTORCC ON)
+
     # C++ 버전
     set(CMAKE_CXX_STANDARD 17)
 
@@ -205,13 +208,16 @@ QtQuick.Project
     # 소스 파일들을 SRC_FILES 변수에 저장
     file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
 
-    # CMake 함수 qt5_add_resources()를 통해 리소스 파일을 등록해줘야 함.  
-    # 리소스 파일들은 qrc 변수에 저장됨
-    qt5_add_resources(qrc qml.qrc)
+    # qrc 파일들을 QRC_FILES 변수에 저장
+    # CMAKE_AUTORCC 옵션이 꺼져있다면 밑 함수를 주석 처리하자.
+    file(GLOB QRC_FILES CONFIGURE_DEPENDS ./*.qrc)
+
+    # CMAKE_AUTORCC 옵션이 꺼져있다면 밑 함수를 주석 해제하자.
+    # qt5_add_resources(QRC_FILES qml.qrc)
 
     # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
-    # 리소스 파일도 함께 넣어줘야 함
-    add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${qrc})
+    # qrc 파일도 함께 넣어줘야 함  
+    add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${QRC_FILES})
 
     # 포함한 모듈들을 링크해준다.  
     target_link_libraries(
@@ -427,7 +433,7 @@ cmd를 관리자 모드로 켜서 ```cd D:\Projects\Development\Qt\5.15.8-MSVC-x
 
 ### Widget 프로젝트  
 
-Qml 프로젝트와 별반 다르지 않기 때문에 다른 점만 설명하고 끝내겠다.  
+[Qml 프로젝트](#qml-프로젝트)와 비슷하기에 차이점만 설명하고 끝내겠다.  
 프로젝트 구성은 밑과 같다.  
 ```
 QtWidget.Project
@@ -453,6 +459,9 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
     # .ui 파일과 소스 코드 연동을 위한 UIC 활성화
     set(CMAKE_AUTOUIC ON)
 
+    # qt5_add_resources()와 같은 별도의 CMake 명령 없이 .qrc 파일을 리소스 타겟에 포함하려면 주석을 해제하자.
+    # set(CMAKE_AUTORCC ON)
+
     # C++ 버전
     set(CMAKE_CXX_STANDARD 17)
 
@@ -465,11 +474,11 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
     # 소스 파일들을 SRC_FILES 변수에 저장
     file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
 
-    # UI 파일들을 UI_FILES 변수에 저장
+    # ui 파일들을 UI_FILES 변수에 저장
     file(GLOB UI_FILES CONFIGURE_DEPENDS ./*.ui)
 
     # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
-    # UI 파일도 함께 넣어줘야 함
+    # ui 파일도 함께 넣어줘야 함
     add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${UI_FILES})
 
     # 포함한 모듈들을 링크해준다.  
