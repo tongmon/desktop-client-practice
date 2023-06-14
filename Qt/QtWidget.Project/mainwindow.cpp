@@ -21,5 +21,5 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_Clicked()
 {
-    ui->label->setText("Some random number: " + QString::number(rand() % 101));
+    ui->label->setText("Some random number: " + QString::number(rand() % 100 + 1));
 }

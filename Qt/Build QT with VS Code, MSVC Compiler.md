@@ -433,7 +433,6 @@ cmd를 관리자 모드로 켜서 ```cd D:\Projects\Development\Qt\5.15.8-MSVC-x
 
 ### Widget 프로젝트  
 
-[Qml 프로젝트](#qml-프로젝트)와 비슷하기에 차이점만 설명하고 끝내겠다.  
 프로젝트 구성은 밑과 같다.  
 ```
 QtWidget.Project
@@ -493,8 +492,157 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
 * CMakePresets.json
     Qml 프로젝트와 동일하다.  
 
-* main.cpp, mainwindow.cpp, mainwindow.h, mainwindow.ui
-    ui 구성과 소스 코드 로직은 생략한다.  
+* main.cpp  
+    ```c++
+    #include "mainwindow.h"
+    #include <QApplication>
+
+    int main(int argc, char *argv[])
+    {
+        QApplication a(argc, argv);
+        MainWindow w;
+        w.show();
+
+        return a.exec();
+    }
+    ```
+    Qml을 따로 이용하지 않기에 QApplication을 이용한다.  
+
+* mainwindow.h  
+    ```c++
+    #ifndef MAINWINDOW_H
+    #define MAINWINDOW_H
+
+    #include <QMainWindow>
+
+    namespace Ui
+    {
+    class MainWindow;
+    }
+
+    class MainWindow : public QMainWindow
+    {
+        Q_OBJECT
+
+      public:
+        explicit MainWindow(QWidget *parent = nullptr);
+        ~MainWindow();
+
+      private:
+        Ui::MainWindow *ui;
+
+        void on_pushButton_Clicked();
+    };
+
+    #endif // MAINWINDOW_H
+    ```
+    클래스 이름이 MainWindow 것이 중요하다.  
+    꼭 ui에 정의된 class 이름과 동일해야 한다.  
+
+* mainwindow.cpp  
+    ```c++
+    #include "mainwindow.h"
+    #include "ui_mainwindow.h"
+    #include <cstdlib>
+    #include <ctime>
+
+    MainWindow::MainWindow(QWidget *parent)
+        : QMainWindow(parent),
+          ui(new Ui::MainWindow)
+    {
+        ui->setupUi(this);
+
+        connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::on_pushButton_Clicked);
+
+        srand((unsigned int)time(NULL));
+    }
+
+    MainWindow::~MainWindow()
+    {
+        delete ui;
+    }
+
+    void MainWindow::on_pushButton_Clicked()
+    {
+        ui->label->setText("Some random number: " + QString::number(rand() % 100 + 1));
+    }
+    ```
+    1 ~ 99 사이의 난수를 도출하는 로직이 들어있다.  
+
+* mainwindow.ui  
+    ```ui
+    <?xml version="1.0" encoding="UTF-8"?>
+    <ui version="4.0">
+     <class>MainWindow</class>
+     <widget class="QMainWindow" name="MainWindow">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>500</width>
+        <height>300</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="windowTitle">
+       <string>CMake and Qt Widgets</string>
+      </property>
+      <widget class="QWidget" name="centralWidget">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item alignment="Qt::AlignHCenter">
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>30</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>tongstar</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>some button</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <layoutdefault spacing="6" margin="11"/>
+     <resources/>
+     <connections/>
+    </ui>
+    ```
+    주요하게 봐야될 부분은 ```<class>MainWindow</class>```와 ```<widget class="QMainWindow" name="MainWindow">```이다.  
+    mainwindow.h에 정의된 클래스 이름과 MainWindow 부분이 동일한 것이 중요하다.  
+    동일하지 않으면 비정상적으로 동작한다.  
 
 자세한 내용은 같은 레포지토리 경로에 있는 QtWidget.Project에서 확인할 수 있다.  
 
