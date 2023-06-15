@@ -130,8 +130,13 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     자세한 내용은 [이곳](https://doc.qt.io/qt-5/supported-platforms.html)을 참고하자.  
 
     * -nomake  
-    빌드하기 싫은 모듈을 정할 수 있다.  
-    qtquick3d 모듈이 GPLv3 라이센스라 껄끄러워 빌드하기 싫으면 ```-nomake qtquick3d``` 옵션을 추가하면 된다.  
+    빌드하기 싫은 파트를 정할 수 있다.  
+    가능한 파트는 examples, libs, tests, tools 정도가 있다.  
+    예시를 빌드하는 시간도 꽤 걸리기 때문에 이를 제외하고 싶다면 ```-nomake examples``` 옵션을 추가하면 된다.  
+    
+    * -skip  
+    특정 모듈을 빌드하기 싫은 경우 지정할 수 있다.  
+    Qt WebEngine 모듈은 LGPLv3 라이선스가 아닌데다가 Qt WebView로 대체가 가능하기 때문에 빌드하기 싫다면 ```-skip qtwebengine``` 옵션을 추가하면 된다.  
 
     * -prefix  
     별도로 빌드 모듈이 산출될 폴더를 지정하고 싶다면 해당 옵션을 지정한다.  
@@ -143,17 +148,26 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     * -static  
     Qt 라이브러리를 정적 링크로 사용한다.  
 
-    필자는 ```configure -debug-and-release -opensource -shared -confirm-license -platform win32-msvc2022 -prefix D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared``` 명령어를 수행하여 옵션 설정을 하겠다.  
+    필자는 LGPLv3 라이센스가 적용되지 않는 대부분의 모듈들을 제외하기 위해 밑과 같은 명령을 사용하겠다.  
+    ```cmd
+    configure -debug-and-release -opensource -skip qtwebengine -skip qtactiveqt -skip qtcharts -skip qtdatavis3d -skip qtnetworkauth -skip qtvirtualkeyboard -skip qtquick3d -skip qtquicktimeline -skip qtlottie -shared -confirm-license -platform win32-msvc2022 -prefix "D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared"
+    ```
     더 많은 옵션에 대한 정보는 ```configure -help```를 통해 알 수 있다.  
 
-7. **빌드 및 설치**  
+7. **빌드 전 주의사항**  
+    다른 모듈은 크게 상관이 없는데 Qt WebEngine 모듈을 빌드해야 한다면 반드시 Windows의 시스템 locale을 영어로 변경해줘야 한다.  
+    Qt WebEngine에서 요구하는 chromium을 빌드할 때 ninja가 사용되는 데 ninja가 한국어 관련 오류를 발생시키기에 필수적이다.  
+    왠만하면 Qt를 빌드할 때 만이라도 locale을 영어로 설정하고 빌드하자.  
+    Windows 10에서는 ```설정``` -> ```시간 및 언어``` -> ```언어``` -> ```기본 언어 설정``` -> ```시스템 로켈 변경``` 항목에서 변경이 가능하고 설정 후에는 재부팅을 해야 한다.  
+
+8. **빌드 및 설치**  
     jom을 사용할 것이라면 일반 cmd창을, nmake를 사용할 것이라면 ```Developer Command Prompt for [Visual Studio 버전]```을 열어서 작업하자.  
     ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 코드 위치로 이동한다.  
     ```jom``` (nmake 사용자는 ```nmake```) 명령어를 수행하여 빌드를 진행한다.  
     빌드가 완료되면 ```jom install``` (nmake 사용자는 ```nmake install```) 명령어를 수행해 설치를 진행한다.  
     설치까지 완료했으면 컴퓨터를 재부팅한다.  
 
-8. **재빌드**  
+9.  **재빌드**  
     QT의 configure 옵션을 바꾸고 싶은 경우가 있을 것이다.  
     그럴때는 소스 파일 날리고 다시 압축 풀어서 처음부터 진행하자.  
     cmd 창에서 소스 파일 위치인 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 이동해서 ```jom clean``` (nmake 사용자는 ```nmake distclean```) 명령어를 수행하는 법도 있긴한데 잔여 캐시 파일 때문인지 재빌드가 잘 안된다.  
