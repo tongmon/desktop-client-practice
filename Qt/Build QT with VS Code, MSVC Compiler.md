@@ -161,8 +161,7 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     Windows 10에서는 ```설정``` -> ```시간 및 언어``` -> ```언어``` -> ```기본 언어 설정``` -> ```시스템 로켈 변경``` 항목에서 변경이 가능하고 설정 후에는 재부팅을 해야 한다.  
 
 8. **빌드 및 설치**  
-    jom을 사용할 것이라면 일반 cmd창을, nmake를 사용할 것이라면 ```Developer Command Prompt for [Visual Studio 버전]```을 열어서 작업하자.  
-    ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 코드 위치로 이동한다.  
+    ```Developer Command Prompt for [Visual Studio 버전]```을 관리자 모드로 열어 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 코드 위치로 이동한다.  
     ```jom``` (nmake 사용자는 ```nmake```) 명령어를 수행하여 빌드를 진행한다.  
     빌드가 완료되면 ```jom install``` (nmake 사용자는 ```nmake install```) 명령어를 수행해 설치를 진행한다.  
     설치까지 완료했으면 컴퓨터를 재부팅한다.  
