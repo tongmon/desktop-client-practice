@@ -178,6 +178,7 @@ Qt가 모두 설치되었으면 Qt를 활용해야 한다.
 VS Code에서 CMake를 이용한 프로젝트를 만들어보자.  
 필자가 사용하는 MSVC 컴파일러를 기반으로 설명하겠다.  
 다른 컴파일러를 사용중이라면 CMakePresets.json의 구성을 컴파일러에 맞게 수정해줘야 한다.  
+&nbsp;  
 
 ### Qml 프로젝트  
 
@@ -431,6 +432,7 @@ QtQuick.Project
     버튼을 누르면 랜덤한 숫자를 띄우는 예제이다.  
 
 자세한 내용은 같은 레포지토리 경로에 있는 QtQuick.Project를 확인해라.  
+&nbsp;  
 
 #### 배포  
 
@@ -442,6 +444,18 @@ cmd를 관리자 모드로 켜서 ```cd D:\Projects\Development\Qt\5.15.8-MSVC-x
 ```windeployqt.exe [디버그: --debug, 릴리즈: --release] --qmldir [Qml 파일들이 위치한 폴더 경로] [실행 파일 경로]``` 명령어를 실행하면 실행 파일이 수행되기 위한 dll 들이 모두 실행 파일 위치에 복사된다.  
 필자는 ```windeployqt.exe --debug --qmldir D:\Projects\VSCode\QtQuick.Project\QmlDir D:\Projects\VSCode\QtQuick.Project\Build\msvc-x64\Debug\QtQuick.Project.exe```  명령을 수행했다.  
 이제 실행 파일이 담긴 폴더를 압축해서 배포하면 된다.  
+&nbsp;  
+
+##### CMake를 통한 배포  
+
+배포할 때마다 위와 같이 명령어를 치는 것은 번거로운 일이기에 CMake로 자동화를 시켜주자.  
+```cmake
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir ${CMAKE_SOURCE_DIR}/QmlDir ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+     WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
+)
+```
+위 구문을 해당 Qml 예제에서 다룬 CMakeLists.txt 파일의 최하단에 추가하면 빌드할 때 자동으로 배포를 위한 과정이 수행된다.  
 &nbsp;  
 
 ### Widget 프로젝트  
@@ -658,6 +672,7 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
     동일하지 않으면 비정상적으로 동작한다.  
 
 자세한 내용은 같은 레포지토리 경로에 있는 QtWidget.Project에서 확인할 수 있다.  
+&nbsp;  
 
 #### 배포  
 
@@ -666,3 +681,15 @@ cmd를 관리자 모드로 켜서 ```cd D:\Projects\Development\Qt\5.15.8-MSVC-x
 ```windeployqt.exe [디버그: --debug, 릴리즈: --release] [실행 파일 경로]``` 명령어를 실행하면 실행 파일이 수행되기 위한 dll 들이 모두 실행 파일 위치에 복사된다.  
 필자는 ```windeployqt.exe --debug D:\Projects\VSCode\QtWidget.Project\Build\msvc-x64\Debug\QtWidget.Project.exe``` 명령을 수행했다.  
 이제 실행 파일이 담긴 폴더를 압축해서 배포하면 된다.  
+&nbsp;  
+
+##### CMake를 통한 배포  
+
+Widget 프로젝트도 번거로운 배포 과정을 CMake로 자동화할 수 있다.  
+```cmake
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+     WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
+)
+```
+위 구문을 해당 Widget 예제에서 다룬 CMakeLists.txt 파일의 최하단에 추가하면 빌드할 때 자동으로 배포를 위한 과정이 수행된다.  
