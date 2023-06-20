@@ -16,9 +16,8 @@ class Widget : public QMainWindow
     QPushButton *minimizeButton = nullptr;
     QPushButton *closeButton = nullptr;
 
-    // If you want to enable dragging the window when the mouse is over top of, say, a QToolBar,
-    // then look at how QWinWidget uses this
-    QToolBar *toolBar = nullptr;
+    // 타이틀 바
+    QWidget *titleBar = nullptr;
 
   signals:
 

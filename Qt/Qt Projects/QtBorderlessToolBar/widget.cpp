@@ -1,4 +1,5 @@
 #include "widget.h"
+#include "qwinwidget.h"
 
 #include <QLabel>
 #include <QLayout>
@@ -6,69 +7,70 @@
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
 {
-    // 배경색 지정
-    QPalette Pal(palette());
-    Pal.setColor(QPalette::Background, Qt::gray);
-    setAutoFillBackground(true);
-    setPalette(Pal);
+    // 메인 윈도우라 위젯을 먼저 추가함
+    QWidget *mainWidget = new QWidget(this);
+    mainWidget->setContentsMargins(0, 0, 0, 0);
+    setCentralWidget(mainWidget);
 
-    // Add the toolbar
-    toolBar = new QToolBar(this);
-    toolBar->setMovable(false);
-    toolBar->setFloatable(false);
-    toolBar->setStyleSheet("QToolBar { background-color: rgb(224, 200, 40); border: none; } ");
-    addToolBar(toolBar);
+    // 메인 윈도우에 수직 레이아웃 추가
+    QVBoxLayout *entireLayout = new QVBoxLayout(mainWidget);
+    mainWidget->setLayout(entireLayout);
+    entireLayout->setContentsMargins(0, 0, 0, 0);
+    entireLayout->setSpacing(0);
 
-    // Create a transparent-to-mouse-events widget that pads right for a fixed width equivalent to min/max/close buttons
-    QWidget *btnSpacer = new QWidget(toolBar);
-    btnSpacer->setAttribute(Qt::WA_TransparentForMouseEvents);
-    btnSpacer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    btnSpacer->setStyleSheet("background-color: none; border: none;");
-    btnSpacer->setFixedWidth(135); // rough width of close/min/max buttons
-    toolBar->addWidget(btnSpacer);
+    // 타이틀바 위젯 추가
+    titleBar = new QWidget(mainWidget);
+    entireLayout->addWidget(titleBar);
+    titleBar->setContentsMargins(0, 0, 0, 0);
+    titleBar->setFixedHeight(reinterpret_cast<QWinWidget *>(parent)->TOOLBARHEIGHT);
+    // titleBar->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    // Create a title label just because
-    QLabel *titleLabel = new QLabel("TrueFramelessWindow");
-    titleLabel->setFixedWidth(160);
+    // 타이틀바 색상 결정
+    QPalette Pal(titleBar->palette());
+    Pal.setColor(QPalette::Background, QColor(70, 69, 71));
+    titleBar->setAutoFillBackground(true);
+    titleBar->setPalette(Pal);
 
-    // Set it transparent to mouse events such that you can click and drag when moused over the label
-    titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+    // 타이틀바에 수평 레이아웃 추가
+    QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
+    titleBar->setLayout(titleLayout);
+    titleLayout->setContentsMargins(0, 0, 0, 0);
+    titleLayout->setSpacing(0);
+    titleLayout->setAlignment(Qt::AlignRight);
 
-    // Create spacer widgets to keep the title centered
-    QWidget *leftSpacer = new QWidget(toolBar);
-    QWidget *rightSpacer = new QWidget(toolBar);
+    // 최소화 버튼
+    minimizeButton = new QPushButton("-");
+    minimizeButton->setFixedSize(30, 30);
+    titleLayout->addWidget(minimizeButton);
 
-    // Set them transparent to mouse events + auto-expanding in size
-    leftSpacer->setAttribute(Qt::WA_TransparentForMouseEvents);
-    leftSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    leftSpacer->setStyleSheet("background-color: none; border: none;");
-    rightSpacer->setAttribute(Qt::WA_TransparentForMouseEvents);
-    rightSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    rightSpacer->setStyleSheet("background-color: none; border: none;");
+    // 최대화 버튼
+    maximizeButton = new QPushButton("+");
+    maximizeButton->setFixedSize(30, 30);
+    maximizeButton->setCheckable(true); // 최대화 상태는 토글 형태여야 한다.
+    titleLayout->addWidget(maximizeButton);
 
-    // Add spacers & title label
-    toolBar->addWidget(leftSpacer);
-    toolBar->addWidget(titleLabel);
-    toolBar->addWidget(rightSpacer);
-
-    // Create the min/max/close buttons
-    minimizeButton = new QPushButton("ㅡ");
-    minimizeButton->setFixedSize(45, 28);
-
-    maximizeButton = new QPushButton("ㅁ");
-    maximizeButton->setFixedSize(45, 28);
-
+    // 닫기 버튼
     closeButton = new QPushButton("X");
-    closeButton->setFixedSize(45, 28);
+    closeButton->setFixedSize(30, 30);
+    titleLayout->addWidget(closeButton);
 
-    maximizeButton->setCheckable(true);
+    entireLayout->setAlignment(titleBar, Qt::AlignTop);
 
-    toolBar->addWidget(minimizeButton);
-    toolBar->addWidget(maximizeButton);
-    toolBar->addWidget(closeButton);
-    toolBar->layout()->setAlignment(minimizeButton, Qt::AlignTop);
-    toolBar->layout()->setAlignment(maximizeButton, Qt::AlignTop);
-    toolBar->layout()->setAlignment(closeButton, Qt::AlignTop);
+    // 메인 윈도우 추가
+    QWidget *mainwindowWidget = new QWidget(mainWidget);
+    entireLayout->addWidget(mainwindowWidget);
+    mainwindowWidget->setContentsMargins(0, 0, 0, 0);
+    mainwindowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    // 메인 윈도우 색상 결정
+    Pal = mainwindowWidget->palette();
+    Pal.setColor(QPalette::Background, QColor(175, 174, 176));
+    mainwindowWidget->setAutoFillBackground(true);
+    mainwindowWidget->setPalette(Pal);
+
+    // 메인 윈도우에 수직 레이아웃 추가
+    QVBoxLayout *mainwindowLayout = new QVBoxLayout(mainwindowWidget);
+    mainwindowWidget->setLayout(mainwindowLayout);
 
     // An actual app should use icons for the buttons instead of text
     // and style the different button states / widget margins in css

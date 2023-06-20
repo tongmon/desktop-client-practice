@@ -79,9 +79,14 @@ QWinWidget::QWinWidget()
     BORDERWIDTH = BORDERWIDTH * window()->devicePixelRatio();
 
     // Update the TOOLBARHEIGHT value to match the height of toolBar * if needed, the HiDPI display
-    if (p_Widget->toolBar)
+    // if (p_Widget->toolBar)
+    // {
+    //     TOOLBARHEIGHT = p_Widget->toolBar->height() * window()->devicePixelRatio();
+    // }
+
+    if (p_Widget->titleBar)
     {
-        TOOLBARHEIGHT = p_Widget->toolBar->height() * window()->devicePixelRatio();
+        TOOLBARHEIGHT = p_Widget->titleBar->height() * window()->devicePixelRatio();
     }
 
     // You need to keep the native window in sync with the Qt window & children, so wire min/max/close buttons to
@@ -324,11 +329,11 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 
         if (x >= BORDERWIDTH && x <= WindowRect.right - WindowRect.left - BORDERWIDTH && y >= BORDERWIDTH && y <= TOOLBARHEIGHT)
         {
-            if (p_Widget->toolBar)
+            if (p_Widget->titleBar)
             {
                 // If the mouse is over top of the toolbar area BUT is actually positioned over a child widget of the toolbar,
                 // Then we don't want to enable dragging. This allows for buttons in the toolbar, eg, a Maximize button, to keep the mouse interaction
-                if (QApplication::widgetAt(QCursor::pos()) != p_Widget->toolBar)
+                if (QApplication::widgetAt(QCursor::pos()) != p_Widget->titleBar)
                     return false;
             }
 
