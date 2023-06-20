@@ -108,14 +108,17 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam
                 GetWindowRect(hWnd, &winrect);
 
                 LPARAM cmd = TrackPopupMenu(hMenu, (TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD),
-                                            winrect.left, winrect.top, NULL, hWnd, NULL);
+                                            // 창 크기 최대인 경우 듀얼 모니터 사용자에게서 팝 업 메뉴가 다른 모니터를 침범하는 경우가 있음
+                                            // 이를 해결하기 위해 팝업 메뉴의 시작부를 윈도우 안쪽으로 살짝 밀어줌
+                                            winrect.left + (wp.showCmd == SW_SHOWMAXIMIZED ? 8 : 0),
+                                            winrect.top, NULL, hWnd, nullptr);
 
                 if (cmd)
                     PostMessage(hWnd, WM_SYSCOMMAND, cmd, 0);
             }
             return 0;
         }
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        break;
     }
     case WM_NCCALCSIZE: {
         // this kills the window frame and title bar we added with
