@@ -23,7 +23,6 @@ Widget::Widget(QWidget *parent)
     entireLayout->addWidget(titleBar);
     titleBar->setContentsMargins(0, 0, 0, 0);
     titleBar->setFixedHeight(reinterpret_cast<QWinWidget *>(parent)->TOOLBARHEIGHT);
-    // titleBar->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     // 타이틀바 색상 결정
     QPalette Pal(titleBar->palette());
@@ -41,17 +40,19 @@ Widget::Widget(QWidget *parent)
     // 최소화 버튼
     minimizeButton = new QPushButton("-");
     minimizeButton->setFixedSize(30, 30);
+    minimizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     titleLayout->addWidget(minimizeButton);
 
     // 최대화 버튼
     maximizeButton = new QPushButton("+");
     maximizeButton->setFixedSize(30, 30);
-    maximizeButton->setCheckable(true); // 최대화 상태는 토글 형태여야 한다.
+    maximizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     titleLayout->addWidget(maximizeButton);
 
     // 닫기 버튼
     closeButton = new QPushButton("X");
     closeButton->setFixedSize(30, 30);
+    closeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     titleLayout->addWidget(closeButton);
 
     entireLayout->setAlignment(titleBar, Qt::AlignTop);
@@ -71,7 +72,4 @@ Widget::Widget(QWidget *parent)
     // 메인 윈도우에 수직 레이아웃 추가
     QVBoxLayout *mainwindowLayout = new QVBoxLayout(mainwindowWidget);
     mainwindowWidget->setLayout(mainwindowLayout);
-
-    // An actual app should use icons for the buttons instead of text
-    // and style the different button states / widget margins in css
 }

@@ -1,5 +1,5 @@
-#ifndef QWINWIDGET_H
-#define QWINWIDGET_H
+#ifndef HEADER__FILE__QWINWIDGET
+#define HEADER__FILE__QWINWIDGET
 
 #include <QVBoxLayout>
 #include <QWidget>
@@ -23,6 +23,8 @@ class QWinWidget : public QWidget
 
     int BORDERWIDTH = 6;    // Adjust this as you wish for # of pixels on the edges to show resize handles
     int TOOLBARHEIGHT = 35; // Adjust this as you wish for # of pixels from the top to allow dragging the window
+
+    bool _maximized = false;
 
   public slots:
     void onMaximizeButtonClicked();
@@ -53,4 +55,4 @@ class QWinWidget : public QWidget
     void resetFocus();
 };
 
-#endif // QWINWIDGET_H
+#endif /* HEADER__FILE__QWINWIDGET */

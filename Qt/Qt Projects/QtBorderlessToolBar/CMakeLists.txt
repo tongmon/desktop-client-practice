@@ -41,7 +41,7 @@ target_link_libraries(
     gdi32.lib
 )
 
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
-     WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
-)
+# add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+#      COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+#      WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
+# )

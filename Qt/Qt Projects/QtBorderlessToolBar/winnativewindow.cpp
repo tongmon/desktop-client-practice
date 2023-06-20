@@ -58,25 +58,64 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam
     WinNativeWindow *window = reinterpret_cast<WinNativeWindow *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
     if (!window)
-    {
         return DefWindowProc(hWnd, message, wParam, lParam);
-    }
 
     switch (message)
     {
     // ALT + SPACE or F10 system menu
     case WM_SYSCOMMAND: {
-        if (wParam == SC_KEYMENU)
+        if (wParam == VK_SPACE || (wParam == SC_KEYMENU && lParam == VK_SPACE))
         {
-            RECT winrect;
-            GetWindowRect(hWnd, &winrect);
-            TrackPopupMenu(GetSystemMenu(hWnd, false), TPM_TOPALIGN | TPM_LEFTALIGN, winrect.left + 5, winrect.top + 5, 0, hWnd, NULL);
-            break;
+            HMENU hMenu = GetSystemMenu(hWnd, FALSE);
+            if (hMenu)
+            {
+                MENUITEMINFO mii;
+                mii.cbSize = sizeof(MENUITEMINFO);
+                mii.fMask = MIIM_STATE;
+                mii.fType = 0;
+
+                mii.fState = MF_ENABLED;
+                SetMenuItemInfo(hMenu, SC_RESTORE, FALSE, &mii);
+                SetMenuItemInfo(hMenu, SC_SIZE, FALSE, &mii);
+                SetMenuItemInfo(hMenu, SC_MOVE, FALSE, &mii);
+                SetMenuItemInfo(hMenu, SC_MAXIMIZE, FALSE, &mii);
+                SetMenuItemInfo(hMenu, SC_MINIMIZE, FALSE, &mii);
+
+                mii.fState = MF_GRAYED;
+
+                WINDOWPLACEMENT wp;
+                GetWindowPlacement(hWnd, &wp);
+
+                switch (wp.showCmd)
+                {
+                case SW_SHOWMAXIMIZED:
+                    SetMenuItemInfo(hMenu, SC_SIZE, FALSE, &mii);
+                    SetMenuItemInfo(hMenu, SC_MOVE, FALSE, &mii);
+                    SetMenuItemInfo(hMenu, SC_MAXIMIZE, FALSE, &mii);
+                    SetMenuDefaultItem(hMenu, SC_CLOSE, FALSE);
+                    break;
+                case SW_SHOWMINIMIZED:
+                    SetMenuItemInfo(hMenu, SC_MINIMIZE, FALSE, &mii);
+                    SetMenuDefaultItem(hMenu, SC_RESTORE, FALSE);
+                    break;
+                case SW_SHOWNORMAL:
+                    SetMenuItemInfo(hMenu, SC_RESTORE, FALSE, &mii);
+                    SetMenuDefaultItem(hMenu, SC_CLOSE, FALSE);
+                    break;
+                }
+
+                RECT winrect;
+                GetWindowRect(hWnd, &winrect);
+
+                LPARAM cmd = TrackPopupMenu(hMenu, (TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD),
+                                            winrect.left, winrect.top, NULL, hWnd, NULL);
+
+                if (cmd)
+                    PostMessage(hWnd, WM_SYSCOMMAND, cmd, 0);
+            }
+            return 0;
         }
-        else
-        {
-            return DefWindowProc(hWnd, message, wParam, lParam);
-        }
+        return DefWindowProc(hWnd, message, wParam, lParam);
     }
     case WM_NCCALCSIZE: {
         // this kills the window frame and title bar we added with
@@ -167,8 +206,8 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam
         {
             if (wp.showCmd == SW_MAXIMIZE)
             {
-                childWidget->setGeometry(8, 8 // Maximized window draw 8 pixels off screen
-                                         ,
+                // Maximized window draw 8 pixels off screen
+                childWidget->setGeometry(8, 8,
                                          winrect.right / childWidget->window()->devicePixelRatio() - 16, winrect.bottom / childWidget->window()->devicePixelRatio() - 16);
             }
             else
@@ -185,7 +224,6 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam
         if (window->minimumSize.required)
         {
             minMaxInfo->ptMinTrackSize.x = window->getMinimumWidth();
-            ;
             minMaxInfo->ptMinTrackSize.y = window->getMinimumHeight();
         }
 

@@ -36,10 +36,10 @@ QWinWidget::QWinWidget()
     // Create a native window and give it geometry values * devicePixelRatio for HiDPI support
     p_ParentWinNativeWindow = new WinNativeWindow(1 * window()->devicePixelRatio(), 1 * window()->devicePixelRatio(), 1 * window()->devicePixelRatio(), 1 * window()->devicePixelRatio());
 
-    // If you want to set a minimize size for your app, do so here
+    // 최소화 창의 크기를 고정하고 싶다면 밑 부분 주석 해제
     // p_ParentWinNativeWindow->setMinimumSize(1024 * window()->devicePixelRatio(), 768 * window()->devicePixelRatio());
 
-    // If you want to set a maximum size for your app, do so here
+    // 최대화 창의 크기를 고정하고 싶다면 밑 부분 주석 해제
     // p_ParentWinNativeWindow->setMaximumSize(1024 * window()->devicePixelRatio(), 768 * window()->devicePixelRatio());
 
     // Save the native window handle for shorthand use
@@ -77,12 +77,6 @@ QWinWidget::QWinWidget()
 
     // Update the BORDERWIDTH value if needed for HiDPI displays
     BORDERWIDTH = BORDERWIDTH * window()->devicePixelRatio();
-
-    // Update the TOOLBARHEIGHT value to match the height of toolBar * if needed, the HiDPI display
-    // if (p_Widget->toolBar)
-    // {
-    //     TOOLBARHEIGHT = p_Widget->toolBar->height() * window()->devicePixelRatio();
-    // }
 
     if (p_Widget->titleBar)
     {
@@ -123,9 +117,6 @@ HWND QWinWidget::getParentWindow() const
     return m_ParentNativeWindowHandle;
 }
 
-/*!
-    \reimp
-*/
 void QWinWidget::childEvent(QChildEvent *e)
 {
     QObject *obj = e->child();
@@ -233,14 +224,8 @@ void QWinWidget::onMinimizeButtonClicked()
 // Tell the parent native window to maximize or restore as appropriate
 void QWinWidget::onMaximizeButtonClicked()
 {
-    if (p_Widget->maximizeButton->isChecked())
-    {
-        SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-    }
-    else
-    {
-        SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, SC_RESTORE, 0);
-    }
+    // 최대화 버튼을 최대화 상태에서 누르면 복구, 기본 상태에서 누르면 최대화
+    SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, _maximized ? SC_RESTORE : SC_MAXIMIZE, 0);
 }
 
 void QWinWidget::onCloseButtonClicked()
@@ -306,15 +291,22 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
             // If we're maximized,
             if (wp.showCmd == SW_MAXIMIZE)
             {
-                // Maximize button should show as Restore
-                p_Widget->maximizeButton->setChecked(true);
+                // 최대화 버튼의 모양은 복구 버튼의 모양으로 보여야됨
+                _maximized = true;
             }
             else
             {
-                // Maximize button should show as Maximize
-                p_Widget->maximizeButton->setChecked(false);
+                // 복구 버튼의 모양은 최대화 버튼의 모양으로 보여야됨
+                _maximized = false;
             }
         }
+    }
+
+    if (msg->message == WM_SYSKEYDOWN)
+    {
+        // ALT + SPACE or F10 system menu
+        if (msg->wParam == VK_SPACE || (msg->wParam == SC_KEYMENU && msg->lParam == VK_SPACE))
+            DefWindowProc(m_ParentNativeWindowHandle, msg->message, msg->wParam, msg->lParam);
     }
 
     // Pass NCHITTESTS on the window edges as determined by BORDERWIDTH & TOOLBARHEIGHT through to the parent native window
@@ -389,9 +381,6 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
     return false;
 }
 
-/*!
-    \reimp
-*/
 bool QWinWidget::eventFilter(QObject *o, QEvent *e)
 {
     QWidget *w = (QWidget *)o;
@@ -441,8 +430,6 @@ bool QWinWidget::eventFilter(QObject *o, QEvent *e)
     return QWidget::eventFilter(o, e);
 }
 
-/*! \reimp
- */
 void QWinWidget::focusInEvent(QFocusEvent *e)
 {
     QWidget *candidate = this;
@@ -477,8 +464,6 @@ void QWinWidget::focusInEvent(QFocusEvent *e)
     }
 }
 
-/*! \reimp
- */
 bool QWinWidget::focusNextPrevChild(bool next)
 {
     QWidget *curFocus = focusWidget();
