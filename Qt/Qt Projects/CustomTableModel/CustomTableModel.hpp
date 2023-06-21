@@ -3,6 +3,8 @@
 
 #include <QAbstractTableModel>
 #include <QObject>
+#include <QTime>
+#include <QTimer>
 
 class CustomTableModel : public QAbstractTableModel
 {
@@ -15,6 +17,9 @@ class CustomTableModel : public QAbstractTableModel
     int rowCount(const QModelIndex &) const;
     int columnCount(const QModelIndex &) const;
     QVariant data(const QModelIndex &, int) const; // 실제 테이블의 데이터를 다루는 곳
+
+  private:
+    QTimer *timer;
 };
 
 #endif /* HEADER__FILE__CUSTOMTABLEMODEL */
