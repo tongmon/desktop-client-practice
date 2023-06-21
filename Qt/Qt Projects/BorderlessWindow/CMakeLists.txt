@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 
 # 프로젝트 이름
-project("QtBorderlessWindow")
+project("BorderlessWindow")
 
 # Qt의 시그널 기능을 만들어주는 MOC 활성화  
 set(CMAKE_AUTOMOC ON)
