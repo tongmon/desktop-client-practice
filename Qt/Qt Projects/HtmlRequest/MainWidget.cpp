@@ -1,6 +1,6 @@
 #include "MainWidget.hpp"
 #include "ui_mainwidget.h"
-#include <QDebug>
+#include <QMessageBox>
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent),
@@ -22,7 +22,10 @@ MainWidget::~MainWidget()
 void MainWidget::on_pushButton_clicked()
 {
     QNetworkRequest request;
-    request.setUrl(QUrl("https://www.google.com/")); // https를 처리하려면 Qt 소스를 빌드할 때 OpenSSL이 설치되어 있어야 한다.
+
+    // jsonplaceholder 사이트에서는 get, post와 관련한 많은 테스트 링크를 제공한다.
+    // https를 처리하려면 Qt 소스를 빌드할 때 OpenSSL이 설치되어 있어야 한다.
+    request.setUrl(QUrl("https://jsonplaceholder.typicode.com/posts"));
 
     netReply = netManager->get(request);
 
@@ -37,7 +40,7 @@ void MainWidget::on_pushButton_clicked()
     connect(netReply, &QNetworkReply::finished, [this]() -> void {
         if (netReply->error())
         {
-            qDebug() << netReply->errorString();
+            QMessageBox::critical(this, "Error", netReply->errorString());
         }
         else
         {
