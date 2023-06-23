@@ -79,6 +79,20 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
             따라서 Qt 빌드 시에는 python2 보다 상위 버전의 python에서 설정한 환경 변수 Path를 잠시 빼주자.  
             예를 들어 python 2.7.18 버전을 사용하고 싶은데 python 3.1.1 버전이 이미 설치되어 있다면 보통 환경 변수 path에 ```C:\Python311```, ```C:\Python311\Scripts\``` 요런 녀석들이 들어 있을텐데 저 두 경로를 Qt 빌드할 때 빼주자.  
 
+    4. **OpenSSL**  
+        OpenSSL이 필수는 아니지만 Qt 네트워크 라이브러리로 https 링크를 이용하려면 설치해야 한다.  
+        
+        1. OpenSSL 설치  
+            [이곳](https://slproweb.com/products/Win32OpenSSL.html)에 자신의 아키텍쳐에 맞는 OpenSSL 설치 파일을 받고 설치하자.  
+            필자는 ```Win64 OpenSSL v3.1.1```를 설치했다.  
+
+        2. 환경 변수 세팅  
+            Windows 10 기준으로 ```고급 시스템 설정 보기``` -> ```환경 변수```에 경로를 추가해줘야 한다.  
+            Path에는 ```OpenSSL-Win64```이 설치된 bin 경로를 적어준다.  
+            필자는 ```C:\Program Files\OpenSSL-Win64\bin```를 적어줬다.  
+            OPENSSL_CONF라는 환경 변수를 추가해주고 해당 변수에 ```openssl.cfg``` 파일의 경로를 넣어줘야 한다.  
+            필자는 ```C:\Program Files\OpenSSL-Win64\bin\openssl.cfg```를 넣어줬다.  
+
 4. **환경 변수 세팅**  
     ```D:\Projects\Development\Qt```에 qt5vars.cmd 파일을 만들어 준다.  
     cmd 파일 내용은 밑과 같다.  
