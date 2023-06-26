@@ -44,16 +44,19 @@ Widget::Widget(QWidget *parent)
     minimizeButton->setStyleSheet(R"(
         QPushButton {
             border-image: url(:/icon/Minimize.png);
+            background-color: rgba(255, 255, 255, 0%);
             background-repeat: no-repeat;
         }
 
         QPushButton:hover {
             border-image: url(:/icon/MinimizeHover.png);
+            background-color: rgba(255, 255, 255, 30%);
             background-repeat: no-repeat;
         }
 
         QPushButton:pressed {
-            border-image: url(:/icon/MinimizePressed.png);
+            border-image: url(:/icon/Minimize.png);
+            background-color: rgba(255, 255, 255, 60%);
             background-repeat: no-repeat;
         }
     )");
@@ -63,14 +66,41 @@ Widget::Widget(QWidget *parent)
     maximizeButton = new QPushButton(this);
     maximizeButton->setFixedSize(35, 35);
     maximizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+    maximizeButton->setCheckable(true);
     maximizeButton->setStyleSheet(R"(
         QPushButton {
             border-image: url(:/icon/Maximize.png);
+            background-color: rgba(255, 255, 255, 0%);
             background-repeat: no-repeat;
         }
 
         QPushButton:hover {
             border-image: url(:/icon/MaximizeHover.png);
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+
+        QPushButton:pressed {
+            border-image: url(:/icon/Maximize.png);
+            background-color: rgba(255, 255, 255, 60%);
+            background-repeat: no-repeat;
+        }
+
+        QPushButton:checked {
+            border-image: url(:/icon/Restore.png);
+            background-color: rgba(255, 255, 255, 0%);
+            background-repeat: no-repeat;
+        }
+
+        QPushButton:checked:hover {
+            border-image: url(:/icon/RestoreHover.png);
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+
+        QPushButton:checked:pressed {
+            border-image: url(:/icon/Restore.png);
+            background-color: rgba(255, 255, 255, 60%);
             background-repeat: no-repeat;
         }
     )");
@@ -83,11 +113,19 @@ Widget::Widget(QWidget *parent)
     closeButton->setStyleSheet(R"(
         QPushButton {
             border-image: url(:/icon/Close.png);
+            background-color: rgba(255, 255, 255, 0%);
             background-repeat: no-repeat;
         }
 
         QPushButton:hover {
             border-image: url(:/icon/CloseHover.png);
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+
+        QPushButton:pressed {
+            border-image: url(:/icon/Close.png);
+            background-color: rgba(255, 255, 255, 60%);
             background-repeat: no-repeat;
         }
     )");

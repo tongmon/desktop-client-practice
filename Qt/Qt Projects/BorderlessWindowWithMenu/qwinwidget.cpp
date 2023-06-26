@@ -225,7 +225,10 @@ void QWinWidget::onMinimizeButtonClicked()
 void QWinWidget::onMaximizeButtonClicked()
 {
     // 최대화 버튼을 최대화 상태에서 누르면 복구, 기본 상태에서 누르면 최대화
-    SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, _maximized ? SC_RESTORE : SC_MAXIMIZE, 0);
+    SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, p_Widget->maximizeButton->isChecked() ? SC_MAXIMIZE : SC_RESTORE, 0);
+
+    // hover 상태 남아있는 현상 제거
+    p_Widget->maximizeButton->setAttribute(Qt::WA_UnderMouse, false);
 }
 
 void QWinWidget::onCloseButtonClicked()
@@ -288,17 +291,9 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
             WINDOWPLACEMENT wp;
             GetWindowPlacement(m_ParentNativeWindowHandle, &wp);
 
-            // If we're maximized,
-            if (wp.showCmd == SW_MAXIMIZE)
-            {
-                // 최대화 버튼의 모양은 복구 버튼의 모양으로 보여야됨
-                _maximized = true;
-            }
-            else
-            {
-                // 복구 버튼의 모양은 최대화 버튼의 모양으로 보여야됨
-                _maximized = false;
-            }
+            // 최대화면 버튼을 체크하여 버튼 이미지를 복구 이미지로 변경
+            // 노말 상태면 버튼을 체크 해제하여 버튼 이미지를 최대화 이미지로 변경
+            p_Widget->maximizeButton->setChecked(wp.showCmd == SW_MAXIMIZE ? true : false);
         }
     }
 

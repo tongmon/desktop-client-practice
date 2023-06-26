@@ -24,8 +24,6 @@ class QWinWidget : public QWidget
     int BORDERWIDTH = 6;    // Adjust this as you wish for # of pixels on the edges to show resize handles
     int TOOLBARHEIGHT = 35; // Adjust this as you wish for # of pixels from the top to allow dragging the window
 
-    bool _maximized = false;
-
   public slots:
     void onMaximizeButtonClicked();
     void onMinimizeButtonClicked();
