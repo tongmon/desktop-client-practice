@@ -13,7 +13,7 @@ bool CustomButton::event(QEvent *evt)
 
     // true를 반환하면 CustomButton에서 이벤트를 받고 끝냄
     // 즉 QPushButton은 이벤트를 받지 못함
-    return true;
+    // return true;
 }
 
 // 밑 처럼 특정 이벤트가 발생할 때만 수행되는 함수를 재정의하여 특정 이벤트를 필터링 할 수도 있음.
