@@ -94,6 +94,8 @@ BOOL CWebViewProjectApp::InitInstance()
 // 클릭하여 WebView2 Dialog 수행
 void CWebViewProjectApp::OnWebViewButtonClicked()
 {
+	using WebViewDialog = void(*)();
+
 
 }
 

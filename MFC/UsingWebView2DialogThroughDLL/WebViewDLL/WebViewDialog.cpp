@@ -54,10 +54,8 @@ BOOL WebViewDialog::OnInitDialog()
 
 	SetWindowLongPtr(GetSafeHwnd(), GWLP_USERDATA, (LONG_PTR)this);
 
-	// Set the icon for this dialog.  The framework does this automatically
-	//  when the application's main window is not a dialog
-	SetIcon(m_icon, TRUE);			// Set big icon
-	SetIcon(m_icon, FALSE);		// Set small icon
+	// 아이콘 설정
+	SetIcon(m_icon, TRUE);	// 큰 아이콘, FALSE면 작은 아이콘
 
 	// 윈도우 텍스트 설정
 	SetWindowText(m_title.c_str());
