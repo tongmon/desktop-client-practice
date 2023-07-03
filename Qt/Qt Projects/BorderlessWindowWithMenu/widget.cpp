@@ -1,8 +1,13 @@
 #include "widget.h"
+#include "custommenubar.hpp"
 #include "qwinwidget.h"
 
+#include <QEvent>
 #include <QLabel>
 #include <QLayout>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMouseEvent>
 
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
@@ -35,10 +40,15 @@ Widget::Widget(QWidget *parent)
     titleBar->setLayout(titleLayout);
     titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
-    titleLayout->setAlignment(Qt::AlignRight);
+
+    CustomMenuBar *titleMenuBar = new CustomMenuBar(titleBar);
+    titleMenuBar->installEventFilter(this);
+
+    // 메뉴바 추가
+    titleLayout->setMenuBar(titleMenuBar);
 
     // 최소화 버튼
-    minimizeButton = new QPushButton(this);
+    minimizeButton = new QPushButton;
     minimizeButton->setFixedSize(35, 35);
     minimizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     minimizeButton->setStyleSheet(R"(
@@ -60,10 +70,10 @@ Widget::Widget(QWidget *parent)
             background-repeat: no-repeat;
         }
     )");
-    titleLayout->addWidget(minimizeButton);
+    titleMenuBar->addConerWidget(minimizeButton);
 
     // 최대화 버튼
-    maximizeButton = new QPushButton(this);
+    maximizeButton = new QPushButton;
     maximizeButton->setFixedSize(35, 35);
     maximizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     maximizeButton->setCheckable(true);
@@ -104,10 +114,10 @@ Widget::Widget(QWidget *parent)
             background-repeat: no-repeat;
         }
     )");
-    titleLayout->addWidget(maximizeButton);
+    titleMenuBar->addConerWidget(maximizeButton);
 
     // 닫기 버튼
-    closeButton = new QPushButton(this);
+    closeButton = new QPushButton;
     closeButton->setFixedSize(35, 35);
     closeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     closeButton->setStyleSheet(R"(
@@ -129,7 +139,7 @@ Widget::Widget(QWidget *parent)
             background-repeat: no-repeat;
         }
     )");
-    titleLayout->addWidget(closeButton);
+    titleMenuBar->addConerWidget(closeButton);
 
     entireLayout->setAlignment(titleBar, Qt::AlignTop);
 
@@ -148,4 +158,30 @@ Widget::Widget(QWidget *parent)
     // 메인 윈도우에 수직 레이아웃 추가
     QVBoxLayout *mainwindowLayout = new QVBoxLayout(mainwindowWidget);
     mainwindowWidget->setLayout(mainwindowLayout);
+}
+
+bool Widget::eventFilter(QObject *obj, QEvent *event)
+{
+    static QPoint dragPos;
+
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        auto mouseEvt = reinterpret_cast<QMouseEvent *>(event);
+        if (mouseEvt->button() == Qt::LeftButton)
+        {
+            dragPos = mouseEvt->globalPos() - frameGeometry().topLeft();
+            return false;
+        }
+    }
+    else if (event->type() == QEvent::MouseButtonPress)
+    {
+        auto mouseEvt = reinterpret_cast<QMouseEvent *>(event);
+        if (mouseEvt->button() == Qt::LeftButton)
+        {
+            move(mouseEvt->globalPos() - dragPos);
+            return false;
+        }
+    }
+
+    return QObject::eventFilter(obj, event);
 }
