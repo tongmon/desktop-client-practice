@@ -7,6 +7,9 @@
 #include "WebViewProject.h"
 #include "WebViewProjectDlg.h"
 #include "afxdialogex.h"
+#include <vector>
+#include <unordered_map>
+#include <string>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +34,7 @@ void CWebViewProjectDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CWebViewProjectDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_WEBVIEW_BUTTON, OnWebViewButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -84,5 +88,51 @@ void CWebViewProjectDlg::OnPaint()
 HCURSOR CWebViewProjectDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+// WebView Dialog에 넘길 파라메터 구조체
+// WebViewDLL의 구조체와 동일해야 한다.
+struct WebViewParam
+{
+	bool is_base64_encoded;
+	bool should_get_msg_when_closed;
+	bool is_direct_close;
+	LPCTSTR url;
+	LPCTSTR title;
+	HWND hwnd;
+	SIZE size;
+	std::vector<std::wstring> element_ids;
+	std::unordered_map<std::wstring, std::wstring> html_result;
+};
+
+void CWebViewProjectDlg::OnWebViewButtonClicked()
+{
+	using WebViewFunc = void(*)(WebViewParam*);
+
+	HINSTANCE h_instance = LoadLibrary(_T("WebViewDLL.dll"));
+	if (!h_instance)
+		return;
+
+	WebViewFunc webview_func = reinterpret_cast<WebViewFunc>(GetProcAddress(h_instance, "RunWebView"));
+
+	if (webview_func)
+	{
+		WebViewParam wvp
+		{
+			false,
+			false,
+			false,
+			_T("https://www.google.com/"),
+			_T("google"),
+			this->m_hWnd,
+			{900, 700},
+			{},
+			{} 
+		};
+
+		webview_func(&wvp);
+	}
+
+	FreeLibrary(h_instance);
 }
 

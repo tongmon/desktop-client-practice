@@ -53,10 +53,12 @@ public:
 
 	// 웹에서 전달받을 element id들을 미리 넣어준다.  
 	// 예를 들어 Element_ID에 해당하는 값을 웹에서 던져주고 싶다면 웹 페이지 로직은 document.getElementById('Element_ID').textContent = str; 와 같을 것이다.
-	WebViewDialog(universal_string url = _T(""), CWnd* parent = nullptr, const universal_string& title = _T(""), int width = 500, int height = 500, const std::vector<std::wstring>& element_ids = {});
-
-	void AboutClicked();
-	void SendMessageClicked();
+	WebViewDialog(universal_string url = _T(""), 
+				  HWND parent = nullptr, 
+				  const universal_string& title = _T(""), 
+				  int width = 500, 
+				  int height = 500, 
+				  const std::vector<std::wstring>& element_ids = {});
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_WEBVIEW2_DIALOG };
@@ -83,6 +85,8 @@ public:
 	inline void SetSize(int width, int height) { m_window_width = width; m_window_height = height; }
 
 	inline void SetUrl(LPCTSTR url) { m_url = url; }
+
+	inline auto GetFullWebResult() { return m_html_result; }
 
 	std::wstring GetElementValue(const std::wstring& key);
 
@@ -234,32 +238,4 @@ inline std::string DecodeBase64(const std::string& str_encoded)
 		}
 	}
 	return ret;
-}
-
-AFX_API_EXPORT std::unordered_map<std::wstring, std::wstring> RunWebViewDialog(universal_string url = _T(""), CWnd* parent = nullptr, const universal_string& title = _T(""), int width = 500, int height = 500, const std::vector<std::wstring>& element_ids = {})
-{
-	// typedef void (*WebViewDlgFunc)(LPCTSTR, HWND, LPTSTR, int, int, LPCTSTR, LPCTSTR, bool*, bool*);
-	// 
-	// // CString strWebViewDlgModulePath = 
-	// HINSTANCE hInstance = LoadLibrary(_T("WebViewDialog.dll"));
-	// if (!hInstance)
-	// {
-	// 	LOG4CPLUS_TRACE(logger, "Can't Find WebView Modules!\n");
-	// 	return;
-	// }
-	// 
-	// 
-	// 
-	// WebViewDlgFunc webview_func = (WebViewDlgFunc)GetProcAddress(hInstance, _T("RunWebViewDialog"));
-	// if (webview_func)
-	// 	webview_func(param.url_, param.parent_hwnd_, param.html_ret_, param.size_.cx, param.size_.cy,
-	// 				 param.dlg_opt_, param.wnd_title_, &param.decode_ret_, &param.user_close_);
-	// 
-	// FreeLibrary(hInstance);
-
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-
-	WebViewDialog wvd(url, parent, title, width, height, element_ids);
-
-	wvd.DoModal();
 }

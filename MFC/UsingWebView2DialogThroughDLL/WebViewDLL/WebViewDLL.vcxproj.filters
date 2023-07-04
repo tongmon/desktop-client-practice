@@ -29,13 +29,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WebViewDLL.def">
-      <Filter>소스 파일</Filter>
-    </None>
     <None Include="res\WebViewDLL.rc2">
       <Filter>리소스 파일</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="WebViewDLL.def">
+      <Filter>소스 파일</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

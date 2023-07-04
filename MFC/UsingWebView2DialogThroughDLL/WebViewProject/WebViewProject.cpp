@@ -16,7 +16,6 @@
 
 BEGIN_MESSAGE_MAP(CWebViewProjectApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
-	ON_BN_CLICKED(IDC_WEBVIEW_BUTTON, OnWebViewButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -90,12 +89,3 @@ BOOL CWebViewProjectApp::InitInstance()
 	// 반환합니다.
 	return FALSE;
 }
-
-// 클릭하여 WebView2 Dialog 수행
-void CWebViewProjectApp::OnWebViewButtonClicked()
-{
-	using WebViewDialog = void(*)();
-
-
-}
-

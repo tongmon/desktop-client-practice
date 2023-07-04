@@ -20,10 +20,10 @@ class CWebViewProjectApp : public CWinApp
 public:
 	CWebViewProjectApp();
 
-// 재정의입니다.
+	// 재정의입니다.
 public:
 	virtual BOOL InitInstance();
-	afx_msg void OnWebViewButtonClicked();
+	// afx_msg void OnWebViewButtonClicked();
 
 // 구현입니다.
 
