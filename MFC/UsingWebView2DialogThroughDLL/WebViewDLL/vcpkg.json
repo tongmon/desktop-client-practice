@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "using-webview2-dialog-through-dll",
+  "version": "1.0.0",
+  "dependencies": [
+    "webview2",
+	  "wil"
+  ]
+}

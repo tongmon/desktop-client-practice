@@ -32,8 +32,10 @@
     <None Include="res\WebViewDLL.rc2">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="WebViewDLL.def">
+      <Filter>소스 파일</Filter>
+    </None>
+    <None Include="vcpkg.json">
       <Filter>소스 파일</Filter>
     </None>
   </ItemGroup>
@@ -67,8 +69,5 @@
     <ResourceCompile Include="WebViewDLL.rc">
       <Filter>리소스 파일</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>
