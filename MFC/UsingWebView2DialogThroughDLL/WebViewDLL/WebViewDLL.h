@@ -23,33 +23,23 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-void RunWebViewTest()
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-
-	WebViewDialog wvd(_T("https://www.google.com/"));
-
-	wvd.DoModal();
-}
-
 struct WebViewParam
 {
-	bool is_base64_encoded;
-	bool should_get_msg_when_closed;
-	bool is_direct_close;
-	LPCTSTR url;
-	LPCTSTR title;
-	HWND hwnd;
-	SIZE size;
-	std::vector<std::wstring> element_ids;
-	std::unordered_map<std::wstring, std::wstring> html_result;
+	bool is_base64_encoded = false;
+	bool should_get_msg_when_closed = false;
+	bool is_direct_close = false;
+	LPCTSTR url = nullptr;
+	LPCTSTR title = nullptr;
+	HWND hwnd = nullptr;
+	SIZE size = { 500,500 };
+	std::unordered_map<std::wstring, std::wstring> html_result = {};
 };
 
 void RunWebView(WebViewParam* wvp)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
-	WebViewDialog wvd(wvp->url, wvp->hwnd, wvp->title, wvp->size.cx, wvp->size.cy, wvp->element_ids);
+	WebViewDialog wvd(wvp->url, wvp->hwnd, wvp->title, wvp->size.cx, wvp->size.cy, wvp->html_result);
 
 	wvd.is_base64_encoded = wvp->is_base64_encoded;
 	wvd.should_get_msg_when_closed = wvp->should_get_msg_when_closed;
@@ -57,5 +47,4 @@ void RunWebView(WebViewParam* wvp)
 	wvd.DoModal();
 
 	wvp->is_direct_close = wvd.is_direct_close;
-	wvp->html_result = std::move(wvd.GetFullWebResult());
 }

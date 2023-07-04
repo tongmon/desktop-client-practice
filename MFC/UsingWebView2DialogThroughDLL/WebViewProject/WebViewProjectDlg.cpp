@@ -94,15 +94,14 @@ HCURSOR CWebViewProjectDlg::OnQueryDragIcon()
 // WebViewDLL의 구조체와 동일해야 한다.
 struct WebViewParam
 {
-	bool is_base64_encoded;
-	bool should_get_msg_when_closed;
-	bool is_direct_close;
-	LPCTSTR url;
-	LPCTSTR title;
-	HWND hwnd;
-	SIZE size;
-	std::vector<std::wstring> element_ids;
-	std::unordered_map<std::wstring, std::wstring> html_result;
+	bool is_base64_encoded = false;
+	bool should_get_msg_when_closed = false;
+	bool is_direct_close = false;
+	LPCTSTR url = nullptr;
+	LPCTSTR title = nullptr;
+	HWND hwnd = nullptr;
+	SIZE size = { 500,500 };
+	std::unordered_map<std::wstring, std::wstring> html_result = {};
 };
 
 void CWebViewProjectDlg::OnWebViewButtonClicked()
@@ -126,7 +125,6 @@ void CWebViewProjectDlg::OnWebViewButtonClicked()
 			_T("google"),
 			this->m_hWnd,
 			{900, 700},
-			{},
 			{} 
 		};
 

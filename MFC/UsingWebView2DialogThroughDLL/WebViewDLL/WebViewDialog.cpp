@@ -15,14 +15,11 @@
 using Microsoft::WRL::Callback;
 static constexpr UINT s_runAsyncWindowMessage = WM_APP;
 
-WebViewDialog::WebViewDialog(universal_string url, HWND parent, const universal_string& title, int width, int height, const std::vector<std::wstring>& element_ids)
-	: CDialog(IDD_WEBVIEW2_DIALOG, CWnd::FromHandle(parent)), m_url{ url }, m_title{ title }, m_window_width{ width }, m_window_height{height}
+WebViewDialog::WebViewDialog(universal_string url, HWND parent, const universal_string& title, int width, int height, std::unordered_map<std::wstring, std::wstring>& html_ret)
+	: CDialog(IDD_WEBVIEW2_DIALOG, CWnd::FromHandle(parent)), m_url{ url }, m_title{ title }, m_window_width{ width }, m_window_height{ height }, m_html_result{ html_ret }
 {
 	is_direct_close = is_base64_encoded = should_get_msg_when_closed = false;
 	m_message_from_web = L"";
-
-	for (const auto& element : element_ids)
-		m_html_result[element] = L"";
 }
 
 void WebViewDialog::DoDataExchange(CDataExchange* pDX)

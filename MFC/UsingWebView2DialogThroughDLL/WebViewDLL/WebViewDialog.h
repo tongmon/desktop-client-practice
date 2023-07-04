@@ -44,21 +44,21 @@ private:
 	std::wstring m_message_from_web; // 스크립트 수행으로 전달되는 결과값
 	int m_window_width;
 	int m_window_height;
-	std::unordered_map<std::wstring, std::wstring> m_html_result; // 태그 ID별로 결과값 저장, key = element id, value = id에 저장된 값
+	std::unordered_map<std::wstring, std::wstring>& m_html_result; // 태그 ID별로 결과값 저장, key = element id, value = id에 저장된 값
 
 public:
 	bool is_base64_encoded;
-	bool is_direct_close;
+	bool is_direct_close; // 직접 다이얼로그 프레임의 X 버튼을 눌러 껐는지 여부, 반환값이라고 보면 된다.
 	bool should_get_msg_when_closed;
 
-	// 웹에서 전달받을 element id들을 미리 넣어준다.  
+	// 웹에서 전달받을 element id들을 해쉬맵에 미리 넣어준다.  
 	// 예를 들어 Element_ID에 해당하는 값을 웹에서 던져주고 싶다면 웹 페이지 로직은 document.getElementById('Element_ID').textContent = str; 와 같을 것이다.
-	WebViewDialog(universal_string url = _T(""), 
-				  HWND parent = nullptr, 
-				  const universal_string& title = _T(""), 
-				  int width = 500, 
-				  int height = 500, 
-				  const std::vector<std::wstring>& element_ids = {});
+	WebViewDialog(universal_string url, 
+				  HWND parent, 
+				  const universal_string& title, 
+				  int width, 
+				  int height, 
+				  std::unordered_map<std::wstring, std::wstring>& element_ids);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_WEBVIEW2_DIALOG };
