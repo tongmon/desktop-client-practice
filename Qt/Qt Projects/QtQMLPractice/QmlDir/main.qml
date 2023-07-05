@@ -11,23 +11,19 @@ Window {
     minimumHeight: 100 // 윈도우 최대 너비
     title: "CMake and Qt Quick" // 윈도우 창 제목
 
-    property string myName: "tongstar"
-    onMyNameChanged: {
-        alert("My Name is changed to : " + myName)
-        // console.log("My Name is changed to : " + myName)
-    }
-    
     Rectangle{
-        width: 300
-        height: 100
-        color: "green"
-        anchors.centerIn: parent
-
-        MouseArea{          
-            anchors.fill: parent
-            onClicked: {
-                myName = "kyungjoonlee"
-            }
+        width: my_text.implicitWidth + 20;
+        height: my_text.implicitHeight + 20;
+        color: "beige"
+        border {
+            color: "grey"
+            width: 3
+        }
+        Text {
+            id: my_text
+            text: "My Text"   
+            anchors.centerIn: parent
+            font.pointSize: 30
         }
     }
 }

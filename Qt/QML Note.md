@@ -181,13 +181,6 @@ Window {
 프로퍼티 값이 변경될 때마다 작동하는 함수를 만드려면 어떻게 해야할까?  
 ```qml
 Window {
-    visible: true // 윈도우 보임 여부
-    width: 500 // 윈도우 초기 너비   
-    height: 300 // 윈도우 초기 높이
-    minimumWidth: 200 // 윈도우 최소 너비
-    minimumHeight: 100 // 윈도우 최대 너비
-    title: "CMake and Qt Quick" // 윈도우 창 제목
-
     property string mMyName: "tongstar"
     onMMyNameChanged: {
         console.log("My Name is changed to :" + mMyName)
@@ -213,3 +206,79 @@ Window {
 그리고 앞에는 on이, 뒤에는 Changed가 붙는다.  
 최종적으로 onMMyNameChanged 라는 이름의 함수를 만들면 해당 함수는 mMyName이 변경될 때마다 작동하게 된다.  
 항상 프로퍼티 변수명의 첫 글자가 소문자인 경우 작동하는 기믹이기에 이를 유의하자.  
+&nbsp;  
+
+Item이라는 녀석도 존재한다.  
+특정 UI 객체들을 모아두는 녀석이라고 보면 된다.  
+```qml
+Window {
+    // 생략 
+
+    Item{
+        x: 10
+        y: 10
+        width: 300
+        height: 200
+
+        // Item 배경색 지정을 위한 사각형
+        Rectangle {
+            id: item_bckground
+            anchors.fill: parent
+            color: "beige"
+        }
+
+        // Item 내부에 위치하기에 실제 절대 위치는 x: 20, y: 20이다.
+        Rectangle {
+            id: green_rect
+            x: 10
+            y: 10
+            width: 50
+            height: 50
+            color: "green"
+        }
+
+        Rectangle {
+            id: red_rect
+            width: 50
+            height: 50
+            color: "red"
+            anchors {
+                left: green_rect.right
+                leftMargin: 10
+                top: green_rect.top
+            }
+        }
+    }
+}
+```
+Item에 위와 같이 UI 객체들을 손쉽게 묶어 관리할 수 있다.  
+&nbsp;  
+
+위에서 본 예시의 계층을 살펴보면 Item이 부모고 자식 UI는 Rectangle이 된다.  
+만약 자식 UI의 크기를 부모 UI에서 알고 싶다면 어떻게 해야 할까?  
+implicitWidth, implicitHeight를 이용하면 된다.  
+```qml
+Window {
+    // 생략
+
+    Rectangle{
+        width: my_text.implicitWidth + 20;
+        height: my_text.implicitHeight + 20;
+        color: "beige"
+        border {
+            color: "grey"
+            width: 3
+        }
+        Text {
+            id: my_text
+            text: "My Text"   
+            anchors.centerIn: parent
+            font.pointSize: 30
+        }
+    }
+}
+```
+위 예시에서는 Text의 UI 크기의 가로, 세로에 20이 더해진 크기로 Rectangle이 생성된다.  
+즉 자식 UI의 크기를 이용하고 싶을 때 implicitWidth, implicitHeight를 적절히 사용하면 된다.  
+&nbsp;  
+
