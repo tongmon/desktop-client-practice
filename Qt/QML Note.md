@@ -281,3 +281,73 @@ Window {
 위 예시에서는 Text의 UI 크기의 가로, 세로에 20이 더해진 크기로 Rectangle이 생성된다.  
 즉 자식 UI의 크기를 이용하고 싶을 때 implicitWidth, implicitHeight를 적절히 사용하면 된다.  
 &nbsp;  
+
+Qml에서 signal와 slot을 어떻게 다루는지 알아보자.  
+```qml
+Window {
+    Rectangle{
+        id: my_rect
+        width : 100
+        height: 100
+        color: "beige"
+
+        // 사용자 정의 시그널을 만든다.
+        signal my_custom_signal(string signal_msg)
+
+        // 함수명 첫글자는 무조건 소문자여야 한다.
+        // 모든 자바스크립트 함수는 다 가능
+        function myCustomFunction(signal_msg) {
+            console.log("Signal Message: " + signal_msg)
+        }
+
+        MouseArea
+        {           
+            anchors.fill: parent
+            onClicked: {
+                // 사용자 정의 시그널을 발동한다.  
+                my_rect.my_custom_signal("Message From Beige Rectangle!")
+            }
+        }
+
+        // Rectangle 생성될 때 수행되는 생성자와 비슷한 함수
+        Component.onCompleted: {
+            // 커스텀 시그널과 특정 JS 함수와 연결한다. 
+            // my_custom_signal 시그널이 발생하면 myCustomFunction 함수가 수행된다.
+            my_custom_signal.connect(myCustomFunction)
+        }
+    }
+}
+```
+위와 같이 따로 JS 함수를 생성하고 connect 시키는 방식이 있다.  
+id만 알면 외부 객체 각자의 멤버 함수들을 connect 할 수 있기에 유연하다.  
+&nbsp;  
+
+밑과 같이 자동으로 생성된 slot을 이용하는 방법도 있다.  
+```qml
+Window {
+    Rectangle{
+        id: my_rect
+        width : 100
+        height: 100
+        color: "beige"
+
+        signal my_custom_signal(string signal_msg)
+
+        // on이 붙고 시그널의 첫문자가 대문자로 변한다.
+        // 시그널에서 전달한 모든 인자를 사용할 수 있다.  
+        onMy_custom_signal: {
+            console.log("Signal Message: " + signal_msg)
+        }
+
+        MouseArea
+        {           
+            anchors.fill: parent
+            onClicked: {
+                my_rect.my_custom_signal("Message From Beige Rectangle!")
+            }
+        }
+    }
+}
+```
+위 처럼 따로 JS 함수를 만들지 않고 시그널을 이용할 수도 있다.  
+&nbsp;  
