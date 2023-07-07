@@ -25,5 +25,6 @@ Window {
             anchors.centerIn: parent
             font.pointSize: 30
         }
+
     }
 }

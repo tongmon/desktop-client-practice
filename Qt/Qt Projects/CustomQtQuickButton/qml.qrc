@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>QmlDir/main.qml</file>
+        <file>QmlDir/CustomButton.qml</file>
+    </qresource>
+</RCC>

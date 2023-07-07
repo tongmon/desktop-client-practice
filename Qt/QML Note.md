@@ -281,4 +281,3 @@ Window {
 위 예시에서는 Text의 UI 크기의 가로, 세로에 20이 더해진 크기로 Rectangle이 생성된다.  
 즉 자식 UI의 크기를 이용하고 싶을 때 implicitWidth, implicitHeight를 적절히 사용하면 된다.  
 &nbsp;  
-
