@@ -12,32 +12,6 @@ Window {
     title: "CMake and Qt Quick" // 윈도우 창 제목
 
     Rectangle{
-        id: my_rect
-        width : 100
-        height: 100
-        color: "beige"
-
-        signal my_custom_signal(string signal_msg)
-
-        // 함수명 첫글자는 무조건 소문자여야 한다.
-        // function myCustomFunction(signal_msg) {
-        //     console.log("Signal Message: " + signal_msg)
-        // }
-
-        onMy_custom_signal: {
-            console.log("Signal Message: " + signal_msg)
-        }
-
-        MouseArea
-        {           
-            anchors.fill: parent
-            onClicked: {
-                my_rect.my_custom_signal("Message From Beige Rectangle!")
-            }
-        }
-
-        Component.onCompleted: {
-            // my_custom_signal.connect(myCustomFunction)
-        }
+        
     }
 }
