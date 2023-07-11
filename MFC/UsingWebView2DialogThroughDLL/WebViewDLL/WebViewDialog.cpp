@@ -165,7 +165,44 @@ void WebViewDialog::InitializeWebView()
 	if (!SUCCEEDED(hr))
 	{
 		if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-			AfxMessageBox(_T("WebView2를 설치해야 합니다."));
+		{
+			// 웹뷰 설치가 안되어 있는 경우 웹뷰 설치
+			
+			// 1. 온라인 연결이 가능하여 웹뷰를 설치할 수 있는 경우 편하게 MicrosoftEdgeWebview2Setup를 이용
+			// MicrosoftEdgeWebview2Setup.exe는 경로에 따라 달라져야됨.
+			// std::system("MicrosoftEdgeWebview2Setup.exe /silent /install");
+
+			// 2. 온라인 연결 없이 웹뷰를 설치해야 하는 경우 불편하고 용량이 큰 MicrosoftEdgeWebView2RuntimeInstaller를 이용
+			LONG result, is_webview_installed = 0;
+			HKEY hkey;
+			DWORD type;
+			DWORD bytes = MAX_PATH;
+			TCHAR str_regkey[MAX_PATH] = { 0, };
+
+			// 레지스트리에 웹뷰가 등록되어 있는지 확인하고 안되어 있으면 설치
+			// MicrosoftEdgeWebview2Setup을 이용하면 알아서 확인해주지만 오프라인 전용 인스톨러는 그런거 없음
+			for (int i = 0; i < 4 && !is_webview_installed; i++)
+			{
+				// Regstry Key 탐색
+				result = RegOpenKeyEx((i % 2 ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE),
+									   (i ? _T("SOFTWARE\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}") : _T("SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")),
+									   0, KEY_READ, &hkey);
+				if (result != ERROR_SUCCESS)
+					continue;
+
+				// Regstry Key 값 획득
+				result = RegQueryValueEx(hkey, _T("pv"), 0, &type, (LPBYTE)str_regkey, &bytes);
+
+				if (result == ERROR_SUCCESS && str_regkey[0] != 0 && lstrcmp(str_regkey, _T("0.0.0.0")))
+					is_webview_installed = 1;
+			}
+
+			// MicrosoftEdgeWebView2RuntimeInstaller의 이름은 배포될 아키텍쳐에 따라 달라져야됨.
+			if (!is_webview_installed)
+				std::system("MicrosoftEdgeWebView2RuntimeInstallerX64.exe /silent /install");
+
+			// AfxMessageBox(_T("WebView2를 설치해야 합니다."));
+		}
 		else
 			AfxMessageBox(_T("웹뷰 환경 구성에 실패하였습니다."));		
 	}
