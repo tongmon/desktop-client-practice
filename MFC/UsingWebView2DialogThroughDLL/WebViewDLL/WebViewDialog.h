@@ -193,6 +193,7 @@ inline std::string WStrToUtf8(const std::wstring& wstr)
 	return uft_8;
 }
 
+// UTF-8 Base64 Encoding
 inline std::string EncodeBase64(const std::string& str)
 {
 	std::string ret;
@@ -216,6 +217,7 @@ inline std::string EncodeBase64(const std::string& str)
 	return ret;
 }
 
+// UTF-8 Base64 Decoding
 inline std::string DecodeBase64(const std::string& str_encoded)
 {
 	std::string ret;

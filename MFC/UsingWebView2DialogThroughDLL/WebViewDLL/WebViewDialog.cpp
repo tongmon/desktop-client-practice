@@ -243,9 +243,9 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 
 		HRESULT hresult = m_webview->Navigate(
 #if defined(UNICODE) || defined(_UNICODE)
-			m_url.c_str()
+			Utf8ToWStr(WStrToUtf8(m_url)).c_str()
 #else
-			StrToWStr(m_url).c_str()
+			Utf8ToWStr(StrToUtf8(m_url)).c_str()
 #endif
 		);
 
@@ -319,6 +319,6 @@ std::wstring WebViewDialog::GetElementValue(const std::wstring& key)
 	if (m_html_result[key] == L"null")
 		return L"";
 	if (is_base64_encoded)
-		m_message_from_web = std::move(StrToWStr(DecodeBase64(WStrToStr(m_message_from_web))));
+		m_message_from_web = std::move(Utf8ToWStr(DecodeBase64(WStrToUtf8(m_message_from_web))));
 	return m_html_result[key];
 }
