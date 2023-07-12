@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file alias="Close.png">Resources/Close.png</file>
+        <file alias="CloseHover.png">Resources/CloseHover.png</file>
+        <file alias="Maximize.png">Resources/Maximize.png</file>
+        <file alias="MaximizeHover.png">Resources/MaximizeHover.png</file>       
+        <file alias="Restore.png">Resources/Restore.png</file>
+        <file alias="RestoreHover.png">Resources/RestoreHover.png</file>
+        <file alias="Minimize.png">Resources/Minimize.png</file>
+        <file alias="MinimizeHover.png">Resources/MinimizeHover.png</file> 
+    </qresource>
+
+    <qresource prefix="/qml">
+        <file alias="TitleBar.qml">Qmls/TitleBar.qml</file> 
+     </qresource>
+</RCC>
