@@ -4,6 +4,8 @@
 #include <QEvent>
 #include <QFont>
 #include <QLayout>
+#include <QStyleOptionButton>
+#include <QStylePainter>
 
 CustomMenuBar::CustomMenuBar(QWidget *parent)
     : QWidget{parent}
@@ -30,85 +32,141 @@ void CustomMenuBar::paintEvent(QPaintEvent *event)
 
 bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::MouseButtonPress)
+    // if (event->type() == QEvent::MouseButtonPress)
+    // {
+    //     QPushButton *hoveredButton = nullptr;
+    //     QMenu *hoveredMenu = nullptr;
+    //     for (auto &item : m_menuButtons)
+    //     {
+    //         if (item.second.first->rect().contains(item.second.first->mapFromGlobal(QCursor::pos())))
+    //         {
+    //             hoveredButton = item.second.first;
+    //             hoveredMenu = item.second.second;
+    //             break;
+    //         }
+    //     }
+    //
+    //     if (hoveredMenu)
+    //     {
+    //         static bool t = false;
+    //
+    //         if (!t)
+    //         {
+    //             hoveredMenu->popup(hoveredButton->mapToGlobal({hoveredButton->rect().left(), hoveredButton->rect().top() + hoveredButton->height()}));
+    //         }
+    //         else
+    //         {
+    //             hoveredMenu->hide();
+    //         }
+    //         t = !t;
+    //
+    //         // if (hoveredMenu->isHidden())
+    //         // {
+    //         //     qDebug() << "Button Pressed! Menu show up!";
+    //         //     hoveredMenu->popup(hoveredButton->mapToGlobal({hoveredButton->rect().left(), hoveredButton->rect().top() + hoveredButton->height()}));
+    //         // }
+    //         // else
+    //         // {
+    //         //     qDebug() << "Button Pressed! Menu hide!";
+    //         //     hoveredMenu->hide();
+    //         // }
+    //     }
+    //
+    //     return false;
+    // }
+    //
+    // if (event->type() == QEvent::Leave)
+    // {
+    // }
+    //
+    // if (event->type() == QEvent::Enter)
+    // {
+    // }
+
+    if (event->type() == QEvent::MouseMove)
     {
-        QPushButton *hoveredButton = nullptr;
-        QMenu *hoveredMenu = nullptr;
+        bool isContainedChanged = false;
+        static QPushButton *containedBtn = nullptr;
+        QPushButton *menuVisibleBtn = nullptr;
+
         for (auto &item : m_menuButtons)
         {
-            if (item.second.first->rect().contains(item.second.first->mapFromGlobal(QCursor::pos())))
+            if (item.second->menu()->isVisible())
+                menuVisibleBtn = item.second;
+
+            if (item.second->rect().contains(item.second->mapFromGlobal(QCursor::pos())) && item.second != containedBtn)
             {
-                hoveredButton = item.second.first;
-                hoveredMenu = item.second.second;
-                break;
+                isContainedChanged = true;
+                containedBtn = item.second;
             }
         }
 
-        if (hoveredMenu)
+        // 켜져있는 메뉴가 하나라도 없으면 마우스 움직이는 이벤트 그대로 전달
+        if (!menuVisibleBtn || !isContainedChanged)
+            return QObject::eventFilter(obj, event);
+
+        if (containedBtn->menu()->isHidden() && containedBtn->rect().contains(containedBtn->mapFromGlobal(QCursor::pos())))
         {
-            if (hoveredMenu->isHidden())
-            {
-                qDebug() << "Button Pressed! Menu show up!";
-                hoveredMenu->popup(hoveredButton->mapToGlobal({hoveredButton->rect().left(), hoveredButton->rect().top() + hoveredButton->height()}));
-            }
-            else
-            {
-                qDebug() << "Button Pressed! Menu hide!";
-                hoveredMenu->hide();
-            }
+            menuVisibleBtn->menu()->hide();
+            menuVisibleBtn->click();
+            containedBtn->menu()->popup(containedBtn->mapToGlobal({containedBtn->rect().left(),
+                                                                   containedBtn->rect().top() + containedBtn->height()}));
         }
 
         return false;
     }
 
-    if (event->type() == QEvent::Leave)
-    {
-    }
-
-    if (event->type() == QEvent::Enter)
-    {
-    }
-
-    // static QPushButton *containedBtn = nullptr;
-    //
-    // if (event->type() == QEvent::MouseMove)
-    // {
-    //     bool isContainedChanged = false;
-    //     QPushButton *menuVisibleBtn = nullptr;
-    //     for (auto &item : m_menuButtons)
-    //     {
-    //         if (item.second->menu()->isVisible())
-    //             menuVisibleBtn = item.second;
-    //
-    //         if (item.second->rect().contains(item.second->mapFromGlobal(QCursor::pos())) && item.second != containedBtn)
-    //         {
-    //             isContainedChanged = true;
-    //             containedBtn = item.second;
-    //         }
-    //     }
-    //
-    //     // 켜져있는 메뉴가 하나라도 없으면 마우스 움직이는 이벤트 그대로 전달
-    //     if (!menuVisibleBtn || !isContainedChanged)
-    //         return QObject::eventFilter(obj, event);
-    //
-    //     if (containedBtn->menu()->isHidden() && containedBtn->rect().contains(containedBtn->mapFromGlobal(QCursor::pos())))
-    //     {
-    //         menuVisibleBtn->menu()->hide();
-    //         // menuVisibleBtn->animateClick();
-    //         // containedBtn->animateClick();
-    //
-    //         menuVisibleBtn->click();
-    //         // containedBtn->showMenu();
-    //         containedBtn->menu()->popup({containedBtn->rect().left(), containedBtn->rect().top() + containedBtn->height()}); // 얘 연구해보셈 안팅김
-    //     }
-    //
-    //     return false;
-    // }
-
     return QObject::eventFilter(obj, event);
 }
 
 // menu 이름은 고유해야 한다.
+// QMenu *CustomMenuBar::addMenu(const QString &menuTitle, const QSize &size)
+// {
+//     if (m_menuButtons.find(menuTitle.toStdString()) != m_menuButtons.end())
+//         return nullptr;
+//
+//     auto stdTitle = menuTitle.toStdString();
+//
+//     m_menuButtons[stdTitle] = {new QPushButton(menuTitle, this), nullptr};
+//     m_menuButtons[stdTitle].second = new QMenu(m_menuButtons[menuTitle.toStdString()].first);
+//     m_menuButtons[stdTitle].second->setStyleSheet(R"(
+//         QMenu {
+//             color: rgb(152, 160, 175);
+//             background-color: rgb(30, 34, 39);
+//         }
+//         QMenu::item:selected {
+//             background-color: rgb(52, 56, 61);
+//         }
+//     )");
+//
+//     m_menuButtons[stdTitle].first->installEventFilter(this);
+//     m_menuButtons[stdTitle].first->setFixedSize(size);
+//     m_menuButtons[stdTitle].first->setFocusPolicy(Qt::NoFocus);
+//     m_menuButtons[stdTitle].first->setStyleSheet(R"(
+//         QPushButton {
+//             border-image: url(:/icon/Transparent.png);
+//             color: rgb(152, 160, 175);
+//             background-color: rgba(255, 255, 255, 0%);
+//             background-repeat: no-repeat;
+//         }
+//         QPushButton:hover {
+//             background-color: rgba(255, 255, 255, 30%);
+//             background-repeat: no-repeat;
+//         }
+//         QPushButton:pressed {
+//             background-color: rgba(255, 255, 255, 30%);
+//             background-repeat: no-repeat;
+//         }
+//         // QPushButton::menu-indicator {
+//         //     width: 0px;
+//         // }
+//     )");
+//
+//     m_menuLayout->addWidget(m_menuButtons[stdTitle].first);
+//
+//     return m_menuButtons[stdTitle].second;
+// }
+
 QMenu *CustomMenuBar::addMenu(const QString &menuTitle, const QSize &size)
 {
     if (m_menuButtons.find(menuTitle.toStdString()) != m_menuButtons.end())
@@ -116,48 +174,45 @@ QMenu *CustomMenuBar::addMenu(const QString &menuTitle, const QSize &size)
 
     auto stdTitle = menuTitle.toStdString();
 
-    m_menuButtons[stdTitle] = {new QPushButton(menuTitle, this), nullptr};
+    m_menuButtons[stdTitle] = new QPushButton(menuTitle, this);
 
-    m_menuButtons[stdTitle].second = new QMenu(m_menuButtons[menuTitle.toStdString()].first);
-    m_menuButtons[stdTitle].second->setStyleSheet(R"(
-        QMenu {
-            color: rgb(152, 160, 175);
-            background-color: rgb(30, 34, 39);
-        }
+    auto menu = new QMenu(m_menuButtons[menuTitle.toStdString()]);
+    menu->installEventFilter(this);
+    menu->setStyleSheet(R"(
+         QMenu {
+             color: rgb(152, 160, 175);
+             background-color: rgb(30, 34, 39);
+         }
+         QMenu::item:selected {
+             background-color: rgb(52, 56, 61);
+         }
+     )");
 
-        QMenu::item:selected {
-            background-color: rgb(52, 56, 61);
-        }
-    )");
+    m_menuButtons[stdTitle]->setMenu(menu);
+    m_menuButtons[stdTitle]->installEventFilter(this);
+    m_menuButtons[stdTitle]->setFixedSize(size);
+    m_menuButtons[stdTitle]->setFocusPolicy(Qt::NoFocus);
+    m_menuButtons[stdTitle]->setStyleSheet(R"(
+         QPushButton {
+             border-image: url(:/icon/Transparent.png);
+             color: rgb(152, 160, 175);
+             background-color: rgba(255, 255, 255, 0%);
+             background-repeat: no-repeat;
+         }
+         QPushButton:hover {
+             background-color: rgba(255, 255, 255, 30%);
+             background-repeat: no-repeat;
+         }
+         QPushButton:pressed {
+             background-color: rgba(255, 255, 255, 30%);
+             background-repeat: no-repeat;
+         }
+         QPushButton::menu-indicator {
+             width: 0px;
+         }
+     )");
 
-    // m_menuButtons[stdTitle]->setMenu(menu);
-    m_menuButtons[stdTitle].first->installEventFilter(this);
-    m_menuButtons[stdTitle].first->setFixedSize(size);
-    m_menuButtons[stdTitle].first->setFocusPolicy(Qt::NoFocus);
-    m_menuButtons[stdTitle].first->setStyleSheet(R"(
-        QPushButton {
-            border-image: url(:/icon/Transparent.png);
-            color: rgb(152, 160, 175);
-            background-color: rgba(255, 255, 255, 0%);
-            background-repeat: no-repeat;
-        }
+    m_menuLayout->addWidget(m_menuButtons[stdTitle]);
 
-        QPushButton:hover {
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:pressed {
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-
-        // QPushButton::menu-indicator {
-        //     width: 0px;
-        // }
-    )");
-
-    m_menuLayout->addWidget(m_menuButtons[stdTitle].first);
-
-    return m_menuButtons[stdTitle].second;
+    return menu;
 }
