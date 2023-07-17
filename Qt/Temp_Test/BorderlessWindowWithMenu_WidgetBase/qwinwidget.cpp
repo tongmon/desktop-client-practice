@@ -316,15 +316,16 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 
         if (x >= BORDERWIDTH && x <= WindowRect.right - WindowRect.left - BORDERWIDTH && y >= BORDERWIDTH && y <= TOOLBARHEIGHT)
         {
-            // 여기 바꿀 예정
-            if (BORDERWIDTH + 70 <= x && x <= WindowRect.right - WindowRect.left - BORDERWIDTH - 105)
-            {
-                *result = HTTRANSPARENT;
-                return true;
-            }
-
             if (p_Widget->titleBar)
             {
+                // 타이틀바에서 클릭 제외 영역 검사
+                if (!p_Widget->isClickEventAllowedZone())
+                {
+                    // 드래깅 동작 진행
+                    *result = HTTRANSPARENT;
+                    return true;
+                }
+
                 // If the mouse is over top of the toolbar area BUT is actually positioned over a child widget of the toolbar,
                 // Then we don't want to enable dragging. This allows for buttons in the toolbar, eg, a Maximize button, to keep the mouse interaction
                 if (QApplication::widgetAt(QCursor::pos()) != p_Widget->titleBar)

@@ -19,7 +19,7 @@ class Widget : public QMainWindow
     // 타이틀 바
     QWidget *titleBar = nullptr;
 
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool isClickEventAllowedZone();
 
   signals:
 

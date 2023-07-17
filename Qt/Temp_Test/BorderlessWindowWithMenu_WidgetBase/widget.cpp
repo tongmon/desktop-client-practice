@@ -5,9 +5,6 @@
 #include <QEvent>
 #include <QLabel>
 #include <QLayout>
-#include <QMenu>
-#include <QMenuBar>
-#include <QMouseEvent>
 
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
@@ -31,7 +28,7 @@ Widget::Widget(QWidget *parent)
 
     // 타이틀바 색상 결정
     QPalette Pal(titleBar->palette());
-    Pal.setColor(QPalette::Background, QColor(70, 69, 71));
+    Pal.setColor(QPalette::Background, QColor(30, 34, 39));
     titleBar->setAutoFillBackground(true);
     titleBar->setPalette(Pal);
 
@@ -41,8 +38,36 @@ Widget::Widget(QWidget *parent)
     titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
 
+    // 커스텀 메뉴 추가
     auto customMenu = new CustomMenuBar(titleBar);
     titleLayout->addWidget(customMenu);
+
+    auto menu = customMenu->addMenu("File", {35, titleBar->height()});
+    menu->addAction("New Text File");
+    menu->addAction("New File");
+    menu->addAction("New Window");
+    menu->addAction("Open File");
+    menu->addAction("Open Directory");
+
+    menu = customMenu->addMenu("Edit", {35, titleBar->height()});
+    menu->addAction("Undo");
+    menu->addAction("Redo");
+    menu->addAction("Cut");
+    menu->addAction("Copy");
+    menu->addAction("Paste");
+
+    menu = customMenu->addMenu("Selected Zone", {90, titleBar->height()});
+    menu->addAction("Select All");
+    menu->addAction("Expand Select Zone");
+    menu->addAction("Collapse Select Zone");
+    menu->addAction("Add Cursor");
+    menu->addAction("Select Line Mode");
+
+    menu = customMenu->addMenu("View", {35, titleBar->height()});
+    menu->addAction("Command Pallete");
+    menu->addAction("Open View");
+    menu->addAction("Shape");
+    menu->addAction("Edit Layout");
 
     // 최소화 버튼
     minimizeButton = new QPushButton;
@@ -148,7 +173,7 @@ Widget::Widget(QWidget *parent)
 
     // 메인 윈도우 색상 결정
     Pal = mainwindowWidget->palette();
-    Pal.setColor(QPalette::Background, QColor(175, 174, 176));
+    Pal.setColor(QPalette::Background, QColor(35, 39, 46));
     mainwindowWidget->setAutoFillBackground(true);
     mainwindowWidget->setPalette(Pal);
 
@@ -157,28 +182,33 @@ Widget::Widget(QWidget *parent)
     mainwindowWidget->setLayout(mainwindowLayout);
 }
 
-bool Widget::eventFilter(QObject *obj, QEvent *event)
+// 타이틀바에서 클릭이 허용된 부분인지 검사
+bool Widget::isClickEventAllowedZone()
 {
-    static QPoint dragPos;
+    // 타이틀바 필수 버튼 영역에 커서가 위치한지 검사
+    if (minimizeButton->rect().contains(minimizeButton->mapFromGlobal(QCursor::pos())) ||
+        maximizeButton->rect().contains(maximizeButton->mapFromGlobal(QCursor::pos())) ||
+        closeButton->rect().contains(closeButton->mapFromGlobal(QCursor::pos())))
+        return true;
 
-    if (event->type() == QEvent::MouseButtonPress)
+    // 커스텀 타이틀바 메뉴 영역에 커서가 위치한지 검사
+    for (int i = 0; i < titleBar->layout()->count(); i++)
     {
-        auto mouseEvt = reinterpret_cast<QMouseEvent *>(event);
-        if (mouseEvt->button() == Qt::LeftButton)
+        auto customMenubar = dynamic_cast<CustomMenuBar *>(titleBar->layout()->itemAt(i)->widget());
+        if (customMenubar)
         {
-            dragPos = mouseEvt->globalPos() - frameGeometry().topLeft();
-            return false;
+            auto menuLayout = customMenubar->layout();
+
+            bool isContains = false;
+            for (int j = 0; j < menuLayout->count() && !isContains; j++)
+                isContains |= menuLayout->itemAt(j)->widget()->rect().contains(menuLayout->itemAt(j)->widget()->mapFromGlobal(QCursor::pos()));
+
+            if (isContains)
+                return true;
+            else
+                break;
         }
     }
-    else if (event->type() == QEvent::MouseButtonPress)
-    {
-        auto mouseEvt = reinterpret_cast<QMouseEvent *>(event);
-        if (mouseEvt->button() == Qt::LeftButton)
-        {
-            move(mouseEvt->globalPos() - dragPos);
-            return false;
-        }
-    }
 
-    return QObject::eventFilter(obj, event);
+    return false;
 }
