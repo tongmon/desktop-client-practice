@@ -46,14 +46,32 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
 
         if (hoveredMenu)
         {
-            if (hoveredMenu->isVisible())
+            if (hoveredMenu->isHidden())
             {
-                hoveredButton->click();
-                hoveredMenu->hide();
+                qDebug() << "Button Pressed! Menu show up!";
+                hoveredMenu->popup(hoveredButton->mapToGlobal({hoveredButton->rect().left(), hoveredButton->rect().top() + hoveredButton->height()}));
             }
-            else
-                hoveredMenu->show();
         }
+
+        return false;
+    }
+
+    if (event->type() == QEvent::MouseButtonRelease)
+    {
+        QPushButton *hoveredButton = nullptr;
+        QMenu *hoveredMenu = nullptr;
+        for (auto &item : m_menuButtons)
+        {
+            if (item.second.first->rect().contains(item.second.first->mapFromGlobal(QCursor::pos())))
+            {
+                hoveredButton = item.second.first;
+                hoveredMenu = item.second.second;
+                break;
+            }
+        }
+
+        hoveredMenu->hide();
+        return false;
     }
 
     if (event->type() == QEvent::Leave)
@@ -94,8 +112,7 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
     //
     //         menuVisibleBtn->click();
     //         // containedBtn->showMenu();
-    //         containedBtn->menu()->popup({0,0}); // 얘 연구해보셈 안팅김
-
+    //         containedBtn->menu()->popup({containedBtn->rect().left(), containedBtn->rect().top() + containedBtn->height()}); // 얘 연구해보셈 안팅김
     //     }
     //
     //     return false;
