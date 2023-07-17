@@ -317,7 +317,11 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
         if (x >= BORDERWIDTH && x <= WindowRect.right - WindowRect.left - BORDERWIDTH && y >= BORDERWIDTH && y <= TOOLBARHEIGHT)
         {
             // 여기 바꿀 예정
-            // return false;
+            if (BORDERWIDTH + 70 <= x && x <= WindowRect.right - WindowRect.left - BORDERWIDTH - 105)
+            {
+                *result = HTTRANSPARENT;
+                return true;
+            }
 
             if (p_Widget->titleBar)
             {
