@@ -51,26 +51,13 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
                 qDebug() << "Button Pressed! Menu show up!";
                 hoveredMenu->popup(hoveredButton->mapToGlobal({hoveredButton->rect().left(), hoveredButton->rect().top() + hoveredButton->height()}));
             }
-        }
-
-        return false;
-    }
-
-    if (event->type() == QEvent::MouseButtonRelease)
-    {
-        QPushButton *hoveredButton = nullptr;
-        QMenu *hoveredMenu = nullptr;
-        for (auto &item : m_menuButtons)
-        {
-            if (item.second.first->rect().contains(item.second.first->mapFromGlobal(QCursor::pos())))
+            else
             {
-                hoveredButton = item.second.first;
-                hoveredMenu = item.second.second;
-                break;
+                qDebug() << "Button Pressed! Menu hide!";
+                hoveredMenu->hide();
             }
         }
 
-        hoveredMenu->hide();
         return false;
     }
 
