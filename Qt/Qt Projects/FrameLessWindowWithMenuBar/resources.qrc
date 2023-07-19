@@ -8,5 +8,6 @@
         <file alias="RestoreHover.png">Resources/RestoreHover.png</file>
         <file alias="Minimize.png">Resources/Minimize.png</file>
         <file alias="MinimizeHover.png">Resources/MinimizeHover.png</file> 
+        <file alias="Transparent.png">Resources/Transparent.png</file> 
     </qresource>
 </RCC>

@@ -39,8 +39,12 @@ END_MESSAGE_MAP()
 
 void WebViewDialog::OnSize(UINT opt, int width, int height)
 {
-	MoveWindow(0, 0, m_window_width, m_window_height);
+	// MoveWindow(0, 0, m_window_width, m_window_height);
+	m_window_width = width;
+	m_window_height = height;
 	ResizeEverything();
+
+	CDialog::OnSize(opt, width, height);
 }
 
 BOOL WebViewDialog::OnInitDialog()

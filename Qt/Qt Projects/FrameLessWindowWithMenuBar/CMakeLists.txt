@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 
 # 프로젝트 이름
-project("BorderlessWindow")
+project("FrameLessWindow")
 
 # Qt의 시그널 기능을 만들어주는 MOC 활성화  
 set(CMAKE_AUTOMOC ON)
@@ -19,9 +19,11 @@ set(CMAKE_CXX_STANDARD 17)
 # C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5
 # D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5
 set(Qt5_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5")
+set(QT_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5")
 
 # Qt 모듈 포함
 find_package(Qt5 REQUIRED Widgets Core Gui)
+find_package(QT NAMES Qt5 REQUIRED Core Gui Widgets)
 
 # 소스 파일들을 SRC_FILES 변수에 저장
 file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
