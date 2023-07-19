@@ -22,7 +22,7 @@ class QWinWidget : public QWidget
     HWND getParentWindow() const;
 
     int BORDERWIDTH = 6;    // Adjust this as you wish for # of pixels on the edges to show resize handles
-    int TOOLBARHEIGHT = 35; // Adjust this as you wish for # of pixels from the top to allow dragging the window
+    int TOOLBARHEIGHT = 30; // Adjust this as you wish for # of pixels from the top to allow dragging the window
 
   public slots:
     void onMaximizeButtonClicked();

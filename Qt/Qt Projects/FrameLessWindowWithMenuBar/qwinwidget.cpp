@@ -251,6 +251,12 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 {
     MSG *msg = (MSG *)message;
 
+    if (msg->message == WM_ACTIVATE)
+    {
+        QEvent e(QEvent::ActivationChange);
+        QApplication::sendEvent(p_Widget, &e);
+    }
+
     if (msg->message == WM_SETFOCUS)
     {
         Qt::FocusReason reason;

@@ -2,7 +2,8 @@
 #include "custommenubar.hpp"
 #include "qwinwidget.h"
 
-#include <QEvent>
+#include <QApplication>
+#include <QDebug>
 #include <QLabel>
 #include <QLayout>
 
@@ -71,7 +72,7 @@ Widget::Widget(QWidget *parent)
 
     // 최소화 버튼
     minimizeButton = new QPushButton;
-    minimizeButton->setFixedSize(35, 35);
+    minimizeButton->setFixedSize(40, titleBar->height());
     minimizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     minimizeButton->setStyleSheet(R"(
         QPushButton {
@@ -96,7 +97,7 @@ Widget::Widget(QWidget *parent)
 
     // 최대화 버튼
     maximizeButton = new QPushButton;
-    maximizeButton->setFixedSize(35, 35);
+    maximizeButton->setFixedSize(40, titleBar->height());
     maximizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     maximizeButton->setCheckable(true);
     maximizeButton->setStyleSheet(R"(
@@ -140,7 +141,7 @@ Widget::Widget(QWidget *parent)
 
     // 닫기 버튼
     closeButton = new QPushButton;
-    closeButton->setFixedSize(35, 35);
+    closeButton->setFixedSize(40, titleBar->height());
     closeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     closeButton->setStyleSheet(R"(
         QPushButton {
@@ -211,4 +212,12 @@ bool Widget::isClickEventAllowedZone()
     }
 
     return false;
+}
+
+void Widget::changeEvent(QEvent *evt)
+{
+    if (evt->type() == QEvent::ActivationChange)
+        QApplication::sendEvent(titleBar, evt);
+
+    return;
 }

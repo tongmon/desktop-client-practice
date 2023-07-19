@@ -1,6 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+#include <QEvent>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QToolBar>
@@ -20,6 +21,7 @@ class Widget : public QMainWindow
     QWidget *titleBar = nullptr;
 
     bool isClickEventAllowedZone();
+    void changeEvent(QEvent *evt);
 
   signals:
 

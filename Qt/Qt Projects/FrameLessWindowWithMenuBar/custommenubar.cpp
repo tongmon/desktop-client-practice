@@ -78,7 +78,6 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
         }
         else
         {
-            QPushButton *btn = nullptr;
             for (auto &item : m_menuButtons)
             {
                 if (item.second->menu()->isVisible())
