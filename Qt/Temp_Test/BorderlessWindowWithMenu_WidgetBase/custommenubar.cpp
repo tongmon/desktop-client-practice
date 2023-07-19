@@ -30,17 +30,48 @@ void CustomMenuBar::paintEvent(QPaintEvent *event)
 
 bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
 {
+    if (event->type() == QEvent::MouseButtonDblClick)
+        return true;
+
+    if (event->type() == QEvent::MouseButtonPress)
+        return true;
+
+    if (event->type() == QEvent::MouseButtonRelease)
+    {
+        QPushButton *btn = dynamic_cast<QPushButton *>(obj);
+        if (btn)
+        {
+            btn->menu()->popup(btn->mapToGlobal({btn->rect().left(),
+                                                 btn->rect().top() + btn->height()}));
+        }
+        else
+        {
+            QPushButton *btn = nullptr;
+            for (auto &item : m_menuButtons)
+            {
+                if (item.second->menu()->isVisible())
+                {
+                    btn = item.second;
+                    break;
+                }
+            }
+
+            btn->menu()->hide();
+            btn->click();
+        }
+
+        return true;
+    }
+
     if (event->type() == QEvent::MouseMove)
     {
         bool isContainedChanged = false;
         static QPushButton *containedBtn = nullptr;
         QPushButton *menuVisibleBtn = nullptr;
-
         for (auto &item : m_menuButtons)
         {
             if (item.second->menu()->isVisible())
                 menuVisibleBtn = item.second;
-
             if (item.second->rect().contains(item.second->mapFromGlobal(QCursor::pos())) && item.second != containedBtn)
             {
                 isContainedChanged = true;
@@ -60,7 +91,7 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
                                                                    containedBtn->rect().top() + containedBtn->height()}));
         }
 
-        return false;
+        return true;
     }
 
     return QObject::eventFilter(obj, event);
