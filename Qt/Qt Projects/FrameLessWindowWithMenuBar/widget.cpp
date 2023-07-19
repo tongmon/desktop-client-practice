@@ -72,7 +72,7 @@ Widget::Widget(QWidget *parent)
 
     // 최소화 버튼
     minimizeButton = new QPushButton;
-    minimizeButton->setFixedSize(40, titleBar->height());
+    minimizeButton->setFixedSize(46, titleBar->height());
     minimizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     minimizeButton->setStyleSheet(R"(
         QPushButton {
@@ -82,7 +82,7 @@ Widget::Widget(QWidget *parent)
         }
 
         QPushButton:hover {
-            border-image: url(:/icon/MinimizeHover.png);
+            border-image: url(:/icon/Minimize.png);
             background-color: rgba(255, 255, 255, 30%);
             background-repeat: no-repeat;
         }
@@ -97,7 +97,7 @@ Widget::Widget(QWidget *parent)
 
     // 최대화 버튼
     maximizeButton = new QPushButton;
-    maximizeButton->setFixedSize(40, titleBar->height());
+    maximizeButton->setFixedSize(46, titleBar->height());
     maximizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     maximizeButton->setCheckable(true);
     maximizeButton->setStyleSheet(R"(
@@ -108,7 +108,7 @@ Widget::Widget(QWidget *parent)
         }
 
         QPushButton:hover {
-            border-image: url(:/icon/MaximizeHover.png);
+            border-image: url(:/icon/Maximize.png);
             background-color: rgba(255, 255, 255, 30%);
             background-repeat: no-repeat;
         }
@@ -126,7 +126,7 @@ Widget::Widget(QWidget *parent)
         }
 
         QPushButton:checked:hover {
-            border-image: url(:/icon/RestoreHover.png);
+            border-image: url(:/icon/Restore.png);
             background-color: rgba(255, 255, 255, 30%);
             background-repeat: no-repeat;
         }
@@ -141,24 +141,24 @@ Widget::Widget(QWidget *parent)
 
     // 닫기 버튼
     closeButton = new QPushButton;
-    closeButton->setFixedSize(40, titleBar->height());
+    closeButton->setFixedSize(46, titleBar->height());
     closeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     closeButton->setStyleSheet(R"(
         QPushButton {
             border-image: url(:/icon/Close.png);
-            background-color: rgba(255, 255, 255, 0%);
+            background-color: rgba(200, 41, 47, 0%);
             background-repeat: no-repeat;
         }
 
         QPushButton:hover {
-            border-image: url(:/icon/CloseHover.png);
-            background-color: rgba(255, 255, 255, 30%);
+            border-image: url(:/icon/Close.png);
+            background-color: rgba(200, 41, 47, 80%);
             background-repeat: no-repeat;
         }
 
         QPushButton:pressed {
             border-image: url(:/icon/Close.png);
-            background-color: rgba(255, 255, 255, 60%);
+            background-color: rgba(200, 41, 47, 60%);
             background-repeat: no-repeat;
         }
     )");
