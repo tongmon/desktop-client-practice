@@ -15,9 +15,7 @@
 class CustomMenuBar : public QWidget
 {
     std::unordered_map<std::string, QPushButton *> m_menuButtons;
-    // std::unordered_map<std::string, std::pair<QPushButton *, QMenu *>> m_menuButtons;
     QHBoxLayout *m_menuLayout;
-    QTime m_frameTime;
 
   public:
     CustomMenuBar(QWidget *parent = nullptr);
