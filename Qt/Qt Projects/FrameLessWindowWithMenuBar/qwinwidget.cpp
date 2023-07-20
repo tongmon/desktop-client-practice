@@ -3,10 +3,13 @@
 #include <QEvent>
 #include <QFocusEvent>
 #include <QWindow>
+#include <QtGlobal>
 #include <QtWinExtras>
 #include <qt_windows.h>
 
-#include <QDebug>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QtWinExtras>
+#endif
 
 /*!
     \class QWinWidget qwinwidget.h
@@ -107,10 +110,16 @@ QWinWidget::QWinWidget()
     // Qt 6점대는 QImage를 사용
     // QImage appIcon(":/icon/ApplicationIcon.png");
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // 윈도우 아이콘 수정
     QPixmap appIcon(":/icon/ApplicationIcon.png");
     SendMessage(m_ParentNativeWindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)QtWin::toHICON(appIcon));
     SendMessage(m_ParentNativeWindowHandle, WM_SETICON, ICON_BIG, (LPARAM)QtWin::toHICON(appIcon));
+#else
+    QImage appIcon(":/icon/ApplicationIcon.png");
+    SendMessage(m_ParentNativeWindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)QImage::toHICON(appIcon));
+    SendMessage(m_ParentNativeWindowHandle, WM_SETICON, ICON_BIG, (LPARAM)QImage::toHICON(appIcon));
+#endif
 
     // Send the parent native window a WM_SIZE message to update the widget size
     SendMessage(m_ParentNativeWindowHandle, WM_SIZE, 0, 0);

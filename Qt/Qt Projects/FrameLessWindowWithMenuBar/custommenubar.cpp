@@ -6,11 +6,14 @@
 #include <QLayout>
 #include <QStyleOptionButton>
 #include <QStylePainter>
+#include <QSysInfo>
 #include <Windows.h>
 
 CustomMenuBar::CustomMenuBar(QWidget *parent)
     : QWidget{parent}
 {
+    m_isWin8OrGreater = QSysInfo::productVersion().toInt() >= 8;
+
     m_menuLayout = new QHBoxLayout(parent);
     setLayout(m_menuLayout);
     m_menuLayout->setContentsMargins(0, 0, 0, 0);
@@ -37,25 +40,8 @@ CustomMenuBar::CustomMenuBar(QWidget *parent)
         }
     )";
 
-    m_deactivatedStyle = R"(
-        QPushButton {
-            border-image: url(:/icon/Transparent.png);
-            color: rgb(102, 110, 125);
-            background-color: rgba(255, 255, 255, 0%);
-            background-repeat: no-repeat;
-        }
-        QPushButton:hover {
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-        QPushButton:pressed {
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-        QPushButton::menu-indicator {
-            width: 0px;
-        }
-    )";
+    m_deactivatedStyle = m_casualStyle;
+    m_deactivatedStyle.replace("152, 160, 175", "102, 110, 125"); // 색상만 어둡게 해준다.
 
     m_hoverStyle = R"(
         QPushButton {
@@ -118,14 +104,17 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
                 }
             }
 
+            // 효율 때문에 문자열 비교말고 다른 것으로 변경 필요
             if (btn->styleSheet() == m_hoverStyle)
                 btn->setStyleSheet(m_casualStyle);
             btn->menu()->hide();
             btn->click();
         }
 
-        // Windows 7 이하에서는 해줘야 됨
-        // repaint();
+        if (!m_isWin8OrGreater)
+        {
+            repaint();
+        }
 
         return true;
     }
@@ -161,8 +150,10 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
                                                                    containedBtn->rect().top() + containedBtn->height()}));
         }
 
-        // Windows 7 이하에서는 해줘야 됨
-        // repaint();
+        if (!m_isWin8OrGreater)
+        {
+            repaint();
+        }
 
         return true;
     }

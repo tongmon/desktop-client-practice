@@ -8,8 +8,11 @@
 class CustomTitleBar : public QWidget
 {
     QString m_maxBtnStyle;
+    QString m_maxDeactivatedBtnStyle;
     QString m_minBtnStyle;
+    QString m_minDeactivatedBtnStyle;
     QString m_closeBtnStyle;
+    QString m_closeDeactivatedBtnStyle;
     QPushButton *m_maximizeButton = nullptr;
     QPushButton *m_minimizeButton = nullptr;
     QPushButton *m_closeButton = nullptr;

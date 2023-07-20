@@ -18,13 +18,20 @@ set(CMAKE_CXX_STANDARD 17)
 # Qt5Config.cmake 파일의 경로를 적어준다.  
 # C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5
 # D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5
-set(Qt5_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5")
-set(QT_DIR ${Qt5_DIR})
+set(QT_DIR "C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5")
 
 # Qt 모듈 포함
-# Qt6에서는 WinExtras 모듈 제거해야함
-find_package(Qt5 REQUIRED Widgets Core Gui WinExtras)
-find_package(QT NAMES Qt5 REQUIRED Core Gui Widgets WinExtras)
+# 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
+find_package(QT NAMES Qt6 Qt5 REQUIRED Core)
+
+# Major Version에 대한 경로도 설정해줘야 한다.
+set(Qt${QT_VERSION_MAJOR}_DIR ${QT_DIR})
+
+if(${QT_VERSION_MAJOR} EQUAL 5)
+    find_package(Qt5 REQUIRED Gui Widgets WinExtras)
+else()
+    find_package(Qt6 REQUIRED Gui Widgets)
+endif()
 
 # 소스 파일들을 SRC_FILES 변수에 저장
 file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
@@ -38,18 +45,24 @@ file(GLOB QRC_FILES CONFIGURE_DEPENDS ./*.qrc)
 # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
 add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${UI_FILES} ${QRC_FILES})
 
-# 포함한 모듈들을 링크해준다.  
+# 포함한 모듈들을 링크해준다. 
 target_link_libraries(
     ${CMAKE_PROJECT_NAME}
-    Qt5::Widgets
-    Qt5::Core
-    Qt5::Gui
-    Qt5::WinExtras
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
     dwmapi.lib
     gdi32.lib
 )
 
-# add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-#      COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
-#      WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
-# )
+if(${QT_VERSION_MAJOR} EQUAL 5)
+    target_link_libraries(
+        ${CMAKE_PROJECT_NAME}
+        Qt5::WinExtras
+    )
+endif()
+
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+     WORKING_DIRECTORY ${QT_DIR}/../../../bin
+)

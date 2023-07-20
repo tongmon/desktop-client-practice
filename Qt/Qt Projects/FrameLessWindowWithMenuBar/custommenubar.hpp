@@ -19,7 +19,7 @@ class CustomMenuBar : public QWidget
     QString m_casualStyle;
     QString m_hoverStyle;
     QString m_deactivatedStyle;
-    // QString m_currentMenuStyle;
+    bool m_isWin8OrGreater;
 
   public:
     CustomMenuBar(QWidget *parent = nullptr);

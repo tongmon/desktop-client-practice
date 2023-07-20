@@ -4,7 +4,6 @@
 
 #include <QApplication>
 #include <QDebug>
-#include <regex>
 
 CustomTitleBar::CustomTitleBar(QWidget *parent, int height)
 {
@@ -27,6 +26,9 @@ CustomTitleBar::CustomTitleBar(QWidget *parent, int height)
             background-repeat: no-repeat;
         }
     )";
+
+    m_minDeactivatedBtnStyle = m_minBtnStyle;
+    m_minDeactivatedBtnStyle.replace("Minimize.png", "MinimizeDeactivated.png");
 
     m_maxBtnStyle = R"(
         QPushButton {
@@ -61,6 +63,10 @@ CustomTitleBar::CustomTitleBar(QWidget *parent, int height)
         }
     )";
 
+    m_maxDeactivatedBtnStyle = m_maxBtnStyle;
+    m_maxDeactivatedBtnStyle.replace("Maximize.png", "MaximizeDeactivated.png");
+    m_maxDeactivatedBtnStyle.replace("Restore.png", "RestoreDeactivated.png");
+
     m_closeBtnStyle = R"(
         QPushButton {
             border-image: url(:/icon/Close.png);
@@ -79,6 +85,9 @@ CustomTitleBar::CustomTitleBar(QWidget *parent, int height)
         }
     )";
 
+    m_closeDeactivatedBtnStyle = m_closeBtnStyle;
+    m_closeDeactivatedBtnStyle.replace("Close.png", "CloseDeactivated.png");
+
     setContentsMargins(0, 0, 0, 0);
     setFixedHeight(height);
     setLayout(new QHBoxLayout(this));
@@ -88,6 +97,7 @@ CustomTitleBar::CustomTitleBar(QWidget *parent, int height)
 
     m_titlebarLayout = new QHBoxLayout(this);
     reinterpret_cast<QHBoxLayout *>(layout())->addLayout(m_titlebarLayout);
+    reinterpret_cast<QHBoxLayout *>(layout())->addStretch();
 
     m_minimizeButton = new QPushButton(this);
     m_minimizeButton->setFixedSize(46, height);
@@ -137,21 +147,9 @@ bool CustomTitleBar::event(QEvent *evt)
 {
     if (evt->type() == QEvent::WindowActivate || evt->type() == QEvent::WindowDeactivate)
     {
-        if (evt->type() == QEvent::WindowActivate)
-        {
-            m_minimizeButton->setStyleSheet(m_minBtnStyle);
-            m_maximizeButton->setStyleSheet(m_maxBtnStyle);
-            m_closeButton->setStyleSheet(m_closeBtnStyle);
-        }
-        else
-        {
-            m_minimizeButton->setStyleSheet(std::regex_replace(m_minBtnStyle.toStdString(), std::regex("Minimize.png"), "MinimizeDeactivated.png").c_str());
-            m_closeButton->setStyleSheet(std::regex_replace(m_closeBtnStyle.toStdString(), std::regex("Close.png"), "CloseDeactivated.png").c_str());
-
-            std::string tempStyle = std::regex_replace(m_maxBtnStyle.toStdString(), std::regex("Maximize.png"), "MaximizeDeactivated.png");
-            tempStyle = std::regex_replace(tempStyle, std::regex("Restore.png"), "RestoreDeactivated.png");
-            m_maximizeButton->setStyleSheet(tempStyle.c_str());
-        }
+        m_minimizeButton->setStyleSheet(evt->type() == QEvent::WindowActivate ? m_minBtnStyle : m_minDeactivatedBtnStyle);
+        m_maximizeButton->setStyleSheet(evt->type() == QEvent::WindowActivate ? m_maxBtnStyle : m_maxDeactivatedBtnStyle);
+        m_closeButton->setStyleSheet(evt->type() == QEvent::WindowActivate ? m_closeBtnStyle : m_closeDeactivatedBtnStyle);
 
         for (int i = 0; i < m_titlebarLayout->count(); i++)
             QApplication::sendEvent(m_titlebarLayout->itemAt(i)->widget(), evt);
@@ -161,33 +159,6 @@ bool CustomTitleBar::event(QEvent *evt)
 
     return QWidget::event(evt);
 }
-
-// void CustomTitleBar::changeEvent(QEvent *evt)
-// {
-//     if (evt->type() == QEvent::WindowActivate)
-//     {
-//         qDebug() << "Activate";
-//     }
-//
-//     if (evt->type() == QEvent::WindowDeactivate)
-//     {
-//         qDebug() << "Deactivate";
-//     }
-//
-//     if (evt->type() == QEvent::ActivationChange)
-//     {
-//         CustomMenuBar *customMenubar = nullptr;
-//         for (int i = 0; i < m_titlebarLayout->count() && !customMenubar; i++)
-//             customMenubar = dynamic_cast<CustomMenuBar *>(m_titlebarLayout->itemAt(i)->widget());
-//
-//         // 메뉴가 켜지는 경우에도 top window 변경 메시지가 전달되기에 메뉴가 켜지는 경우에는 ActivationChange 메시지를 무시한다.
-//         if (!customMenubar || !customMenubar->IsMenuOn())
-//         {
-//             for (int i = 0; i < m_titlebarLayout->count(); i++)
-//                 QApplication::sendEvent(m_titlebarLayout->itemAt(i)->widget(), evt);
-//         }
-//     }
-// }
 
 void CustomTitleBar::addWidget(QWidget *widget, int stretch, Qt::Alignment alignment)
 {
