@@ -1,6 +1,8 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+#include "customtitlebar.hpp"
+
 #include <QEvent>
 #include <QMainWindow>
 #include <QPushButton>
@@ -9,19 +11,21 @@
 class Widget : public QMainWindow
 {
     Q_OBJECT
+
+    // 타이틀 바
+    CustomTitleBar *m_titleBar = nullptr;
+
   public:
     explicit Widget(QWidget *parent = 0);
 
-    // If you want to have Max/Min/Close buttons, look at how QWinWidget uses these
-    QPushButton *maximizeButton = nullptr;
-    QPushButton *minimizeButton = nullptr;
-    QPushButton *closeButton = nullptr;
-
-    // 타이틀 바
-    QWidget *titleBar = nullptr;
-
     bool isClickEventAllowedZone();
-    void changeEvent(QEvent *evt);
+    bool event(QEvent *evt);
+
+    QPushButton *GetMinimizeBtn();
+    QPushButton *GetCloseBtn();
+    QPushButton *GetMaximizeBtn();
+
+    QWidget *GetTitleBar();
 
   signals:
 

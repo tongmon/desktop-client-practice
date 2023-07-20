@@ -5,6 +5,8 @@
 #include <QWindow>
 #include <qt_windows.h>
 
+#include <QDebug>
+
 /*!
     \class QWinWidget qwinwidget.h
     \brief The QWinWidget class is a Qt widget that can be child of a
@@ -78,25 +80,28 @@ QWinWidget::QWinWidget()
     // Update the BORDERWIDTH value if needed for HiDPI displays
     BORDERWIDTH = BORDERWIDTH * window()->devicePixelRatio();
 
-    if (p_Widget->titleBar)
+    if (p_Widget->GetTitleBar())
     {
-        TOOLBARHEIGHT = p_Widget->titleBar->height() * window()->devicePixelRatio();
+        TOOLBARHEIGHT = p_Widget->GetTitleBar()->height() * window()->devicePixelRatio();
     }
 
     // You need to keep the native window in sync with the Qt window & children, so wire min/max/close buttons to
     // slots inside of QWinWidget. QWinWidget can then talk with the native window as needed
-    if (p_Widget->minimizeButton)
+    if (p_Widget->GetMinimizeBtn())
     {
-        connect(p_Widget->minimizeButton, &QPushButton::clicked, this, &QWinWidget::onMinimizeButtonClicked);
+        connect(p_Widget->GetMinimizeBtn(), &QPushButton::clicked, this, &QWinWidget::onMinimizeButtonClicked);
     }
-    if (p_Widget->maximizeButton)
+    if (p_Widget->GetMaximizeBtn())
     {
-        connect(p_Widget->maximizeButton, &QPushButton::clicked, this, &QWinWidget::onMaximizeButtonClicked);
+        connect(p_Widget->GetMaximizeBtn(), &QPushButton::clicked, this, &QWinWidget::onMaximizeButtonClicked);
     }
-    if (p_Widget->closeButton)
+    if (p_Widget->GetCloseBtn())
     {
-        connect(p_Widget->closeButton, &QPushButton::clicked, this, &QWinWidget::onCloseButtonClicked);
+        connect(p_Widget->GetCloseBtn(), &QPushButton::clicked, this, &QWinWidget::onCloseButtonClicked);
     }
+
+    // 윈도우 텍스트 수정
+    setWindowTitle("FrameLessWindow");
 
     // Send the parent native window a WM_SIZE message to update the widget size
     SendMessage(m_ParentNativeWindowHandle, WM_SIZE, 0, 0);
@@ -115,6 +120,15 @@ QWinWidget::~QWinWidget()
 HWND QWinWidget::getParentWindow() const
 {
     return m_ParentNativeWindowHandle;
+}
+
+void QWinWidget::setWindowTitle(const QString &title)
+{
+#if defined(UNICODE) || defined(_UNICODE)
+    SetWindowText(getParentWindow(), title.toStdWString().c_str());
+#else
+    SetWindowText(getParentWindow(), title.toStdString().c_str());
+#endif
 }
 
 void QWinWidget::childEvent(QChildEvent *e)
@@ -225,10 +239,10 @@ void QWinWidget::onMinimizeButtonClicked()
 void QWinWidget::onMaximizeButtonClicked()
 {
     // 최대화 버튼을 최대화 상태에서 누르면 복구, 기본 상태에서 누르면 최대화
-    SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, p_Widget->maximizeButton->isChecked() ? SC_MAXIMIZE : SC_RESTORE, 0);
+    SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, p_Widget->GetMaximizeBtn()->isChecked() ? SC_MAXIMIZE : SC_RESTORE, 0);
 
     // hover 상태 남아있는 현상 제거
-    p_Widget->maximizeButton->setAttribute(Qt::WA_UnderMouse, false);
+    p_Widget->GetMaximizeBtn()->setAttribute(Qt::WA_UnderMouse, false);
 }
 
 void QWinWidget::onCloseButtonClicked()
@@ -251,9 +265,15 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 {
     MSG *msg = (MSG *)message;
 
-    if (msg->message == WM_ACTIVATE)
+    // if (msg->message == WM_ACTIVATE)
+    // {
+    //     QEvent e(isActiveWindow() ? QEvent::WindowActivate : QEvent::WindowDeactivate);
+    //     QApplication::sendEvent(p_Widget, &e);
+    // }
+
+    if (msg->message == WM_ACTIVATEAPP)
     {
-        QEvent e(QEvent::ActivationChange);
+        QEvent e(isActiveWindow() ? QEvent::WindowActivate : QEvent::WindowDeactivate);
         QApplication::sendEvent(p_Widget, &e);
     }
 
@@ -291,7 +311,7 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
     // Double check WM_SIZE messages to see if the parent native window is maximized
     if (msg->message == WM_SIZE)
     {
-        if (p_Widget && p_Widget->maximizeButton)
+        if (p_Widget && p_Widget->GetMaximizeBtn())
         {
             // Get the window state
             WINDOWPLACEMENT wp;
@@ -299,7 +319,7 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 
             // 최대화면 버튼을 체크하여 버튼 이미지를 복구 이미지로 변경
             // 노말 상태면 버튼을 체크 해제하여 버튼 이미지를 최대화 이미지로 변경
-            p_Widget->maximizeButton->setChecked(wp.showCmd == SW_MAXIMIZE ? true : false);
+            p_Widget->GetMaximizeBtn()->setChecked(wp.showCmd == SW_MAXIMIZE ? true : false);
         }
     }
 
@@ -322,7 +342,7 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 
         if (x >= BORDERWIDTH && x <= WindowRect.right - WindowRect.left - BORDERWIDTH && y >= BORDERWIDTH && y <= TOOLBARHEIGHT)
         {
-            if (p_Widget->titleBar)
+            if (p_Widget->GetTitleBar())
             {
                 // 타이틀바에서 클릭 제외 영역 검사
                 if (!p_Widget->isClickEventAllowedZone())
@@ -334,7 +354,7 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 
                 // If the mouse is over top of the toolbar area BUT is actually positioned over a child widget of the toolbar,
                 // Then we don't want to enable dragging. This allows for buttons in the toolbar, eg, a Maximize button, to keep the mouse interaction
-                if (QApplication::widgetAt(QCursor::pos()) != p_Widget->titleBar)
+                if (QApplication::widgetAt(QCursor::pos()) != p_Widget->GetTitleBar())
                     return false;
             }
 

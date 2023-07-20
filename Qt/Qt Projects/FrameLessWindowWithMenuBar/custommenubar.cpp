@@ -6,6 +6,7 @@
 #include <QLayout>
 #include <QStyleOptionButton>
 #include <QStylePainter>
+#include <Windows.h>
 
 CustomMenuBar::CustomMenuBar(QWidget *parent)
     : QWidget{parent}
@@ -17,40 +18,70 @@ CustomMenuBar::CustomMenuBar(QWidget *parent)
     m_menuLayout->setAlignment(Qt::AlignLeft);
 
     m_casualStyle = R"(
-                        QPushButton {
-                            border-image: url(:/icon/Transparent.png);
-                            color: rgb(152, 160, 175);
-                            background-color: rgba(255, 255, 255, 0%);
-                            background-repeat: no-repeat;
-                        }
-                        QPushButton:hover {
-                            background-color: rgba(255, 255, 255, 30%);
-                            background-repeat: no-repeat;
-                        }
-                        QPushButton:pressed {
-                            background-color: rgba(255, 255, 255, 30%);
-                            background-repeat: no-repeat;
-                        }
-                        QPushButton::menu-indicator {
-                            width: 0px;
-                        }
-                    )";
+        QPushButton {
+            border-image: url(:/icon/Transparent.png);
+            color: rgb(152, 160, 175);
+            background-color: rgba(255, 255, 255, 0%);
+            background-repeat: no-repeat;
+        }
+        QPushButton:hover {
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+        QPushButton:pressed {
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+        QPushButton::menu-indicator {
+            width: 0px;
+        }
+    )";
+
+    m_deactivatedStyle = R"(
+        QPushButton {
+            border-image: url(:/icon/Transparent.png);
+            color: rgb(102, 110, 125);
+            background-color: rgba(255, 255, 255, 0%);
+            background-repeat: no-repeat;
+        }
+        QPushButton:hover {
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+        QPushButton:pressed {
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+        QPushButton::menu-indicator {
+            width: 0px;
+        }
+    )";
 
     m_hoverStyle = R"(
-                        QPushButton {
-                            border-image: url(:/icon/Transparent.png);
-                            color: rgb(152, 160, 175);
-                            background-color: rgba(255, 255, 255, 30%);
-                            background-repeat: no-repeat;
-                        }
-                        QPushButton::menu-indicator {
-                            width: 0px;
-                        }
-                    )";
+        QPushButton {
+            border-image: url(:/icon/Transparent.png);
+            color: rgb(152, 160, 175);
+            background-color: rgba(255, 255, 255, 30%);
+            background-repeat: no-repeat;
+        }
+        QPushButton::menu-indicator {
+            width: 0px;
+        }
+    )";
 }
 
 CustomMenuBar::~CustomMenuBar()
 {
+}
+
+bool CustomMenuBar::isClickEventAllowedZone()
+{
+    bool ret = false;
+
+    for (int j = 0; j < m_menuLayout->count(); j++)
+        ret |= m_menuLayout->itemAt(j)->widget()->rect().contains(m_menuLayout->itemAt(j)->widget()->mapFromGlobal(QCursor::pos()));
+
+    return ret;
 }
 
 void CustomMenuBar::paintEvent(QPaintEvent *event)
@@ -87,7 +118,8 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
                 }
             }
 
-            btn->setStyleSheet(m_casualStyle);
+            if (btn->styleSheet() == m_hoverStyle)
+                btn->setStyleSheet(m_casualStyle);
             btn->menu()->hide();
             btn->click();
         }
@@ -136,6 +168,18 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
     }
 
     return QObject::eventFilter(obj, event);
+}
+
+bool CustomMenuBar::event(QEvent *evt)
+{
+    if (evt->type() == QEvent::WindowActivate || evt->type() == QEvent::WindowDeactivate)
+    {
+        for (auto &btn : m_menuButtons)
+            btn.second->setStyleSheet(evt->type() == QEvent::WindowActivate ? m_casualStyle : m_deactivatedStyle);
+        return true;
+    }
+
+    return QWidget::event(evt);
 }
 
 QMenu *CustomMenuBar::addMenu(const QString &menuTitle, const QSize &size)

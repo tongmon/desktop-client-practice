@@ -3,9 +3,9 @@
 #include "qwinwidget.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QLabel>
 #include <QLayout>
+#include <QPixmap>
 
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
@@ -22,149 +22,54 @@ Widget::Widget(QWidget *parent)
     entireLayout->setSpacing(0);
 
     // 타이틀바 위젯 추가
-    titleBar = new QWidget(mainWidget);
-    entireLayout->addWidget(titleBar);
-    titleBar->setContentsMargins(0, 0, 0, 0);
-    titleBar->setFixedHeight(reinterpret_cast<QWinWidget *>(parent)->TOOLBARHEIGHT);
+    m_titleBar = new CustomTitleBar(mainWidget, reinterpret_cast<QWinWidget *>(parent)->TOOLBARHEIGHT);
+    entireLayout->addWidget(m_titleBar);
 
     // 타이틀바 색상 결정
-    QPalette Pal(titleBar->palette());
+    QPalette Pal(m_titleBar->palette());
     Pal.setColor(QPalette::Background, QColor(30, 34, 39));
-    titleBar->setAutoFillBackground(true);
-    titleBar->setPalette(Pal);
+    m_titleBar->setAutoFillBackground(true);
+    m_titleBar->setPalette(Pal);
 
-    // 타이틀바에 수평 레이아웃 추가
-    QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
-    titleBar->setLayout(titleLayout);
-    titleLayout->setContentsMargins(0, 0, 0, 0);
-    titleLayout->setSpacing(0);
+    // 타이틀바 아이콘 추가
+    QLabel *titleBarIcon = new QLabel(m_titleBar);
+    titleBarIcon->setPixmap(QPixmap(":/icon/ApplicationIcon.png").scaled(m_titleBar->height() * 0.7f, m_titleBar->height() * 0.7f, Qt::KeepAspectRatio));
+    titleBarIcon->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    titleBarIcon->setFixedSize(m_titleBar->height(), m_titleBar->height());
+    m_titleBar->addWidget(titleBarIcon);
 
     // 커스텀 메뉴 추가
-    auto customMenu = new CustomMenuBar(titleBar);
-    titleLayout->addWidget(customMenu);
+    auto customMenu = new CustomMenuBar(m_titleBar);
+    m_titleBar->addWidget(customMenu);
 
-    auto menu = customMenu->addMenu("File", {35, titleBar->height()});
+    auto menu = customMenu->addMenu("File", {35, m_titleBar->height()});
     menu->addAction("New Text File");
     menu->addAction("New File");
     menu->addAction("New Window");
     menu->addAction("Open File");
     menu->addAction("Open Directory");
 
-    menu = customMenu->addMenu("Edit", {35, titleBar->height()});
+    menu = customMenu->addMenu("Edit", {35, m_titleBar->height()});
     menu->addAction("Undo");
     menu->addAction("Redo");
     menu->addAction("Cut");
     menu->addAction("Copy");
     menu->addAction("Paste");
 
-    menu = customMenu->addMenu("Selected Zone", {90, titleBar->height()});
+    menu = customMenu->addMenu("Selected Zone", {90, m_titleBar->height()});
     menu->addAction("Select All");
     menu->addAction("Expand Select Zone");
     menu->addAction("Collapse Select Zone");
     menu->addAction("Add Cursor");
     menu->addAction("Select Line Mode");
 
-    menu = customMenu->addMenu("View", {35, titleBar->height()});
+    menu = customMenu->addMenu("View", {35, m_titleBar->height()});
     menu->addAction("Command Pallete");
     menu->addAction("Open View");
     menu->addAction("Shape");
     menu->addAction("Edit Layout");
 
-    // 최소화 버튼
-    minimizeButton = new QPushButton;
-    minimizeButton->setFixedSize(46, titleBar->height());
-    minimizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-    minimizeButton->setStyleSheet(R"(
-        QPushButton {
-            border-image: url(:/icon/Minimize.png);
-            background-color: rgba(255, 255, 255, 0%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:hover {
-            border-image: url(:/icon/Minimize.png);
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:pressed {
-            border-image: url(:/icon/Minimize.png);
-            background-color: rgba(255, 255, 255, 60%);
-            background-repeat: no-repeat;
-        }
-    )");
-    titleLayout->addWidget(minimizeButton);
-
-    // 최대화 버튼
-    maximizeButton = new QPushButton;
-    maximizeButton->setFixedSize(46, titleBar->height());
-    maximizeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-    maximizeButton->setCheckable(true);
-    maximizeButton->setStyleSheet(R"(
-        QPushButton {
-            border-image: url(:/icon/Maximize.png);
-            background-color: rgba(255, 255, 255, 0%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:hover {
-            border-image: url(:/icon/Maximize.png);
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:pressed {
-            border-image: url(:/icon/Maximize.png);
-            background-color: rgba(255, 255, 255, 60%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:checked {
-            border-image: url(:/icon/Restore.png);
-            background-color: rgba(255, 255, 255, 0%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:checked:hover {
-            border-image: url(:/icon/Restore.png);
-            background-color: rgba(255, 255, 255, 30%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:checked:pressed {
-            border-image: url(:/icon/Restore.png);
-            background-color: rgba(255, 255, 255, 60%);
-            background-repeat: no-repeat;
-        }
-    )");
-    titleLayout->addWidget(maximizeButton);
-
-    // 닫기 버튼
-    closeButton = new QPushButton;
-    closeButton->setFixedSize(46, titleBar->height());
-    closeButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-    closeButton->setStyleSheet(R"(
-        QPushButton {
-            border-image: url(:/icon/Close.png);
-            background-color: rgba(200, 41, 47, 0%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:hover {
-            border-image: url(:/icon/Close.png);
-            background-color: rgba(200, 41, 47, 80%);
-            background-repeat: no-repeat;
-        }
-
-        QPushButton:pressed {
-            border-image: url(:/icon/Close.png);
-            background-color: rgba(200, 41, 47, 60%);
-            background-repeat: no-repeat;
-        }
-    )");
-    titleLayout->addWidget(closeButton);
-
-    entireLayout->setAlignment(titleBar, Qt::AlignTop);
+    entireLayout->setAlignment(m_titleBar, Qt::AlignTop);
 
     // 메인 윈도우 추가
     QWidget *mainwindowWidget = new QWidget(mainWidget);
@@ -186,38 +91,36 @@ Widget::Widget(QWidget *parent)
 // 타이틀바에서 클릭이 허용된 부분인지 검사
 bool Widget::isClickEventAllowedZone()
 {
-    // 타이틀바 필수 버튼 영역에 커서가 위치한지 검사
-    if (minimizeButton->rect().contains(minimizeButton->mapFromGlobal(QCursor::pos())) ||
-        maximizeButton->rect().contains(maximizeButton->mapFromGlobal(QCursor::pos())) ||
-        closeButton->rect().contains(closeButton->mapFromGlobal(QCursor::pos())))
-        return true;
-
-    // 커스텀 타이틀바 메뉴 영역에 커서가 위치한지 검사
-    for (int i = 0; i < titleBar->layout()->count(); i++)
-    {
-        auto customMenubar = dynamic_cast<CustomMenuBar *>(titleBar->layout()->itemAt(i)->widget());
-        if (customMenubar)
-        {
-            auto menuLayout = customMenubar->layout();
-
-            bool isContains = false;
-            for (int j = 0; j < menuLayout->count() && !isContains; j++)
-                isContains |= menuLayout->itemAt(j)->widget()->rect().contains(menuLayout->itemAt(j)->widget()->mapFromGlobal(QCursor::pos()));
-
-            if (isContains)
-                return true;
-            else
-                break;
-        }
-    }
-
-    return false;
+    return m_titleBar->isClickEventAllowedZone();
 }
 
-void Widget::changeEvent(QEvent *evt)
+bool Widget::event(QEvent *evt)
 {
-    if (evt->type() == QEvent::ActivationChange)
-        QApplication::sendEvent(titleBar, evt);
+    if (evt->type() == QEvent::WindowActivate || evt->type() == QEvent::WindowDeactivate)
+    {
+        QApplication::sendEvent(m_titleBar, evt);
+        return true;
+    }
 
-    return;
+    return QMainWindow::event(evt);
+}
+
+QPushButton *Widget::GetMinimizeBtn()
+{
+    return m_titleBar->GetMinimizeBtn();
+}
+
+QPushButton *Widget::GetCloseBtn()
+{
+    return m_titleBar->GetCloseBtn();
+}
+
+QPushButton *Widget::GetMaximizeBtn()
+{
+    return m_titleBar->GetMaximizeBtn();
+}
+
+QWidget *Widget::GetTitleBar()
+{
+    return m_titleBar;
 }

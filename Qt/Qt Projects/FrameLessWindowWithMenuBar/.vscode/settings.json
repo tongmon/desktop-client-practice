@@ -105,6 +105,7 @@
         "*.ipp": "cpp",
         "hash_map": "cpp",
         "hash_set": "cpp",
-        "qtime": "cpp"
+        "qtime": "cpp",
+        "qpushbutton": "cpp"
     }
 }

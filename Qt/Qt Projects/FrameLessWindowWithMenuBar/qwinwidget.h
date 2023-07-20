@@ -21,6 +21,8 @@ class QWinWidget : public QWidget
 
     HWND getParentWindow() const;
 
+    void setWindowTitle(const QString &title);
+
     int BORDERWIDTH = 6;    // Adjust this as you wish for # of pixels on the edges to show resize handles
     int TOOLBARHEIGHT = 30; // Adjust this as you wish for # of pixels from the top to allow dragging the window
 

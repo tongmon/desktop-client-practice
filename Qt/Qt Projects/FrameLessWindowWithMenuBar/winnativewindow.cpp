@@ -147,6 +147,14 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam
         }
         break;
     }
+    case WM_ACTIVATEAPP: {
+        if (childWindow)
+        {
+            SendMessage(childWindow, WM_ACTIVATEAPP, 0, 0);
+            return 0;
+        }
+        break;
+    }
 
     case WM_NCHITTEST: {
         // This value can be arbitrarily large as only intentionally-HTTRANSPARENT'd messages arrive here

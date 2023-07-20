@@ -18,13 +18,17 @@ class CustomMenuBar : public QWidget
     QHBoxLayout *m_menuLayout;
     QString m_casualStyle;
     QString m_hoverStyle;
+    QString m_deactivatedStyle;
+    // QString m_currentMenuStyle;
 
   public:
     CustomMenuBar(QWidget *parent = nullptr);
     ~CustomMenuBar();
 
+    bool isClickEventAllowedZone();
     void paintEvent(QPaintEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
+    bool event(QEvent *evt);
     QMenu *addMenu(const QString &menu, const QSize &size = QSize(35, 35));
 };
 
