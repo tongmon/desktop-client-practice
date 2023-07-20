@@ -3,6 +3,7 @@
 #include <QEvent>
 #include <QFocusEvent>
 #include <QWindow>
+#include <QtWinExtras>
 #include <qt_windows.h>
 
 #include <QDebug>
@@ -103,6 +104,14 @@ QWinWidget::QWinWidget()
     // 윈도우 텍스트 수정
     setWindowTitle("FrameLessWindow");
 
+    // Qt 6점대는 QImage를 사용
+    // QImage appIcon(":/icon/ApplicationIcon.png");
+
+    // 윈도우 아이콘 수정
+    QPixmap appIcon(":/icon/ApplicationIcon.png");
+    SendMessage(m_ParentNativeWindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)QtWin::toHICON(appIcon));
+    SendMessage(m_ParentNativeWindowHandle, WM_SETICON, ICON_BIG, (LPARAM)QtWin::toHICON(appIcon));
+
     // Send the parent native window a WM_SIZE message to update the widget size
     SendMessage(m_ParentNativeWindowHandle, WM_SIZE, 0, 0);
 }
@@ -125,9 +134,9 @@ HWND QWinWidget::getParentWindow() const
 void QWinWidget::setWindowTitle(const QString &title)
 {
 #if defined(UNICODE) || defined(_UNICODE)
-    SetWindowText(getParentWindow(), title.toStdWString().c_str());
+    SetWindowText(m_ParentNativeWindowHandle, title.toStdWString().c_str());
 #else
-    SetWindowText(getParentWindow(), title.toStdString().c_str());
+    SetWindowText(m_ParentNativeWindowHandle, title.toStdString().c_str());
 #endif
 }
 
@@ -265,11 +274,14 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
 {
     MSG *msg = (MSG *)message;
 
-    // if (msg->message == WM_ACTIVATE)
-    // {
-    //     QEvent e(isActiveWindow() ? QEvent::WindowActivate : QEvent::WindowDeactivate);
-    //     QApplication::sendEvent(p_Widget, &e);
-    // }
+    if (msg->message == WM_ACTIVATE)
+    {
+        if (!isActiveWindow())
+        {
+            QEvent e(QEvent::WindowActivate);
+            QApplication::sendEvent(p_Widget, &e);
+        }
+    }
 
     if (msg->message == WM_ACTIVATEAPP)
     {

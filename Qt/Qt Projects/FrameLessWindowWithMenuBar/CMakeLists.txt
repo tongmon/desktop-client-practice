@@ -22,8 +22,9 @@ set(Qt5_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Q
 set(QT_DIR ${Qt5_DIR})
 
 # Qt 모듈 포함
-find_package(Qt5 REQUIRED Widgets Core Gui)
-find_package(QT NAMES Qt5 REQUIRED Core Gui Widgets)
+# Qt6에서는 WinExtras 모듈 제거해야함
+find_package(Qt5 REQUIRED Widgets Core Gui WinExtras)
+find_package(QT NAMES Qt5 REQUIRED Core Gui Widgets WinExtras)
 
 # 소스 파일들을 SRC_FILES 변수에 저장
 file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
@@ -43,6 +44,7 @@ target_link_libraries(
     Qt5::Widgets
     Qt5::Core
     Qt5::Gui
+    Qt5::WinExtras
     dwmapi.lib
     gdi32.lib
 )

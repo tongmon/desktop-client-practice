@@ -126,33 +126,19 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam
         return 0;
     }
 
+    case WM_ACTIVATEAPP:
+    case WM_ACTIVATE:
     // If the parent window gets any close messages, send them over to QWinWidget and don't actually close here
     case WM_CLOSE: {
         if (childWindow)
         {
-            SendMessage(childWindow, WM_CLOSE, 0, 0);
+            SendMessage(childWindow, message, 0, 0);
             return 0;
         }
         break;
     }
     case WM_DESTROY: {
         PostQuitMessage(0);
-        break;
-    }
-    case WM_ACTIVATE: {
-        if (childWindow)
-        {
-            SendMessage(childWindow, WM_ACTIVATE, 0, 0);
-            return 0;
-        }
-        break;
-    }
-    case WM_ACTIVATEAPP: {
-        if (childWindow)
-        {
-            SendMessage(childWindow, WM_ACTIVATEAPP, 0, 0);
-            return 0;
-        }
         break;
     }
 
