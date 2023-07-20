@@ -68,6 +68,7 @@ Widget::Widget(QWidget *parent)
     menu->addAction("Open View");
     menu->addAction("Shape");
     menu->addAction("Edit Layout");
+    menu->show();
 
     entireLayout->setAlignment(m_titleBar, Qt::AlignTop);
 

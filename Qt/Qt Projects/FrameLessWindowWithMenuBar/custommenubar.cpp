@@ -45,9 +45,9 @@ CustomMenuBar::CustomMenuBar(QWidget *parent)
 
     m_hoverStyle = R"(
         QPushButton {
+            background-color: rgba(255, 255, 255, 30%);
             border-image: url(:/icon/Transparent.png);
             color: rgb(152, 160, 175);
-            background-color: rgba(255, 255, 255, 30%);
             background-repeat: no-repeat;
         }
         QPushButton::menu-indicator {
@@ -58,16 +58,6 @@ CustomMenuBar::CustomMenuBar(QWidget *parent)
 
 CustomMenuBar::~CustomMenuBar()
 {
-}
-
-bool CustomMenuBar::isClickEventAllowedZone()
-{
-    bool ret = false;
-
-    for (int j = 0; j < m_menuLayout->count(); j++)
-        ret |= m_menuLayout->itemAt(j)->widget()->rect().contains(m_menuLayout->itemAt(j)->widget()->mapFromGlobal(QCursor::pos()));
-
-    return ret;
 }
 
 void CustomMenuBar::paintEvent(QPaintEvent *event)
@@ -192,7 +182,7 @@ QMenu *CustomMenuBar::addMenu(const QString &menuTitle, const QSize &size)
          QMenu::item:selected {
              background-color: rgb(52, 56, 61);
          }
-     )");
+    )");
 
     m_menuButtons[stdTitle]->setMenu(menu);
     m_menuButtons[stdTitle]->installEventFilter(this);

@@ -1,9 +1,9 @@
 #include "customtitlebar.hpp"
-#include "custommenubar.hpp"
 #include "qwinwidget.h"
 
 #include <QApplication>
 #include <QDebug>
+#include <QLabel>
 
 CustomTitleBar::CustomTitleBar(QWidget *parent, int height)
 {
@@ -132,11 +132,16 @@ bool CustomTitleBar::isClickEventAllowedZone()
         return true;
 
     // 나머지 ui에 커서가 위치한지 검사
-    // 일단은 메뉴만 존재
     for (int i = 0; i < m_titlebarLayout->count(); i++)
     {
-        auto customMenubar = dynamic_cast<CustomMenuBar *>(m_titlebarLayout->itemAt(i)->widget());
-        if (customMenubar && customMenubar->isClickEventAllowedZone())
+        auto widget = m_titlebarLayout->itemAt(i)->widget();
+
+        // 이미지만 박혀있는 레이블은 제외
+        auto label = dynamic_cast<QLabel *>(widget);
+        if (label)
+            continue;
+
+        if (widget->rect().contains(widget->mapFromGlobal(QCursor::pos())))
             return true;
     }
 
