@@ -72,6 +72,7 @@ Widget::Widget(QWidget *parent)
 
     entireLayout->setAlignment(m_titleBar, Qt::AlignTop);
 
+    // Widget Base 윈도우 추가
     // 메인 윈도우 추가
     QWidget *mainwindowWidget = new QWidget(mainWidget);
     entireLayout->addWidget(mainwindowWidget);
@@ -87,6 +88,24 @@ Widget::Widget(QWidget *parent)
     // 메인 윈도우에 수직 레이아웃 추가
     QVBoxLayout *mainwindowLayout = new QVBoxLayout(mainwindowWidget);
     mainwindowWidget->setLayout(mainwindowLayout);
+
+    // Qt Quick Base 윈도우 추가, 실행 잘 안됨... 확인 필요
+    // QQuickView *mainWindowView = new QQuickView;
+    // mainWindowView->setSource(QUrl(":/qml/MainWindowView.qml"));
+    // mainWindowView->setResizeMode(QQuickView::SizeRootObjectToView);
+    // QWidget *container = QWidget::createWindowContainer(mainWindowView, this);
+
+    // QQmlApplicationEngine *engine = new QQmlApplicationEngine;
+    // engine->load(QUrl(QStringLiteral(":/qml/MainWindowView.qml")));
+    // QWindow *mainWindow = qobject_cast<QWindow *>(engine->rootObjects().at(0));
+    // QWidget *container = QWidget::createWindowContainer(mainWindow, this);
+
+    // entireLayout->addWidget(container);
+
+    // QQuickWidget *mainWindow = new QQuickWidget(QUrl(QStringLiteral(":/qml/MainWindowView.qml")), this);
+    // mainWindow->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    // mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // entireLayout->addWidget(mainWindow);
 }
 
 // 타이틀바에서 클릭이 허용된 부분인지 검사
