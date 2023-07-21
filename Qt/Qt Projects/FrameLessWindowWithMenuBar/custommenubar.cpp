@@ -1,4 +1,5 @@
 #include "custommenubar.hpp"
+#include "qwinwidget.h"
 #include <QApplication>
 #include <QDebug>
 #include <QEvent>
@@ -60,6 +61,24 @@ CustomMenuBar::~CustomMenuBar()
 {
 }
 
+// Windows 7에서 화면 렌더링이 안되는 문제를 해결하기 위한 함수
+void CustomMenuBar::RepaintAllPrecedence()
+{
+    repaint();
+    auto p = dynamic_cast<QWidget *>(parent());
+    while (p)
+    {
+        p->repaint();
+        auto winWidget = dynamic_cast<QWinWidget *>(p->parent());
+        if (winWidget)
+        {
+            SendMessage(winWidget->getParentWindow(), WM_MOVE, 0, 0);
+            break;
+        }
+        p = dynamic_cast<QWidget *>(p->parent());
+    }
+}
+
 void CustomMenuBar::paintEvent(QPaintEvent *event)
 {
     // setFixedSize(reinterpret_cast<QWidget *>(parent())->size());
@@ -70,10 +89,20 @@ void CustomMenuBar::paintEvent(QPaintEvent *event)
 bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonDblClick)
+    {
+        if (!m_isWin8OrGreater)
+            RepaintAllPrecedence();
+
         return true;
+    }
 
     if (event->type() == QEvent::MouseButtonPress)
+    {
+        if (!m_isWin8OrGreater)
+            RepaintAllPrecedence();
+
         return true;
+    }
 
     if (event->type() == QEvent::MouseButtonRelease)
     {
@@ -102,9 +131,7 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
         }
 
         if (!m_isWin8OrGreater)
-        {
-            repaint();
-        }
+            RepaintAllPrecedence();
 
         return true;
     }
@@ -141,9 +168,7 @@ bool CustomMenuBar::eventFilter(QObject *obj, QEvent *event)
         }
 
         if (!m_isWin8OrGreater)
-        {
-            repaint();
-        }
+            RepaintAllPrecedence();
 
         return true;
     }

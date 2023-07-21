@@ -25,6 +25,7 @@ class CustomMenuBar : public QWidget
     CustomMenuBar(QWidget *parent = nullptr);
     ~CustomMenuBar();
 
+    void RepaintAllPrecedence();
     void paintEvent(QPaintEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
     bool event(QEvent *evt);
