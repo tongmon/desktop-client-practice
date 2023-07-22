@@ -16,7 +16,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 
 # Qt5Config.cmake 파일의 경로를 적어준다.  
-set(Qt5_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5")
+set(Qt5_DIR "C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5")
 
 # Qt 모듈 포함 (현재는 Quick, Qml만 포함)
 find_package(Qt5 REQUIRED Quick Qml)
