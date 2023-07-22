@@ -6,11 +6,12 @@
 WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
     : m_window{quick_window}, QAbstractNativeEventFilter()
 {
-    m_parent_native_window = new WinNativeWindow(1 * m_window.devicePixelRatio(),
-                                                 1 * m_window.devicePixelRatio(),
-                                                 1 * m_window.devicePixelRatio(),
-                                                 1 * m_window.devicePixelRatio());
+    m_parent_native_window = std::make_unique<WinNativeWindow>(1 * m_window.devicePixelRatio(),
+                                                               1 * m_window.devicePixelRatio(),
+                                                               1 * m_window.devicePixelRatio(),
+                                                               1 * m_window.devicePixelRatio());
 
+    // 초반 윈도우 크기, 위치 설정
     int window_x, window_y, window_width, window_height;
     window_x = 100;
     window_y = 100;
@@ -91,15 +92,15 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
     if (msg->message == WM_SETFOCUS)
     {
-        Qt::FocusReason reason;
-        if (::GetKeyState(VK_LBUTTON) < 0 || ::GetKeyState(VK_RBUTTON) < 0)
-            reason = Qt::MouseFocusReason;
-        else if (::GetKeyState(VK_SHIFT) < 0)
-            reason = Qt::BacktabFocusReason;
-        else
-            reason = Qt::TabFocusReason;
-        QFocusEvent e(QEvent::FocusIn, reason);
-        QGuiApplication::sendEvent(&m_window, &e);
+        // Qt::FocusReason reason;
+        // if (::GetKeyState(VK_LBUTTON) < 0 || ::GetKeyState(VK_RBUTTON) < 0)
+        //     reason = Qt::MouseFocusReason;
+        // else if (::GetKeyState(VK_SHIFT) < 0)
+        //     reason = Qt::BacktabFocusReason;
+        // else
+        //     reason = Qt::TabFocusReason;
+        // QFocusEvent e(QEvent::FocusIn, reason);
+        // QGuiApplication::sendEvent(&m_window, &e);
     }
 
     // Only close if safeToClose clears()
@@ -123,8 +124,6 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     // Double check WM_SIZE messages to see if the parent native window is maximized
     if (msg->message == WM_SIZE)
     {
-        int i = 0;
-
         // if (p_Widget && p_Widget->GetMaximizeBtn())
         // {
         //     // Get the window state

@@ -7,13 +7,14 @@
 #include <QQuickWindow>
 #include <Windows.h>
 #include <Windowsx.h>
+#include <memory>
 
 class WinNativeWindow;
 
 class WinQuickWindow : public QAbstractNativeEventFilter
 {
     QQuickWindow &m_window;
-    WinNativeWindow *m_parent_native_window;
+    std::unique_ptr<WinNativeWindow> m_parent_native_window;
 
   public:
     WinQuickWindow(QQuickWindow &quick_window);

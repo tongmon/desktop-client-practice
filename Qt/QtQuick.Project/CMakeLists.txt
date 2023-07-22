@@ -16,7 +16,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 
 # Qt5Config.cmake 파일의 경로를 적어준다.  
-set(Qt5_DIR "D:\\Projects\\Development\\Qt\\5.15.8-MSVC-x64-shared\\lib\\cmake\\Qt5")
+set(Qt5_DIR "C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5")
 
 # Qt 모듈 포함 (현재는 Quick, Qml만 포함)
 find_package(Qt5 REQUIRED Quick Qml)
@@ -42,7 +42,7 @@ target_link_libraries(
     Qt5::Qml
 )
 
-# add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-#      COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
-#      WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
-# )
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir ${CMAKE_SOURCE_DIR}/QmlDir ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+     WORKING_DIRECTORY ${Qt5_DIR}/../../../bin
+)

@@ -31,6 +31,7 @@ ApplicationWindow {
             onClicked: {
                 txt.text = "Some random number: ".concat(Math.floor((Math.random() * 100) + 1))
             }
+            // focusPolicy: Qt.NoFocus
         }
     }
 }
