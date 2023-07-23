@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    std::shared_ptr<WinQuickWindow> quick_window(nullptr);
+    std::unique_ptr<WinQuickWindow> quick_window(nullptr);
 
     const QUrl main_url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(-1);
             else
             {
-                quick_window = std::make_shared<WinQuickWindow>(*qobject_cast<QQuickWindow *>(engine.rootObjects().at(0)));
+                quick_window = std::make_unique<WinQuickWindow>(*qobject_cast<QQuickWindow *>(engine.rootObjects().at(0)));
                 app.installNativeEventFilter(quick_window.get());
             }
         },

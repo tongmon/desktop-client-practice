@@ -104,6 +104,13 @@
         "xutility": "cpp",
         "*.ipp": "cpp",
         "hash_map": "cpp",
-        "hash_set": "cpp"
+        "hash_set": "cpp",
+        "qtime": "cpp",
+        "qpushbutton": "cpp",
+        "qdebug": "cpp",
+        "qqmlapplicationengine": "cpp",
+        "qquickwindow": "cpp",
+        "qabstractnativeeventfilter": "cpp",
+        "qmetaobject": "cpp"
     }
 }

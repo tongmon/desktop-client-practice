@@ -31,6 +31,7 @@ class WinQuickWindow : public QAbstractNativeEventFilter
     HWND GetParentHandle() const;
 
   protected:
+    bool IsTitleBarClickEventAllowedZone();
     bool nativeEventFilter(const QByteArray &event_type, void *message, long *result);
 };
 

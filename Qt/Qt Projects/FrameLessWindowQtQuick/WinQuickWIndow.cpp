@@ -1,6 +1,8 @@
 #include "WinQuickWindow.hpp"
 #include "WinNativeWindow.hpp"
 
+#include <QMetaObject>
+#include <QQmlProperty>
 #include <QUrl>
 
 WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
@@ -22,7 +24,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
 
     if (GetParentHandle())
     {
-        m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
+        // m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
         // SetWindowLong((HWND)m_window.winId(), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
         SetParent((HWND)m_window.winId(), GetParentHandle());
         QEvent e(QEvent::EmbeddingControl);
@@ -34,6 +36,8 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
 
     border_width *= m_window.devicePixelRatio();
     titlebar_height *= m_window.devicePixelRatio();
+
+    m_window.setProperty("titlebarHeight", titlebar_height);
 
     SendMessage(GetParentHandle(), WM_SIZE, 0, 0);
 
@@ -69,6 +73,18 @@ void WinQuickWindow::SetWidnowTitle(const QString &title)
 HWND WinQuickWindow::GetParentHandle() const
 {
     return m_parent_native_window->GetHandle();
+}
+
+bool WinQuickWindow::IsTitleBarClickEventAllowedZone()
+{
+    QVariant ret;
+    QMetaObject::invokeMethod(&m_window,
+                              "isTitleBarClickEventAllowedZone",
+                              Q_RETURN_ARG(QVariant, ret),
+                              Q_ARG(QVariant, QCursor::pos().x()),
+                              Q_ARG(QVariant, QCursor::pos().y()));
+
+    return ret.toBool();
 }
 
 bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *message, long *result)
@@ -155,21 +171,8 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
         if (x >= border_width && x <= WindowRect.right - WindowRect.left - border_width && y >= border_width && y <= titlebar_height)
         {
-            // if (p_Widget->GetTitleBar())
-            // {
-            //     // 타이틀바에서 클릭 제외 영역 검사
-            //     if (!p_Widget->isClickEventAllowedZone())
-            //     {
-            //         // 드래깅 동작 진행
-            //         *result = HTTRANSPARENT;
-            //         return true;
-            //     }
-            //
-            //     // If the mouse is over top of the toolbar area BUT is actually positioned over a child widget of the toolbar,
-            //     // Then we don't want to enable dragging. This allows for buttons in the toolbar, eg, a Maximize button, to keep the mouse interaction
-            //     if (QApplication::widgetAt(QCursor::pos()) != p_Widget->GetTitleBar())
-            //         return false;
-            // }
+            if (IsTitleBarClickEventAllowedZone())
+                return false;
 
             // The mouse is over the toolbar area & is NOT over a child of the toolbar, so pass this message
             // through to the native window for HTCAPTION dragging
