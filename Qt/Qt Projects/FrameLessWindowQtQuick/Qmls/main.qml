@@ -8,19 +8,30 @@ ApplicationWindow {
     minimumWidth: 200
     minimumHeight: 100
     flags: Qt.Window | Qt.FramelessWindowHint
-    title: "CMake and Qt Quick"
+    // title: "CMake and Qt Quick"
 
     // 타이틀바 높이, C++에서 초기화해줌
     property int titlebarHeight: 0
 
     // C++에서 메시지를 받을 영역인지 구분하는 함수
     function isTitleBarClickEventAllowedZone(x, y) {
-        var isContainMouse = minimumButton.contains(
-                    minimumButton.mapFromGlobal(x, y))
-        isContainMouse |= maximumButton.contains(maximumButton.mapFromGlobal(x,
-                                                                             y))
-        isContainMouse |= closeButton.contains(closeButton.mapFromGlobal(x, y))
-        return isContainMouse
+        if (testButton.contains(testButton.mapFromGlobal(x, y)) === true)
+            return true
+
+        if (minimumButton.contains(minimumButton.mapFromGlobal(x, y)) === true)
+            return true
+
+        if (maximumButton.contains(maximumButton.mapFromGlobal(x, y)) === true)
+            return true
+
+        if (closeButton.contains(closeButton.mapFromGlobal(x, y)) === true)
+            return true
+
+        return false
+    }
+
+    function onParentNativeWindowStateChanged(parentActive) {
+        console.log(parentActive)
     }
 
     Column {
@@ -28,7 +39,7 @@ ApplicationWindow {
         spacing: 0
 
         Rectangle {
-            id: title_bar
+            id: titleBar
             color: "grey"
             width: parent.width
             height: titlebarHeight
@@ -36,6 +47,19 @@ ApplicationWindow {
             Row {
                 spacing: 0
                 anchors.fill: parent
+
+                Button {
+                    id: testButton
+                    text: "button"
+                    height: parent.height
+                    opacity: 0.6
+                    anchors {
+                        right: minimumButton.left
+                    }
+                    onHoveredChanged: {
+                        hovered ? testButton.opacity = 1.0 : testButton.opacity = 0.6
+                    }
+                }
 
                 Rectangle {
                     id: minimumButton
@@ -69,4 +93,12 @@ ApplicationWindow {
             }
         }
     }
+
+    onWindowStateChanged: {
+        console.log(windowState)
+    }
+
+    //onActiveChanged: {
+    //    console.log(parentActive)
+    //}
 }

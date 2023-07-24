@@ -24,7 +24,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
 
     if (GetParentHandle())
     {
-        // m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
+        m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
         // SetWindowLong((HWND)m_window.winId(), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
         SetParent((HWND)m_window.winId(), GetParentHandle());
         QEvent e(QEvent::EmbeddingControl);
@@ -75,14 +75,14 @@ HWND WinQuickWindow::GetParentHandle() const
     return m_parent_native_window->GetHandle();
 }
 
-bool WinQuickWindow::IsTitleBarClickEventAllowedZone()
+bool WinQuickWindow::IsTitleBarClickEventAllowedZone(const int &x, const int &y)
 {
     QVariant ret;
     QMetaObject::invokeMethod(&m_window,
                               "isTitleBarClickEventAllowedZone",
                               Q_RETURN_ARG(QVariant, ret),
-                              Q_ARG(QVariant, QCursor::pos().x()),
-                              Q_ARG(QVariant, QCursor::pos().y()));
+                              Q_ARG(QVariant, x),
+                              Q_ARG(QVariant, y));
 
     return ret.toBool();
 }
@@ -93,17 +93,15 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
     if (msg->message == WM_ACTIVATE)
     {
-        if (!m_window.isActive())
-        {
-            QEvent e(QEvent::WindowActivate);
-            QGuiApplication::sendEvent(&m_window, &e);
-        }
-    }
+        static int active = -1;
 
-    if (msg->message == WM_ACTIVATEAPP)
-    {
-        QEvent e(m_window.isActive() ? QEvent::WindowActivate : QEvent::WindowDeactivate);
-        QGuiApplication::sendEvent(&m_window, &e);
+        if (active != (GetForegroundWindow() == GetParentHandle() || GetForegroundWindow() == (HWND)m_window.winId()))
+        {
+            active = GetForegroundWindow() == GetParentHandle() || GetForegroundWindow() == (HWND)m_window.winId();
+            QMetaObject::invokeMethod(&m_window,
+                                      "onParentNativeWindowStateChanged",
+                                      Q_ARG(QVariant, active ? true : false));
+        }
     }
 
     if (msg->message == WM_SETFOCUS)
@@ -163,15 +161,15 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     if (msg->message == WM_NCHITTEST)
     {
         RECT WindowRect;
-        int x, y;
+        int x, y, global_x = GET_X_LPARAM(msg->lParam), global_y = GET_Y_LPARAM(msg->lParam);
 
         GetWindowRect(msg->hwnd, &WindowRect);
-        x = GET_X_LPARAM(msg->lParam) - WindowRect.left;
-        y = GET_Y_LPARAM(msg->lParam) - WindowRect.top;
+        x = global_x - WindowRect.left;
+        y = global_y - WindowRect.top;
 
         if (x >= border_width && x <= WindowRect.right - WindowRect.left - border_width && y >= border_width && y <= titlebar_height)
         {
-            if (IsTitleBarClickEventAllowedZone())
+            if (IsTitleBarClickEventAllowedZone(global_x, global_y))
                 return false;
 
             // The mouse is over the toolbar area & is NOT over a child of the toolbar, so pass this message

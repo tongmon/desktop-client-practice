@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Qt5Config.cmake 파일의 경로를 적어준다.  
 # C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5
 # D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5
-set(QT_DIR "C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5")
+set(QT_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5")
 
 # Qt 모듈 포함
 # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
@@ -63,6 +63,9 @@ if(${QT_VERSION_MAJOR} EQUAL 5)
 endif()
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir ${CMAKE_SOURCE_DIR}/Qmls  ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
-     WORKING_DIRECTORY ${QT_DIR}/../../../bin
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir "${CMAKE_SOURCE_DIR}/Qmls"  "${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
+     WORKING_DIRECTORY "${QT_DIR}/../../../bin"
 )
+
+# message(${CMAKE_SOURCE_DIR}/Qmls)
+
