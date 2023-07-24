@@ -67,5 +67,3 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
      WORKING_DIRECTORY "${QT_DIR}/../../../bin"
 )
 
-# message(${CMAKE_SOURCE_DIR}/Qmls)
-

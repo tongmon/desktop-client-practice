@@ -15,9 +15,6 @@ ApplicationWindow {
 
     // C++에서 메시지를 받을 영역인지 구분하는 함수
     function isTitleBarClickEventAllowedZone(x, y) {
-        if (testButton.contains(testButton.mapFromGlobal(x, y)) === true)
-            return true
-
         if (minimumButton.contains(minimumButton.mapFromGlobal(x, y)) === true)
             return true
 
@@ -49,45 +46,78 @@ ApplicationWindow {
                 anchors.fill: parent
 
                 Button {
-                    id: testButton
-                    text: "button"
-                    height: parent.height
-                    opacity: 0.6
-                    anchors {
-                        right: minimumButton.left
-                    }
-                    onHoveredChanged: {
-                        hovered ? testButton.opacity = 1.0 : testButton.opacity = 0.6
-                    }
-                }
-
-                Rectangle {
                     id: minimumButton
-                    color: "pink"
                     width: 46
                     height: parent.height
                     anchors {
                         right: maximumButton.left
                     }
-                }
+                    background: Rectangle {
+                        color: parent.down ? Qt.rgba(
+                                                 1.0, 1.0, 1.0,
+                                                 0.7) : (parent.hovered ? Qt.rgba(
+                                                                              1.0, 1.0, 1.0,
+                                                                              0.4) : Qt.rgba(
+                                                                              1.0, 1.0, 1.0, 0.0))
+                    }
+                    Image {
+                        source: "qrc:/icon/Minimize.png"
+                        anchors.fill: parent
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    onClicked: {
 
-                Rectangle {
+                        // console.info("image clicked!")
+                    }
+                }
+                Button {
                     id: maximumButton
-                    color: "red"
                     width: 46
                     height: parent.height
                     anchors {
                         right: closeButton.left
                     }
-                }
+                    background: Rectangle {
+                        color: parent.down ? Qt.rgba(
+                                                 1.0, 1.0, 1.0,
+                                                 0.7) : (parent.hovered ? Qt.rgba(
+                                                                              1.0, 1.0, 1.0,
+                                                                              0.4) : Qt.rgba(
+                                                                              1.0, 1.0, 1.0, 0.0))
+                    }
+                    Image {
+                        source: "qrc:/icon/Maximize.png"
+                        anchors.fill: parent
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    onClicked: {
 
-                Rectangle {
+                        // console.info("image clicked!")
+                    }
+                }
+                Button {
                     id: closeButton
-                    color: "blue"
                     width: 46
                     height: parent.height
                     anchors {
                         right: parent.right
+                    }
+                    background: Rectangle {
+                        color: parent.down ? Qt.rgba(
+                                                 1.0, 1.0, 1.0,
+                                                 0.7) : (parent.hovered ? Qt.rgba(
+                                                                              1.0, 1.0, 1.0,
+                                                                              0.4) : Qt.rgba(
+                                                                              1.0, 1.0, 1.0, 0.0))
+                    }
+                    Image {
+                        source: "qrc:/icon/Close.png"
+                        anchors.fill: parent
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    onClicked: {
+
+                        // console.info("image clicked!")
                     }
                 }
             }
