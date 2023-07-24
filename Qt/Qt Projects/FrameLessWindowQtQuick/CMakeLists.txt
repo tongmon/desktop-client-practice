@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Qt5Config.cmake 파일의 경로를 적어준다.  
 # C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5
 # D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5
-set(QT_DIR "D:\\Projects\\Libraries\\Qt\\5_15_10_MSVC_x64_shared\\lib\\cmake\\Qt5")
+set(QT_DIR "C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5")
 
 # Qt 모듈 포함
 # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
@@ -28,9 +28,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED Core)
 set(Qt${QT_VERSION_MAJOR}_DIR ${QT_DIR})
 
 if(${QT_VERSION_MAJOR} EQUAL 5)
-    find_package(Qt5 REQUIRED Qml Quick WinExtras)
+    find_package(Qt5 REQUIRED Qml Quick QuickControls2 WinExtras)
 else()
-    find_package(Qt6 REQUIRED Qml Quick)
+    find_package(Qt6 REQUIRED Qml Quick QuickControls2)
 endif()
 
 # 소스 파일들을 SRC_FILES 변수에 저장
@@ -51,6 +51,7 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Qml
     Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::QuickControls2
     dwmapi.lib
     gdi32.lib
 )
