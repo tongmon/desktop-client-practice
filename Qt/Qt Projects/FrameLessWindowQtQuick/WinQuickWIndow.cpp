@@ -4,10 +4,14 @@
 #include <QMetaObject>
 #include <QQmlProperty>
 #include <QUrl>
+#include <dwmapi.h>
+#include <stdexcept>
 
 WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
     : m_window{quick_window}, QAbstractNativeEventFilter()
 {
+    m_window_active = eWindowActiveState::WindowDeactivated;
+
     m_parent_native_window = std::make_unique<WinNativeWindow>(1 * m_window.devicePixelRatio(),
                                                                1 * m_window.devicePixelRatio(),
                                                                1 * m_window.devicePixelRatio(),
@@ -33,6 +37,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
 
     m_parent_native_window->child_window = &m_window;
     m_parent_native_window->child_hwnd = (HWND)m_window.winId();
+    m_hwnd = (HWND)m_window.winId();
 
     border_width *= m_window.devicePixelRatio();
     titlebar_height *= m_window.devicePixelRatio();
@@ -42,6 +47,8 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
     SendMessage(GetParentHandle(), WM_SIZE, 0, 0);
 
     ShowWindow(GetParentHandle(), true);
+
+    SetForegroundWindow((HWND)m_window.winId());
 }
 
 WinQuickWindow::~WinQuickWindow()
@@ -75,6 +82,11 @@ HWND WinQuickWindow::GetParentHandle() const
     return m_parent_native_window->GetHandle();
 }
 
+HWND WinQuickWindow::GetHandle() const
+{
+    return m_hwnd;
+}
+
 bool WinQuickWindow::IsTitleBarClickEventAllowedZone(const int &x, const int &y)
 {
     QVariant ret;
@@ -93,14 +105,17 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
     if (msg->message == WM_ACTIVATE)
     {
+        HWND foreground_window = GetForegroundWindow();
         static int active = -1;
-
-        if (active != (GetForegroundWindow() == GetParentHandle() || GetForegroundWindow() == (HWND)m_window.winId()))
+        if (active != (foreground_window == GetParentHandle() || foreground_window == m_hwnd))
         {
-            active = GetForegroundWindow() == GetParentHandle() || GetForegroundWindow() == (HWND)m_window.winId();
-            QMetaObject::invokeMethod(&m_window,
-                                      "onParentNativeWindowStateChanged",
-                                      Q_ARG(QVariant, active ? true : false));
+            active = foreground_window == GetParentHandle() || foreground_window == m_hwnd;
+
+            if ((active && foreground_window != m_hwnd) || (foreground_window == m_hwnd && foreground_window != GetParentHandle()))
+            {
+                SetForegroundWindow(GetParentHandle());
+                SetForegroundWindow(m_hwnd);
+            }
         }
     }
 
@@ -160,14 +175,14 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     // Pass NCHITTESTS on the window edges as determined by BORDERWIDTH & TOOLBARHEIGHT through to the parent native window
     if (msg->message == WM_NCHITTEST)
     {
-        RECT WindowRect;
+        RECT window_rect;
         int x, y, global_x = GET_X_LPARAM(msg->lParam), global_y = GET_Y_LPARAM(msg->lParam);
 
-        GetWindowRect(msg->hwnd, &WindowRect);
-        x = global_x - WindowRect.left;
-        y = global_y - WindowRect.top;
+        GetWindowRect(msg->hwnd, &window_rect);
+        x = global_x - window_rect.left;
+        y = global_y - window_rect.top;
 
-        if (x >= border_width && x <= WindowRect.right - WindowRect.left - border_width && y >= border_width && y <= titlebar_height)
+        if (x >= border_width && x <= window_rect.right - window_rect.left - border_width && y >= border_width && y <= titlebar_height)
         {
             if (IsTitleBarClickEventAllowedZone(global_x, global_y))
                 return false;
@@ -182,17 +197,17 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
             *result = HTTRANSPARENT;
             return true;
         }
-        else if (x > WindowRect.right - WindowRect.left - border_width && y < border_width)
+        else if (x > window_rect.right - window_rect.left - border_width && y < border_width)
         {
             *result = HTTRANSPARENT;
             return true;
         }
-        else if (x > WindowRect.right - WindowRect.left - border_width && y > WindowRect.bottom - WindowRect.top - border_width)
+        else if (x > window_rect.right - window_rect.left - border_width && y > window_rect.bottom - window_rect.top - border_width)
         {
             *result = HTTRANSPARENT;
             return true;
         }
-        else if (x < border_width && y > WindowRect.bottom - WindowRect.top - border_width)
+        else if (x < border_width && y > window_rect.bottom - window_rect.top - border_width)
         {
             *result = HTTRANSPARENT;
             return true;
@@ -207,12 +222,12 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
             *result = HTTRANSPARENT;
             return true;
         }
-        else if (x > WindowRect.right - WindowRect.left - border_width)
+        else if (x > window_rect.right - window_rect.left - border_width)
         {
             *result = HTTRANSPARENT;
             return true;
         }
-        else if (y > WindowRect.bottom - WindowRect.top - border_width)
+        else if (y > window_rect.bottom - window_rect.top - border_width)
         {
             *result = HTTRANSPARENT;
             return true;

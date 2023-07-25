@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.0, 2023-07-24T21:33:55. -->
+<!-- Written by QtCreator 10.0.2, 2023-07-25T08:23:16. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
-  <value type="QByteArray">{b47dbf75-1084-489a-a082-e228725e0e34}</value>
+  <value type="QByteArray">{ff2c7573-a1fb-4bce-9865-80b267e0b8f3}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -43,7 +43,7 @@
    <value type="int" key="EditorConfiguration.SmartBackspaceBehavior">0</value>
    <value type="bool" key="EditorConfiguration.SmartSelectionChanging">true</value>
    <value type="bool" key="EditorConfiguration.SpacesForTabs">true</value>
-   <value type="int" key="EditorConfiguration.TabKeyBehavior">0</value>
+   <value type="int" key="EditorConfiguration.TabKeyBehavior">1</value>
    <value type="int" key="EditorConfiguration.TabSize">8</value>
    <value type="bool" key="EditorConfiguration.UseGlobal">true</value>
    <value type="bool" key="EditorConfiguration.UseIndenter">false</value>
@@ -75,8 +75,7 @@
     <value type="bool" key="ClangTools.AnalyzeOpenFiles">true</value>
     <value type="bool" key="ClangTools.BuildBeforeAnalysis">true</value>
     <value type="QString" key="ClangTools.DiagnosticConfig">Builtin.DefaultTidyAndClazy</value>
-    <value type="int" key="ClangTools.ParallelJobs">4</value>
-    <value type="bool" key="ClangTools.PreferConfigFile">true</value>
+    <value type="int" key="ClangTools.ParallelJobs">8</value>
     <valuelist type="QVariantList" key="ClangTools.SelectedDirs"/>
     <valuelist type="QVariantList" key="ClangTools.SelectedFiles"/>
     <valuelist type="QVariantList" key="ClangTools.SuppressedDiagnostics"/>
@@ -90,7 +89,7 @@
    <value type="QString" key="DeviceType">Desktop</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">MSVC x64 (CMake preset)</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">MSVC x64 (CMake preset)</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{66bb8765-85ce-467b-aa24-09684bccf587}</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{9ee33db9-338f-4c01-a796-92271cf4c471}</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
@@ -101,7 +100,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=x64
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -110,14 +109,14 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x64-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
       <value type="QString" key="CMakeProjectManager.MakeStep.BuildPreset">msvc-x64-debug-build</value>
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
-       <value type="QString">ALL_BUILD</value>
+       <value type="QString">all</value>
       </valuelist>
       <value type="bool" key="CMakeProjectManager.MakeStep.ClearSystemEnvironment">false</value>
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.UserEnvironmentChanges"/>
@@ -129,7 +128,7 @@
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
       <value type="QString" key="CMakeProjectManager.MakeStep.BuildPreset">msvc-x64-release-build</value>
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
-       <value type="QString">ALL_BUILD</value>
+       <value type="QString">all</value>
       </valuelist>
       <value type="bool" key="CMakeProjectManager.MakeStep.ClearSystemEnvironment">false</value>
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.UserEnvironmentChanges"/>
@@ -174,7 +173,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=x64
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -183,8 +182,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x64-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -244,7 +243,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=x64
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -253,8 +252,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x64-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -314,7 +313,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=x64
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -323,9 +322,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x64-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
-    <value type="int" key="EnableQmlDebugging">0</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -385,7 +383,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=x64
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -394,8 +392,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x64-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x64</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x64</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -469,14 +467,12 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">FrameLessWindow</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.FrameLessWindow</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">FrameLessWindow</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.CustomExecutableRunConfiguration</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey"></value>
+    <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
-    <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Build/msvc-x64/Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>
@@ -487,7 +483,7 @@
    <value type="QString" key="DeviceType">Desktop</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">MSVC x86 (CMake preset)</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">MSVC x86 (CMake preset)</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{d4a76e95-a0fa-4ec7-a3cf-b85fde26a8a6}</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{2fe8f9f0-63f5-4565-8f63-5d124b219a5c}</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
@@ -498,7 +494,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=Win32
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -507,9 +503,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x86-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
-    <value type="int" key="EnableQmlDebugging">0</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -569,7 +564,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=Win32
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -578,8 +573,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x86-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -639,7 +634,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=Win32
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -648,8 +643,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x86-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -709,7 +704,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=Win32
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -718,9 +713,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x86-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
-    <value type="int" key="EnableQmlDebugging">0</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -780,7 +774,7 @@
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_GENERATOR:STRING=Visual Studio 17 2022
 -DCMAKE_GENERATOR_PLATFORM:STRING=Win32
--DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{buildDir}/.qtc/package-manager/auto-setup.cmake
 -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
@@ -789,8 +783,8 @@
 -DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreaded$&lt;$&lt;CONFIG:Debug&gt;:Debug&gt;DLL
 -DVCPKG_TARGET_TRIPLET:STRING=x86-windows-static
 -DCMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
--DCMAKE_INSTALL_PREFIX:PATH=C:/Users/tongm/OneDrive/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\tongm\OneDrive\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
+-DCMAKE_INSTALL_PREFIX:PATH=C:/Users/DP91-HSK/Documents/GitHub/desktop-client-practice/Qt/Qt Projects/FrameLessWindowQtQuick/Installed/msvc-x86</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\DP91-HSK\Documents\GitHub\desktop-client-practice\Qt\Qt Projects\FrameLessWindowQtQuick\Build\msvc-x86</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments">/maxcpucount /nologo /verbosity:minimal</value>
@@ -864,10 +858,11 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.CustomExecutableRunConfiguration</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey"></value>
+    <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>

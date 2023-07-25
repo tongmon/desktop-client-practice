@@ -13,7 +13,16 @@ class WinNativeWindow;
 
 class WinQuickWindow : public QAbstractNativeEventFilter
 {
+    enum class eWindowActiveState
+    {
+        WindowDeactivated,
+        NativeParentActivated,
+        QuickChildActivated
+    };
+
+    eWindowActiveState m_window_active;
     QQuickWindow &m_window;
+    HWND m_hwnd;
     std::unique_ptr<WinNativeWindow> m_parent_native_window;
 
   public:
@@ -29,6 +38,7 @@ class WinQuickWindow : public QAbstractNativeEventFilter
     void SetGeometry(int x, int y, int w, int h);
     void SetWidnowTitle(const QString &title);
     HWND GetParentHandle() const;
+    HWND GetHandle() const;
 
   protected:
     bool IsTitleBarClickEventAllowedZone(const int &x, const int &y);

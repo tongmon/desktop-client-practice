@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-import QtQuick.Controls.Styles 1.2
 
 ApplicationWindow {
     visible: true
@@ -29,11 +28,6 @@ ApplicationWindow {
             return true
 
         return false
-    }
-
-    // 부모창인 Native 윈도우의 활성 상태가 바뀔 때마다 호출됨
-    function onParentNativeWindowStateChanged(parentActive) {
-        console.log(parentActive)
     }
 
     Column {
@@ -91,8 +85,6 @@ ApplicationWindow {
                             text: qsTr("&About")
                         }
                     }
-
-                    style: MenuBarStyle {}
                 }
 
                 Button {
@@ -178,6 +170,16 @@ ApplicationWindow {
             color: Qt.rgba(0.137, 0.152, 0.18, 1.0)
             width: parent.width
             height: parent.height - titlebarHeight
+
+            Button {
+                text: "hi"
+                anchors.centerIn: parent
+            }
         }
+    }
+
+    onActiveChanged: {
+
+        // console.log("WindowActive: " + active)
     }
 }
