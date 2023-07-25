@@ -5,10 +5,8 @@ import QtQuick.Layouts 1.12
 
 ApplicationWindow {
     visible: true
-    minimumWidth: 500
-    minimumHeight: 300
-    height: 700
-    width: 1280
+    // height: 700
+    // width: 1280
     flags: Qt.Window | Qt.FramelessWindowHint
     // title: "CMake and Qt Quick"
 

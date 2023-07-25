@@ -10,8 +10,6 @@
 WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
     : m_window{quick_window}, QAbstractNativeEventFilter()
 {
-    m_window_active = eWindowActiveState::WindowDeactivated;
-
     m_parent_native_window = std::make_unique<WinNativeWindow>(1 * m_window.devicePixelRatio(),
                                                                1 * m_window.devicePixelRatio(),
                                                                1 * m_window.devicePixelRatio(),
@@ -103,21 +101,21 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 {
     MSG *msg = (MSG *)message;
 
-    if (msg->message == WM_ACTIVATE)
-    {
-        HWND foreground_window = GetForegroundWindow();
-        static int active = -1;
-        if (active != (foreground_window == GetParentHandle() || foreground_window == m_hwnd))
-        {
-            active = foreground_window == GetParentHandle() || foreground_window == m_hwnd;
-
-            if ((active && foreground_window != m_hwnd) || (foreground_window == m_hwnd && foreground_window != GetParentHandle()))
-            {
-                SetForegroundWindow(GetParentHandle());
-                SetForegroundWindow(m_hwnd);
-            }
-        }
-    }
+    // if (msg->message == WM_ACTIVATE)
+    // {
+    //     HWND foreground_window = GetForegroundWindow();
+    //     static int active = -1;
+    //     if (active != (foreground_window == GetParentHandle() || foreground_window == m_hwnd))
+    //     {
+    //         active = foreground_window == GetParentHandle() || foreground_window == m_hwnd;
+    //         if ((active && foreground_window != m_hwnd) || foreground_window == m_hwnd)
+    //         {
+    //             qDebug() << "Quick to Foreground!";
+    //             SetForegroundWindow(GetParentHandle());
+    //             SetForegroundWindow(m_hwnd);
+    //         }
+    //     }
+    // }
 
     if (msg->message == WM_SETFOCUS)
     {

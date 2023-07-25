@@ -13,14 +13,6 @@ class WinNativeWindow;
 
 class WinQuickWindow : public QAbstractNativeEventFilter
 {
-    enum class eWindowActiveState
-    {
-        WindowDeactivated,
-        NativeParentActivated,
-        QuickChildActivated
-    };
-
-    eWindowActiveState m_window_active;
     QQuickWindow &m_window;
     HWND m_hwnd;
     std::unique_ptr<WinNativeWindow> m_parent_native_window;

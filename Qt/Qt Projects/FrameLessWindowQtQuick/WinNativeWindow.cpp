@@ -1,5 +1,6 @@
 #include "WinNativeWindow.hpp"
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <dwmapi.h>
 #include <stdexcept>
@@ -137,8 +138,41 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         return 0;
     }
 
-    case WM_ACTIVATEAPP:
-    case WM_ACTIVATE:
+        // case WM_ACTIVATE: {
+        //     if (wparam != WA_INACTIVE && child_hwnd)
+        //     {
+        //         SetForegroundWindow(child_hwnd);
+        //     }
+        //     break;
+        // }
+
+        // case WM_LBUTTONDOWN: {
+        //     if (child_hwnd && child_hwnd != GetForegroundWindow())
+        //     {
+        //         SetForegroundWindow(hwnd);
+        //         SetForegroundWindow(child_hwnd);
+        //     }
+        //     break;
+        // }
+        //
+
+        // case WM_NCLBUTTONDOWN: {
+        //     if (child_hwnd)
+        //     {
+        //         qDebug() << "ncButtonDown";
+        //     }
+        //     break;
+        // }
+
+    case WM_ACTIVATEAPP: {
+        if (wparam && child_hwnd)
+        {
+            SetForegroundWindow(hwnd);
+            SetForegroundWindow(child_hwnd);
+        }
+        break;
+    }
+
     // If the parent window gets any close messages, send them over to QWinWidget and don't actually close here
     case WM_CLOSE: {
         if (child_hwnd)
@@ -149,6 +183,7 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         }
         break;
     }
+
     case WM_DESTROY: {
         PostQuitMessage(0);
         break;
@@ -161,6 +196,9 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         GetWindowRect(hwnd, &winrect);
         long x = GET_X_LPARAM(lparam);
         long y = GET_Y_LPARAM(lparam);
+
+        // if (child_hwnd)
+        //     SetForegroundWindow(child_hwnd);
 
         // bottom left corner
         if (x >= winrect.left && x < winrect.left + border_width &&
