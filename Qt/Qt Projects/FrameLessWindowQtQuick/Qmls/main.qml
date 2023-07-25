@@ -5,8 +5,10 @@ import QtQuick.Layouts 1.12
 
 ApplicationWindow {
     visible: true
-    minimumWidth: 200
-    minimumHeight: 100
+    minimumWidth: 500
+    minimumHeight: 300
+    height: 700
+    width: 1280
     flags: Qt.Window | Qt.FramelessWindowHint
     // title: "CMake and Qt Quick"
 
@@ -30,70 +32,101 @@ ApplicationWindow {
         return false
     }
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
         Rectangle {
             id: titleBar
             color: Qt.rgba(0.117, 0.133, 0.152, 1.0)
-            width: parent.width
-            height: titlebarHeight
 
-            Row {
-                spacing: 0
+            Layout.fillWidth: true
+            Layout.preferredHeight: titlebarHeight
+            Layout.alignment: Qt.AlignTop
+
+            RowLayout {
                 anchors.fill: parent
+                spacing: 0
 
                 MenuBar {
                     id: titleMenuBar
-                    anchors.left: parent.left
-
+                    Layout.alignment: Qt.AlignLeft
                     Menu {
-                        title: qsTr("&File")
+                        title: "File"
                         Action {
-                            text: qsTr("&New...")
+                            text: "New..."
                         }
                         Action {
-                            text: qsTr("&Open...")
+                            text: "Open..."
                         }
                         Action {
-                            text: qsTr("&Save")
+                            text: "Save"
                         }
                         Action {
-                            text: qsTr("Save &As...")
+                            text: "Save As..."
                         }
                         MenuSeparator {}
                         Action {
-                            text: qsTr("&Quit")
+                            text: "Quit"
                         }
                     }
                     Menu {
-                        title: qsTr("&Edit")
+                        title: "Edit"
                         Action {
-                            text: qsTr("Cu&t")
+                            text: "Cut"
                         }
                         Action {
-                            text: qsTr("&Copy")
+                            text: "Copy"
                         }
                         Action {
-                            text: qsTr("&Paste")
+                            text: "Paste"
                         }
                     }
                     Menu {
-                        title: qsTr("&Help")
+                        title: "Help"
                         Action {
-                            text: qsTr("&About")
+                            text: "About"
+                        }
+                    }
+                    delegate: MenuBarItem {
+                        id: menuBarItem
+                        contentItem: Text {
+                            text: menuBarItem.text
+                            font: menuBarItem.font
+                            color: Qt.rgba(0.8, 0.8, 0.8, 1.0)
+                            horizontalAlignment: Text.AlignLeft
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
+                        background: Rectangle {
+                            implicitHeight: titlebarHeight
+                            color: menuBarItem.highlighted ? Qt.rgba(
+                                                                 1.0, 1.0, 1.0,
+                                                                 0.2) : "transparent"
+                        }
+                    }
+                    background: Rectangle {
+                        implicitHeight: titlebarHeight
+                        color: "transparent"
+                        Rectangle {
+                            color: "#21be2b"
+                            width: parent.width
+                            height: 1
+                            anchors.bottom: parent.bottom
                         }
                     }
                 }
 
+                Item {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                }
+
                 Button {
                     id: minimumButton
-                    width: 46
-                    height: parent.height
-                    anchors {
-                        right: maximumButton.left
-                    }
+                    Layout.preferredWidth: 46
+                    Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignRight
                     background: Rectangle {
                         color: parent.down ? Qt.rgba(
                                                  1.0, 1.0, 1.0,
@@ -112,13 +145,12 @@ ApplicationWindow {
                         // console.info("image clicked!")
                     }
                 }
+
                 Button {
                     id: maximumButton
-                    width: 46
-                    height: parent.height
-                    anchors {
-                        right: closeButton.left
-                    }
+                    Layout.preferredWidth: 46
+                    Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignRight
                     background: Rectangle {
                         color: parent.down ? Qt.rgba(
                                                  1.0, 1.0, 1.0,
@@ -137,13 +169,12 @@ ApplicationWindow {
                         // console.info("image clicked!")
                     }
                 }
+
                 Button {
                     id: closeButton
-                    width: 46
-                    height: parent.height
-                    anchors {
-                        right: parent.right
-                    }
+                    Layout.preferredWidth: 46
+                    Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignRight
                     background: Rectangle {
                         color: parent.down ? Qt.rgba(
                                                  0.78, 0.16, 0.184,
@@ -168,9 +199,9 @@ ApplicationWindow {
         Rectangle {
             id: mainContent
             color: Qt.rgba(0.137, 0.152, 0.18, 1.0)
-            width: parent.width
-            height: parent.height - titlebarHeight
-
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignBottom
             Button {
                 text: "hi"
                 anchors.centerIn: parent
