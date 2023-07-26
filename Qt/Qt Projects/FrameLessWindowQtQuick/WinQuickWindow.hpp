@@ -9,16 +9,21 @@
 #include <Windowsx.h>
 #include <memory>
 
+class QmlConnectObj;
 class WinNativeWindow;
 
 class WinQuickWindow : public QAbstractNativeEventFilter
 {
+    friend class QmlConnectObj;
+
     QQuickWindow &m_window;
     HWND m_hwnd;
     std::unique_ptr<WinNativeWindow> m_parent_native_window;
 
+    std::shared_ptr<QmlConnectObj> m_qml_connector;
+
   public:
-    WinQuickWindow(QQuickWindow &quick_window);
+    WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine &engine);
     ~WinQuickWindow();
 
     int border_width = 6;
@@ -35,6 +40,31 @@ class WinQuickWindow : public QAbstractNativeEventFilter
   protected:
     bool IsTitleBarClickEventAllowedZone(const int &x, const int &y);
     bool nativeEventFilter(const QByteArray &event_type, void *message, long *result);
+};
+
+class QmlConnectObj : public QObject
+{
+    Q_OBJECT
+
+    WinQuickWindow &m_quick_window;
+
+  public:
+    QmlConnectObj(WinQuickWindow &quick_window)
+        : QObject(nullptr), m_quick_window{quick_window}
+    {
+    }
+
+    ~QmlConnectObj()
+    {
+    }
+
+    bool eventFilter(QObject *obj, QEvent *evt);
+
+    Q_INVOKABLE void OnMinimizeButtonClicked();
+
+    Q_INVOKABLE void OnMaximizeButtonClicked();
+
+    Q_INVOKABLE void OnCloseButtonClicked();
 };
 
 #endif /* HEADER__FILE__WINQUICKWINDOW */

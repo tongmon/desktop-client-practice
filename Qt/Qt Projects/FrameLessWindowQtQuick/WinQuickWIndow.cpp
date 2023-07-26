@@ -2,12 +2,13 @@
 #include "WinNativeWindow.hpp"
 
 #include <QMetaObject>
+#include <QQmlContext>
 #include <QQmlProperty>
 #include <QUrl>
 #include <dwmapi.h>
 #include <stdexcept>
 
-WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
+WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine &engine)
     : m_window{quick_window}, QAbstractNativeEventFilter()
 {
     m_parent_native_window = std::make_unique<WinNativeWindow>(1 * m_window.devicePixelRatio(),
@@ -37,6 +38,10 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
     m_parent_native_window->child_hwnd = (HWND)m_window.winId();
     m_hwnd = (HWND)m_window.winId();
 
+    m_qml_connector = std::make_shared<QmlConnectObj>(*this);
+    m_window.installEventFilter(m_qml_connector.get());
+    engine.rootContext()->setContextProperty("cppConnector", m_qml_connector.get());
+
     border_width *= m_window.devicePixelRatio();
     titlebar_height *= m_window.devicePixelRatio();
 
@@ -46,7 +51,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window)
 
     ShowWindow(GetParentHandle(), true);
 
-    SetForegroundWindow((HWND)m_window.winId());
+    BringWindowToTop(m_hwnd);
 }
 
 WinQuickWindow::~WinQuickWindow()
@@ -111,8 +116,8 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     //         if ((active && foreground_window != m_hwnd) || foreground_window == m_hwnd)
     //         {
     //             qDebug() << "Quick to Foreground!";
-    //             SetForegroundWindow(GetParentHandle());
-    //             SetForegroundWindow(m_hwnd);
+    //             BringWindowToTop(GetParentHandle());
+    //             BringWindowToTop(m_hwnd);
     //         }
     //     }
     // }
@@ -234,5 +239,89 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         return false;
     }
 
+    // if (msg->message == WM_NCLBUTTONDOWN)
+    // {
+    //     qDebug() << "nclbutton";
+    // }
+
+    if (msg->message == WM_LBUTTONDOWN ||
+        msg->message == WM_RBUTTONDOWN ||
+        msg->message == WM_MBUTTONDOWN)
+    {
+        // qDebug() << "MBtn Down";
+        // BringWindowToTop(GetParentHandle());
+        // BringWindowToTop(m_hwnd);
+    }
+
+    if (msg->message == WM_LBUTTONUP ||
+        msg->message == WM_RBUTTONUP ||
+        msg->message == WM_MBUTTONUP)
+    {
+        // qDebug() << "MBtn Up";
+
+        // HWND top_window = nullptr;
+        // GetTopWindow(top_window);
+        //
+        // if (top_window != m_hwnd)
+        // {
+        //     BringWindowToTop(GetParentHandle());
+        //     BringWindowToTop(m_hwnd);
+        // }
+    }
+
     return false;
+}
+
+bool QmlConnectObj::eventFilter(QObject *obj, QEvent *evt)
+{
+    auto quick_window = reinterpret_cast<QQuickWindow *>(obj);
+
+    // if (GetForegroundWindow() != (HWND)quick_window->winId())
+    // {
+    //     SetForegroundWindow((HWND)quick_window->winId());
+    // }
+
+    qDebug() << evt->type();
+
+    switch (evt->type())
+    {
+        // case QEvent::FocusOut: {
+        //     // if (GetForegroundWindow() == native_hwnd)
+        //     //{
+        //     SetForegroundWindow((HWND)quick_window->winId());
+        //     //}
+        //     break;
+        // }
+        //
+
+        // case QEvent::FocusIn: {
+        //     qDebug() << "Focus in";
+        //     BringWindowToTop((HWND)quick_window->winId());
+        //     break;
+        // }
+
+        //
+        // case QEvent::FocusAboutToChange: {
+        //     qDebug() << "Focust About to Change!";
+        //     break;
+        // }
+    default:
+        break;
+    }
+    return QObject::eventFilter(obj, evt);
+}
+
+void QmlConnectObj::OnMinimizeButtonClicked()
+{
+    qDebug() << "MinimizeButton Clicked";
+}
+
+void QmlConnectObj::OnMaximizeButtonClicked()
+{
+    qDebug() << "MaximizeButton Clicked";
+}
+
+void QmlConnectObj::OnCloseButtonClicked()
+{
+    qDebug() << "CloseButton Clicked";
 }

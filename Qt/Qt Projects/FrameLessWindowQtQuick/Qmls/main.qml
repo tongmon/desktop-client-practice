@@ -139,7 +139,7 @@ ApplicationWindow {
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
-
+                        cppConnector.OnMinimizeButtonClicked()
                         // console.info("image clicked!")
                     }
                 }
@@ -163,7 +163,7 @@ ApplicationWindow {
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
-
+                        cppConnector.OnMaximizeButtonClicked()
                         // console.info("image clicked!")
                     }
                 }
@@ -187,7 +187,7 @@ ApplicationWindow {
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
-
+                        cppConnector.OnCloseButtonClicked()
                         // console.info("image clicked!")
                     }
                 }

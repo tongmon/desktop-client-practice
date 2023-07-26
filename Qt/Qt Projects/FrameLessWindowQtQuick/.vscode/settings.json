@@ -111,6 +111,7 @@
         "qqmlapplicationengine": "cpp",
         "qquickwindow": "cpp",
         "qabstractnativeeventfilter": "cpp",
-        "qmetaobject": "cpp"
+        "qmetaobject": "cpp",
+        "qmouseevent": "cpp"
     }
 }

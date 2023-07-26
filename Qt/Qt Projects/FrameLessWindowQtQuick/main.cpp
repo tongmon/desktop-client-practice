@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(-1);
             else
             {
-                quick_window = std::make_unique<WinQuickWindow>(*qobject_cast<QQuickWindow *>(engine.rootObjects().at(0)));
+                quick_window = std::make_unique<WinQuickWindow>(*qobject_cast<QQuickWindow *>(engine.rootObjects().at(0)), engine);
                 app.installNativeEventFilter(quick_window.get());
             }
         },

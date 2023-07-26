@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QGuiApplication>
+#include <QMouseEvent>
 #include <dwmapi.h>
 #include <stdexcept>
 
@@ -167,12 +168,13 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
     case WM_ACTIVATEAPP: {
         if (wparam && child_hwnd)
         {
-            SetForegroundWindow(hwnd);
-            SetForegroundWindow(child_hwnd);
+            BringWindowToTop(hwnd);
+            BringWindowToTop(child_hwnd);
         }
         break;
     }
 
+    case WM_ACTIVATE:
     // If the parent window gets any close messages, send them over to QWinWidget and don't actually close here
     case WM_CLOSE: {
         if (child_hwnd)

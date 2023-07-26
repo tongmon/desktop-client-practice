@@ -473,6 +473,7 @@ bool QWinWidget::eventFilter(QObject *o, QEvent *e)
             deleteLater();
         break;
     }
+
     default:
         break;
     }
