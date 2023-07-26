@@ -139,16 +139,19 @@ ApplicationWindow {
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
-                        cppConnector.OnMinimizeButtonClicked()
+                        cppConnector.onMinimizeButtonClicked()
                         // console.info("image clicked!")
                     }
                 }
 
                 Button {
                     id: maximumButton
+                    objectName: "maximumButton"
                     Layout.preferredWidth: 46
                     Layout.fillHeight: true
                     Layout.alignment: Qt.AlignRight
+                    checkable: true
+                    checked: false
                     background: Rectangle {
                         color: parent.down ? Qt.rgba(
                                                  1.0, 1.0, 1.0,
@@ -158,12 +161,12 @@ ApplicationWindow {
                                                                               1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: "qrc:/icon/Maximize.png"
+                        source: maximumButton.checked ? "qrc:/icon/Restore.png" : "qrc:/icon/Maximize.png"
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
-                        cppConnector.OnMaximizeButtonClicked()
+                        cppConnector.onMaximizeButtonClicked()
                         // console.info("image clicked!")
                     }
                 }
@@ -187,7 +190,7 @@ ApplicationWindow {
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
-                        cppConnector.OnCloseButtonClicked()
+                        cppConnector.onCloseButtonClicked()
                         // console.info("image clicked!")
                     }
                 }

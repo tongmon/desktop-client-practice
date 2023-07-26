@@ -34,6 +34,11 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
         SetParent(m_hwnd, GetParentHandle());
         QEvent e(QEvent::EmbeddingControl);
         QGuiApplication::sendEvent(&m_window, &e);
+
+        // DWORD quick_th_id = GetWindowThreadProcessId(m_hwnd, NULL);
+        // DWORD native_th_id = GetWindowThreadProcessId(GetParentHandle(), NULL);
+        //
+        // AttachThreadInput(quick_th_id, native_th_id, TRUE);
     }
 
     m_parent_native_window->child_window = &m_window;
@@ -156,16 +161,13 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     // Double check WM_SIZE messages to see if the parent native window is maximized
     if (msg->message == WM_SIZE)
     {
-        // if (p_Widget && p_Widget->GetMaximizeBtn())
-        // {
-        //     // Get the window state
-        //     WINDOWPLACEMENT wp;
-        //     GetWindowPlacement(m_ParentNativeWindowHandle, &wp);
-        //
-        //     // 최대화면 버튼을 체크하여 버튼 이미지를 복구 이미지로 변경
-        //     // 노말 상태면 버튼을 체크 해제하여 버튼 이미지를 최대화 이미지로 변경
-        //     p_Widget->GetMaximizeBtn()->setChecked(wp.showCmd == SW_MAXIMIZE ? true : false);
-        // }
+        // Get the window state
+        WINDOWPLACEMENT wp;
+        GetWindowPlacement(GetParentHandle(), &wp);
+
+        // 최대화면 버튼을 체크하여 버튼 이미지를 복구 이미지로 변경
+        // 노말 상태면 버튼을 체크 해제하여 버튼 이미지를 최대화 이미지로 변경
+        m_window.findChild<QObject *>("maximumButton")->setProperty("checked", wp.showCmd == SW_MAXIMIZE ? true : false);
     }
 
     if (msg->message == WM_SYSKEYDOWN)
@@ -316,17 +318,18 @@ bool QmlConnectObj::eventFilter(QObject *obj, QEvent *evt)
     return QObject::eventFilter(obj, evt);
 }
 
-void QmlConnectObj::OnMinimizeButtonClicked()
+void QmlConnectObj::onMinimizeButtonClicked()
 {
     SendMessage(m_quick_window.GetParentHandle(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 }
 
-void QmlConnectObj::OnMaximizeButtonClicked()
+void QmlConnectObj::onMaximizeButtonClicked()
 {
-    // SendMessage(m_quick_window.GetParentHandle(), m_quick_window.m_window.)
+    bool checked = m_quick_window.m_window.findChild<QObject *>("maximumButton")->property("checked").toBool();
+    SendMessage(m_quick_window.GetParentHandle(), WM_SYSCOMMAND, checked ? SC_MAXIMIZE : SC_RESTORE, 0);
 }
 
-void QmlConnectObj::OnCloseButtonClicked()
+void QmlConnectObj::onCloseButtonClicked()
 {
     if (true) // 종료되지 말아야할 옵션이 있다면 true 대신에 교체, (qml에서 작성하는 것이 바람직함)
     {

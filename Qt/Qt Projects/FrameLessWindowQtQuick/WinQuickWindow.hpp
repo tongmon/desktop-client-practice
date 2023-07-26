@@ -60,11 +60,11 @@ class QmlConnectObj : public QObject
 
     bool eventFilter(QObject *obj, QEvent *evt);
 
-    Q_INVOKABLE void OnMinimizeButtonClicked();
+    Q_INVOKABLE void onMinimizeButtonClicked();
 
-    Q_INVOKABLE void OnMaximizeButtonClicked();
+    Q_INVOKABLE void onMaximizeButtonClicked();
 
-    Q_INVOKABLE void OnCloseButtonClicked();
+    Q_INVOKABLE void onCloseButtonClicked();
 };
 
 #endif /* HEADER__FILE__WINQUICKWINDOW */

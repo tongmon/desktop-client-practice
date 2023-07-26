@@ -170,20 +170,33 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         {
             if (wparam)
             {
-                qDebug() << "Actiate";
-
                 BringWindowToTop(hwnd);
                 BringWindowToTop(child_hwnd);
+
+                // QEvent evt(QEvent::FocusIn);
+                // QGuiApplication::sendEvent(child_window, &evt);
+
+                // DWORD quick_th_id = GetWindowThreadProcessId(hwnd, NULL);
+                // DWORD native_th_id = GetWindowThreadProcessId(GetForegroundWindow(), NULL); // GetWindowThreadProcessId(GetParentHandle(), NULL);
+                // AttachThreadInput(quick_th_id, native_th_id, TRUE);
+                // SetForegroundWindow(hwnd);
+                // AttachThreadInput(native_th_id, quick_th_id, FALSE);
+                //
+                // quick_th_id = GetWindowThreadProcessId(child_hwnd, NULL);
+                // native_th_id = GetWindowThreadProcessId(GetForegroundWindow(), NULL); // GetWindowThreadProcessId(GetParentHandle(), NULL);
+                // AttachThreadInput(quick_th_id, native_th_id, TRUE);
+                // SetForegroundWindow(child_hwnd);
+                // AttachThreadInput(native_th_id, quick_th_id, FALSE);
             }
             else
             {
-                qDebug() << "Deactiate";
+                // BringWindowToTop(child_hwnd);
+                // ShowWindow(child_hwnd, SW_SHOWNOACTIVATE);
             }
         }
         break;
     }
 
-    case WM_ACTIVATE:
     // If the parent window gets any close messages, send them over to QWinWidget and don't actually close here
     case WM_CLOSE: {
         if (child_hwnd)
