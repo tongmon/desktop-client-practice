@@ -166,10 +166,19 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         // }
 
     case WM_ACTIVATEAPP: {
-        if (wparam && child_hwnd)
+        if (child_hwnd)
         {
-            BringWindowToTop(hwnd);
-            BringWindowToTop(child_hwnd);
+            if (wparam)
+            {
+                qDebug() << "Actiate";
+
+                BringWindowToTop(hwnd);
+                BringWindowToTop(child_hwnd);
+            }
+            else
+            {
+                qDebug() << "Deactiate";
+            }
         }
         break;
     }

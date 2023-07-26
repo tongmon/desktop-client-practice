@@ -11,6 +11,8 @@
 WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine &engine)
     : m_window{quick_window}, QAbstractNativeEventFilter()
 {
+    m_hwnd = (HWND)m_window.winId();
+
     m_parent_native_window = std::make_unique<WinNativeWindow>(1 * m_window.devicePixelRatio(),
                                                                1 * m_window.devicePixelRatio(),
                                                                1 * m_window.devicePixelRatio(),
@@ -28,15 +30,14 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
     if (GetParentHandle())
     {
         m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
-        // SetWindowLong((HWND)m_window.winId(), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-        SetParent((HWND)m_window.winId(), GetParentHandle());
+        // SetWindowLong(m_hwnd, GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+        SetParent(m_hwnd, GetParentHandle());
         QEvent e(QEvent::EmbeddingControl);
         QGuiApplication::sendEvent(&m_window, &e);
     }
 
     m_parent_native_window->child_window = &m_window;
-    m_parent_native_window->child_hwnd = (HWND)m_window.winId();
-    m_hwnd = (HWND)m_window.winId();
+    m_parent_native_window->child_hwnd = m_hwnd;
 
     m_qml_connector = std::make_shared<QmlConnectObj>(*this);
     m_window.installEventFilter(m_qml_connector.get());
@@ -49,9 +50,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
 
     SendMessage(GetParentHandle(), WM_SIZE, 0, 0);
 
-    ShowWindow(GetParentHandle(), true);
-
-    BringWindowToTop(m_hwnd);
+    Show();
 }
 
 WinQuickWindow::~WinQuickWindow()
@@ -61,6 +60,7 @@ WinQuickWindow::~WinQuickWindow()
 void WinQuickWindow::Show()
 {
     ShowWindow(GetParentHandle(), true);
+    BringWindowToTop(m_hwnd);
 }
 
 void WinQuickWindow::Center()
@@ -239,11 +239,6 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         return false;
     }
 
-    // if (msg->message == WM_NCLBUTTONDOWN)
-    // {
-    //     qDebug() << "nclbutton";
-    // }
-
     if (msg->message == WM_LBUTTONDOWN ||
         msg->message == WM_RBUTTONDOWN ||
         msg->message == WM_MBUTTONDOWN)
@@ -274,14 +269,23 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
 bool QmlConnectObj::eventFilter(QObject *obj, QEvent *evt)
 {
-    auto quick_window = reinterpret_cast<QQuickWindow *>(obj);
+    // auto quick_window = reinterpret_cast<QQuickWindow *>(obj);
 
     // if (GetForegroundWindow() != (HWND)quick_window->winId())
     // {
     //     SetForegroundWindow((HWND)quick_window->winId());
     // }
 
-    qDebug() << evt->type();
+    // qDebug() << evt->type();
+
+    // HWND top_window = nullptr;
+    // GetTopWindow(top_window);
+    //
+    // if (top_window == m_quick_window.GetParentHandle())
+    // {
+    //     BringWindowToTop(m_quick_window.GetHandle());
+    //     // return true;
+    // }
 
     switch (evt->type())
     {
@@ -308,20 +312,27 @@ bool QmlConnectObj::eventFilter(QObject *obj, QEvent *evt)
     default:
         break;
     }
+
     return QObject::eventFilter(obj, evt);
 }
 
 void QmlConnectObj::OnMinimizeButtonClicked()
 {
-    qDebug() << "MinimizeButton Clicked";
+    SendMessage(m_quick_window.GetParentHandle(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 }
 
 void QmlConnectObj::OnMaximizeButtonClicked()
 {
-    qDebug() << "MaximizeButton Clicked";
+    // SendMessage(m_quick_window.GetParentHandle(), m_quick_window.m_window.)
 }
 
 void QmlConnectObj::OnCloseButtonClicked()
 {
-    qDebug() << "CloseButton Clicked";
+    if (true) // 종료되지 말아야할 옵션이 있다면 true 대신에 교체, (qml에서 작성하는 것이 바람직함)
+    {
+        // Safe to close, so hide the parent window
+        ShowWindow(m_quick_window.GetParentHandle(), false);
+
+        QGuiApplication::quit();
+    }
 }
