@@ -106,30 +106,22 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 {
     MSG *msg = (MSG *)message;
 
-    if (msg->message == WM_LBUTTONDOWN ||
-        msg->message == WM_RBUTTONDOWN ||
-        msg->message == WM_MBUTTONDOWN)
+    switch (msg->message)
     {
+    // 최상위 창이 클릭으로 인해 해당 창으로 바뀌는 경우에 대한 로직
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_LBUTTONDOWN: {
         if (!m_window.isActive())
             SetFocus(GetParentHandle());
+        break;
     }
 
-    if (msg->message == WM_SETFOCUS)
-    {
-        // Qt::FocusReason reason;
-        // if (::GetKeyState(VK_LBUTTON) < 0 || ::GetKeyState(VK_RBUTTON) < 0)
-        //     reason = Qt::MouseFocusReason;
-        // else if (::GetKeyState(VK_SHIFT) < 0)
-        //     reason = Qt::BacktabFocusReason;
-        // else
-        //     reason = Qt::TabFocusReason;
-        // QFocusEvent e(QEvent::FocusIn, reason);
-        // QGuiApplication::sendEvent(&m_window, &e);
+    case WM_SETFOCUS: {
+        break;
     }
 
-    // Only close if safeToClose clears()
-    if (msg->message == WM_CLOSE)
-    {
+    case WM_CLOSE: {
         if (true) // 종료 불가한 상황이 있다면 true 대신에 교체
         {
             // 닫기 전에 부모창을 숨기고 닫음
@@ -141,28 +133,29 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
             *result = 0;
             return true;
         }
+        break;
     }
 
-    if (msg->message == WM_SIZE)
-    {
+    case WM_SIZE: {
         WINDOWPLACEMENT wp;
         GetWindowPlacement(GetParentHandle(), &wp);
 
         // 최대화면 버튼을 체크하여 버튼 이미지를 복구 이미지로 변경
         // 노말 상태면 버튼을 체크 해제하여 버튼 이미지를 최대화 이미지로 변경
         m_window.findChild<QObject *>("maximumButton")->setProperty("checked", wp.showCmd == SW_MAXIMIZE ? true : false);
+        break;
     }
 
-    if (msg->message == WM_SYSKEYDOWN)
-    {
+    // Native 부모창에 가해지는 메시지를 제외하고는 모두 qml에서 받기에 qml에서 ALT + SPACE 혹은 F10이 트리거되는지를 봐야할 것이다.
+    case WM_SYSKEYDOWN: {
         // ALT + SPACE 혹은 F10 시스템 메뉴 발동
         if (msg->wParam == VK_SPACE || (msg->wParam == SC_KEYMENU && msg->lParam == VK_SPACE))
             DefWindowProc(GetParentHandle(), msg->message, msg->wParam, msg->lParam);
+        break;
     }
 
     // 윈도우 툴바 영역, 창 크기 조절 영역 검사
-    if (msg->message == WM_NCHITTEST)
-    {
+    case WM_NCHITTEST: {
         RECT window_rect;
         int x, y, global_x = GET_X_LPARAM(msg->lParam), global_y = GET_Y_LPARAM(msg->lParam);
 
@@ -221,7 +214,11 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
             return true;
         }
 
-        return false;
+        break;
+    }
+
+    default:
+        break;
     }
 
     return false;

@@ -13,7 +13,6 @@
 WinNativeWindow::WinNativeWindow(const int x, const int y, const int width, const int height)
     : m_hwnd(nullptr)
 {
-    // The native window technically has a background color. You can set it here
     HBRUSH window_background = CreateSolidBrush(RGB(255, 255, 255));
 
     HINSTANCE h_instance = GetModuleHandle(nullptr);
@@ -44,7 +43,7 @@ WinNativeWindow::WinNativeWindow(const int x, const int y, const int width, cons
         throw std::runtime_error("Couldn't register window class");
     }
 
-    // Create a native window with the appropriate style
+    // 윈도우 생성
     m_hwnd = CreateWindow(L"WindowClass", L"WindowTitle", aero_borderless, x, y, width, height, 0, 0, h_instance, nullptr);
 
     if (!m_hwnd)
@@ -75,7 +74,7 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
 
     switch (message)
     {
-    // ALT + SPACE or F10 system menu
+    // 시스템 메뉴 처리
     case WM_SYSCOMMAND: {
         if (wparam == VK_SPACE || (wparam == SC_KEYMENU && lparam == VK_SPACE))
         {
@@ -135,119 +134,51 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
     }
 
     case WM_NCCALCSIZE: {
-        // this kills the window frame and title bar we added with
-        // WS_THICKFRAME and WS_CAPTION
+        // FrameLess 윈도우를 망치기 때문에 따로 처리하지 않음
         return 0;
     }
 
     case WM_NCACTIVATE: {
         if (!child_window)
-            break;
+            return 0;
 
         const LONG border_width = 8 * child_window->devicePixelRatio();
         RECT winrect;
         GetWindowRect(hwnd, &winrect);
-        long x = QCursor::pos().x();
-        long y = QCursor::pos().y();
+        auto x = QCursor::pos().x();
+        auto y = QCursor::pos().y();
 
-        if (x >= winrect.left && x < winrect.left + border_width &&
-            y < winrect.bottom && y >= winrect.bottom - border_width)
-        {
+        if ((x >= winrect.left && x < winrect.left + border_width &&
+             y < winrect.bottom && y >= winrect.bottom - border_width) ||
+            (x < winrect.right && x >= winrect.right - border_width &&
+             y < winrect.bottom && y >= winrect.bottom - border_width) ||
+            (x >= winrect.left && x < winrect.left + border_width &&
+             y >= winrect.top && y < winrect.top + border_width) ||
+            (x < winrect.right && x >= winrect.right - border_width &&
+             y >= winrect.top && y < winrect.top + border_width) ||
+            (x >= winrect.left && x < winrect.left + border_width) ||
+            (x < winrect.right && x >= winrect.right - border_width) ||
+            (y < winrect.bottom && y >= winrect.bottom - border_width) ||
+            (y >= winrect.top && y < winrect.top + border_width))
             return 0;
-        }
-        if (x < winrect.right && x >= winrect.right - border_width &&
-            y < winrect.bottom && y >= winrect.bottom - border_width)
-        {
-            return 0;
-        }
-        if (x >= winrect.left && x < winrect.left + border_width &&
-            y >= winrect.top && y < winrect.top + border_width)
-        {
-            return 0;
-        }
-        if (x < winrect.right && x >= winrect.right - border_width &&
-            y >= winrect.top && y < winrect.top + border_width)
-        {
-            return 0;
-        }
-        if (x >= winrect.left && x < winrect.left + border_width)
-        {
-            return 0;
-        }
-        if (x < winrect.right && x >= winrect.right - border_width)
-        {
-            return 0;
-        }
-        if (y < winrect.bottom && y >= winrect.bottom - border_width)
-        {
-            return 0;
-        }
-        if (y >= winrect.top && y < winrect.top + border_width)
-        {
-            return 0;
-        }
 
         break;
     }
 
-    case WM_SETFOCUS: {
-        // if (child_hwnd)
-        // {
-        //     HWND hCurWnd = ::GetForegroundWindow();
-        //     DWORD dwMyID = ::GetCurrentThreadId();
-        //     DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
-        //     ::AttachThreadInput(dwCurID, dwMyID, TRUE);
-        //     ::SetWindowPos(child_hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-        //     ::SetWindowPos(child_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
-        //     ::SetForegroundWindow(child_hwnd);
-        //     ::SetFocus(child_hwnd);
-        //     ::SetActiveWindow(child_hwnd);
-        //     ::AttachThreadInput(dwCurID, dwMyID, FALSE);
-        // }
+    case WM_SETFOCUS:
         break;
-    }
 
+    // 활성화될 때 qml 창을 최상위로 바꿈
     case WM_ACTIVATE: {
         if (wparam != WA_INACTIVE && child_hwnd)
             BringWindowToTop(child_hwnd);
         break;
     }
 
-    case WM_ACTIVATEAPP: {
-        if (child_hwnd)
-        {
-            if (wparam)
-            {
-                // BringWindowToTop(hwnd);
-                // BringWindowToTop(child_hwnd);
-
-                // SetFocus(child_hwnd);
-
-                // QEvent evt(QEvent::FocusIn);
-                // QGuiApplication::sendEvent(child_window, &evt);
-
-                // DWORD quick_th_id = GetWindowThreadProcessId(hwnd, NULL);
-                // DWORD native_th_id = GetWindowThreadProcessId(GetForegroundWindow(), NULL); // GetWindowThreadProcessId(GetParentHandle(), NULL);
-                // AttachThreadInput(quick_th_id, native_th_id, TRUE);
-                // SetForegroundWindow(hwnd);
-                // AttachThreadInput(native_th_id, quick_th_id, FALSE);
-                //
-                // quick_th_id = GetWindowThreadProcessId(child_hwnd, NULL);
-                // native_th_id = GetWindowThreadProcessId(GetForegroundWindow(), NULL); // GetWindowThreadProcessId(GetParentHandle(), NULL);
-                // AttachThreadInput(quick_th_id, native_th_id, TRUE);
-                // SetForegroundWindow(child_hwnd);
-                // AttachThreadInput(native_th_id, quick_th_id, FALSE);
-            }
-            else
-            {
-                // BringWindowToTop(child_hwnd);
-                // ShowWindow(child_hwnd, SW_SHOWNOACTIVATE);
-            }
-        }
+    case WM_ACTIVATEAPP:
         break;
-    }
 
-    // If the parent window gets any close messages, send them over to QWinWidget and don't actually close here
+    // WM_CLOSE 메시지는 자식창에게 넘김
     case WM_CLOSE: {
         if (child_hwnd)
         {
@@ -263,66 +194,43 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
     }
 
     case WM_NCHITTEST: {
-        // This value can be arbitrarily large as only intentionally-HTTRANSPARENT'd messages arrive here
         const LONG border_width = 8 * child_window->devicePixelRatio();
         RECT winrect;
         GetWindowRect(hwnd, &winrect);
         long x = GET_X_LPARAM(lparam);
         long y = GET_Y_LPARAM(lparam);
 
-        // if (child_hwnd)
-        //     SetForegroundWindow(child_hwnd);
-
-        // bottom left corner
         if (x >= winrect.left && x < winrect.left + border_width &&
             y < winrect.bottom && y >= winrect.bottom - border_width)
-        {
             return HTBOTTOMLEFT;
-        }
-        // bottom right corner
+
         if (x < winrect.right && x >= winrect.right - border_width &&
             y < winrect.bottom && y >= winrect.bottom - border_width)
-        {
             return HTBOTTOMRIGHT;
-        }
-        // top left corner
+
         if (x >= winrect.left && x < winrect.left + border_width &&
             y >= winrect.top && y < winrect.top + border_width)
-        {
             return HTTOPLEFT;
-        }
-        // top right corner
+
         if (x < winrect.right && x >= winrect.right - border_width &&
             y >= winrect.top && y < winrect.top + border_width)
-        {
             return HTTOPRIGHT;
-        }
-        // left border
-        if (x >= winrect.left && x < winrect.left + border_width)
-        {
-            return HTLEFT;
-        }
-        // right border
-        if (x < winrect.right && x >= winrect.right - border_width)
-        {
-            return HTRIGHT;
-        }
-        // bottom border
-        if (y < winrect.bottom && y >= winrect.bottom - border_width)
-        {
-            return HTBOTTOM;
-        }
-        // top border
-        if (y >= winrect.top && y < winrect.top + border_width)
-        {
-            return HTTOP;
-        }
 
-        // If it wasn't a border but we still got the message, return HTCAPTION to allow click-dragging the window
+        if (x >= winrect.left && x < winrect.left + border_width)
+            return HTLEFT;
+
+        if (x < winrect.right && x >= winrect.right - border_width)
+            return HTRIGHT;
+
+        if (y < winrect.bottom && y >= winrect.bottom - border_width)
+            return HTBOTTOM;
+
+        if (y >= winrect.top && y < winrect.top + border_width)
+            return HTTOP;
+
         return HTCAPTION;
     }
 
-    // When this native window changes size, it needs to manually resize the QWinWidget child
     case WM_SIZE: {
         RECT winrect;
         GetClientRect(hwnd, &winrect);
@@ -330,18 +238,19 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         WINDOWPLACEMENT wp;
         wp.length = sizeof(WINDOWPLACEMENT);
         GetWindowPlacement(hwnd, &wp);
+
         if (child_window)
         {
             if (wp.showCmd == SW_MAXIMIZE)
-            {
-                // Maximized window draw 8 pixels off screen
-                child_window->setGeometry(8, 8,
-                                          winrect.right / child_window->devicePixelRatio() - 16, winrect.bottom / child_window->devicePixelRatio() - 16);
-            }
+                child_window->setGeometry(8,
+                                          8,
+                                          winrect.right / child_window->devicePixelRatio() - 16,
+                                          winrect.bottom / child_window->devicePixelRatio() - 16);
             else
-            {
-                child_window->setGeometry(0, 0, winrect.right / child_window->devicePixelRatio(), winrect.bottom / child_window->devicePixelRatio());
-            }
+                child_window->setGeometry(0,
+                                          0,
+                                          winrect.right / child_window->devicePixelRatio(),
+                                          winrect.bottom / child_window->devicePixelRatio());
         }
 
         break;
@@ -354,7 +263,6 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
             minmax_info->ptMinTrackSize.x = window->GetMinimumWidth();
             minmax_info->ptMinTrackSize.y = window->GetMinimumHeight();
         }
-
         if (window->GetMaximunSizeInfo().required)
         {
             minmax_info->ptMaxTrackSize.x = window->GetMaximumWidth();
