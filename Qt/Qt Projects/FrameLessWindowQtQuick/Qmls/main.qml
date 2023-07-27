@@ -91,7 +91,9 @@ ApplicationWindow {
                         contentItem: Text {
                             text: menuBarItem.text
                             font: menuBarItem.font
-                            color: Qt.rgba(0.8, 0.8, 0.8, 1.0)
+                            color: active ? Qt.rgba(0.8, 0.8, 0.8,
+                                                    1.0) : Qt.rgba(0.5, 0.5,
+                                                                   0.5, 1.0)
                             horizontalAlignment: Text.AlignLeft
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
@@ -212,6 +214,6 @@ ApplicationWindow {
 
     onActiveChanged: {
 
-        console.log("WindowActive: " + active)
+        // console.log("WindowActive: " + active)
     }
 }

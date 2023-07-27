@@ -176,6 +176,7 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
     }
 
     case WM_ACTIVATEAPP:
+        qDebug() << "WM_ACTIVATEAPP";
         break;
 
     // WM_CLOSE 메시지는 자식창에게 넘김

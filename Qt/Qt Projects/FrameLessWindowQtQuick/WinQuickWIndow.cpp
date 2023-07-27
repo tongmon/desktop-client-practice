@@ -38,6 +38,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
         m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
         // SetWindowLong(m_hwnd, GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
         SetParent(m_hwnd, GetParentHandle());
+
         QEvent e(QEvent::EmbeddingControl);
         QGuiApplication::sendEvent(&m_window, &e);
     }
@@ -120,6 +121,12 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     case WM_LBUTTONDOWN: {
         if (!m_window.isActive())
             SetFocus(GetParentHandle());
+        break;
+    }
+
+    case WM_NCLBUTTONDOWN: {
+        // if (!m_window.isActive())
+        //     SetFocus(GetParentHandle());
         break;
     }
 
