@@ -134,7 +134,7 @@ ApplicationWindow {
                                                                               1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: "qrc:/icon/Minimize.png"
+                        source: active ? "qrc:/icon/Minimize.png" : "qrc:/icon/MinimizeDeactivated.png"
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
@@ -161,7 +161,7 @@ ApplicationWindow {
                                                                               1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: maximumButton.checked ? "qrc:/icon/Restore.png" : "qrc:/icon/Maximize.png"
+                        source: maximumButton.checked ? (active ? "qrc:/icon/Restore.png" : "qrc:/icon/RestoreDeactivated.png") : (active ? "qrc:/icon/Maximize.png" : "qrc:/icon/MaximizeDeactivated.png")
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
@@ -185,7 +185,7 @@ ApplicationWindow {
                                                                               1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: "qrc:/icon/Close.png"
+                        source: active ? "qrc:/icon/Close.png" : "qrc:/icon/CloseDeactivated.png"
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
@@ -212,6 +212,6 @@ ApplicationWindow {
 
     onActiveChanged: {
 
-        // console.log("WindowActive: " + active)
+        console.log("WindowActive: " + active)
     }
 }

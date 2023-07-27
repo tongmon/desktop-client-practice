@@ -27,6 +27,12 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
 
     SetGeometry(window_x, window_y, window_width, window_height);
 
+    // 창 최소 크기 설정
+    m_parent_native_window->SetMinimumSize(400, 300);
+
+    // 창 최대 크기 설정
+    // m_parent_native_window->setMaximumSize(1920, 1080);
+
     if (GetParentHandle())
     {
         m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
