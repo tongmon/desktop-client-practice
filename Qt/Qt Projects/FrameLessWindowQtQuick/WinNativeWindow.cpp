@@ -133,45 +133,95 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         }
         break;
     }
+
     case WM_NCCALCSIZE: {
         // this kills the window frame and title bar we added with
         // WS_THICKFRAME and WS_CAPTION
         return 0;
     }
 
-        // case WM_ACTIVATE: {
-        //     if (wparam != WA_INACTIVE && child_hwnd)
-        //     {
-        //         SetForegroundWindow(child_hwnd);
-        //     }
-        //     break;
-        // }
+    case WM_NCACTIVATE: {
+        if (!child_window)
+            break;
 
-        // case WM_LBUTTONDOWN: {
-        //     if (child_hwnd && child_hwnd != GetForegroundWindow())
-        //     {
-        //         SetForegroundWindow(hwnd);
-        //         SetForegroundWindow(child_hwnd);
-        //     }
-        //     break;
-        // }
-        //
+        const LONG border_width = 8 * child_window->devicePixelRatio();
+        RECT winrect;
+        GetWindowRect(hwnd, &winrect);
+        long x = QCursor::pos().x();
+        long y = QCursor::pos().y();
 
-        // case WM_NCLBUTTONDOWN: {
-        //     if (child_hwnd)
-        //     {
-        //         qDebug() << "ncButtonDown";
-        //     }
-        //     break;
+        if (x >= winrect.left && x < winrect.left + border_width &&
+            y < winrect.bottom && y >= winrect.bottom - border_width)
+        {
+            return 0;
+        }
+        if (x < winrect.right && x >= winrect.right - border_width &&
+            y < winrect.bottom && y >= winrect.bottom - border_width)
+        {
+            return 0;
+        }
+        if (x >= winrect.left && x < winrect.left + border_width &&
+            y >= winrect.top && y < winrect.top + border_width)
+        {
+            return 0;
+        }
+        if (x < winrect.right && x >= winrect.right - border_width &&
+            y >= winrect.top && y < winrect.top + border_width)
+        {
+            return 0;
+        }
+        if (x >= winrect.left && x < winrect.left + border_width)
+        {
+            return 0;
+        }
+        if (x < winrect.right && x >= winrect.right - border_width)
+        {
+            return 0;
+        }
+        if (y < winrect.bottom && y >= winrect.bottom - border_width)
+        {
+            return 0;
+        }
+        if (y >= winrect.top && y < winrect.top + border_width)
+        {
+            return 0;
+        }
+
+        break;
+    }
+
+    case WM_SETFOCUS: {
+        // if (child_hwnd)
+        // {
+        //     HWND hCurWnd = ::GetForegroundWindow();
+        //     DWORD dwMyID = ::GetCurrentThreadId();
+        //     DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
+        //     ::AttachThreadInput(dwCurID, dwMyID, TRUE);
+        //     ::SetWindowPos(child_hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        //     ::SetWindowPos(child_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
+        //     ::SetForegroundWindow(child_hwnd);
+        //     ::SetFocus(child_hwnd);
+        //     ::SetActiveWindow(child_hwnd);
+        //     ::AttachThreadInput(dwCurID, dwMyID, FALSE);
         // }
+        break;
+    }
+
+    case WM_ACTIVATE: {
+        if (wparam != WA_INACTIVE && child_hwnd)
+            BringWindowToTop(child_hwnd);
+        break;
+    }
 
     case WM_ACTIVATEAPP: {
         if (child_hwnd)
         {
             if (wparam)
             {
-                BringWindowToTop(hwnd);
-                BringWindowToTop(child_hwnd);
+                // BringWindowToTop(hwnd);
+                // BringWindowToTop(child_hwnd);
+
+                // SetFocus(child_hwnd);
 
                 // QEvent evt(QEvent::FocusIn);
                 // QGuiApplication::sendEvent(child_window, &evt);
@@ -201,7 +251,6 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
     case WM_CLOSE: {
         if (child_hwnd)
         {
-            // QGuiApplication::sendEvent(child_window, );
             SendMessage(child_hwnd, message, 0, 0);
             return 0;
         }

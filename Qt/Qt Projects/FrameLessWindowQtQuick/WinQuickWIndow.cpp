@@ -34,11 +34,6 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
         SetParent(m_hwnd, GetParentHandle());
         QEvent e(QEvent::EmbeddingControl);
         QGuiApplication::sendEvent(&m_window, &e);
-
-        // DWORD quick_th_id = GetWindowThreadProcessId(m_hwnd, NULL);
-        // DWORD native_th_id = GetWindowThreadProcessId(GetParentHandle(), NULL);
-        //
-        // AttachThreadInput(quick_th_id, native_th_id, TRUE);
     }
 
     m_parent_native_window->child_window = &m_window;
@@ -245,25 +240,8 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         msg->message == WM_RBUTTONDOWN ||
         msg->message == WM_MBUTTONDOWN)
     {
-        // qDebug() << "MBtn Down";
-        // BringWindowToTop(GetParentHandle());
-        // BringWindowToTop(m_hwnd);
-    }
-
-    if (msg->message == WM_LBUTTONUP ||
-        msg->message == WM_RBUTTONUP ||
-        msg->message == WM_MBUTTONUP)
-    {
-        // qDebug() << "MBtn Up";
-
-        // HWND top_window = nullptr;
-        // GetTopWindow(top_window);
-        //
-        // if (top_window != m_hwnd)
-        // {
-        //     BringWindowToTop(GetParentHandle());
-        //     BringWindowToTop(m_hwnd);
-        // }
+        if (!m_window.isActive())
+            BringWindowToTop(GetParentHandle());
     }
 
     return false;
