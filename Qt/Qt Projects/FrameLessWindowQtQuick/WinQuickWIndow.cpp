@@ -106,21 +106,13 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 {
     MSG *msg = (MSG *)message;
 
-    // if (msg->message == WM_ACTIVATE)
-    // {
-    //     HWND foreground_window = GetForegroundWindow();
-    //     static int active = -1;
-    //     if (active != (foreground_window == GetParentHandle() || foreground_window == m_hwnd))
-    //     {
-    //         active = foreground_window == GetParentHandle() || foreground_window == m_hwnd;
-    //         if ((active && foreground_window != m_hwnd) || foreground_window == m_hwnd)
-    //         {
-    //             qDebug() << "Quick to Foreground!";
-    //             BringWindowToTop(GetParentHandle());
-    //             BringWindowToTop(m_hwnd);
-    //         }
-    //     }
-    // }
+    if (msg->message == WM_LBUTTONDOWN ||
+        msg->message == WM_RBUTTONDOWN ||
+        msg->message == WM_MBUTTONDOWN)
+    {
+        if (!m_window.isActive())
+            SetFocus(GetParentHandle());
+    }
 
     if (msg->message == WM_SETFOCUS)
     {
@@ -138,25 +130,21 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     // Only close if safeToClose clears()
     if (msg->message == WM_CLOSE)
     {
-        if (true /* put your check for it if it safe to close your app here */) // eg, does the user need to save a document
+        if (true) // 종료 불가한 상황이 있다면 true 대신에 교체
         {
-            // Safe to close, so hide the parent window
+            // 닫기 전에 부모창을 숨기고 닫음
             ShowWindow(GetParentHandle(), false);
-
-            // And then quit
             QGuiApplication::quit();
         }
         else
         {
-            *result = 0; // Set the message to 0 to ignore it, and thus, don't actually close
+            *result = 0;
             return true;
         }
     }
 
-    // Double check WM_SIZE messages to see if the parent native window is maximized
     if (msg->message == WM_SIZE)
     {
-        // Get the window state
         WINDOWPLACEMENT wp;
         GetWindowPlacement(GetParentHandle(), &wp);
 
@@ -167,12 +155,12 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
     if (msg->message == WM_SYSKEYDOWN)
     {
-        // ALT + SPACE or F10 system menu
+        // ALT + SPACE 혹은 F10 시스템 메뉴 발동
         if (msg->wParam == VK_SPACE || (msg->wParam == SC_KEYMENU && msg->lParam == VK_SPACE))
             DefWindowProc(GetParentHandle(), msg->message, msg->wParam, msg->lParam);
     }
 
-    // Pass NCHITTESTS on the window edges as determined by BORDERWIDTH & TOOLBARHEIGHT through to the parent native window
+    // 윈도우 툴바 영역, 창 크기 조절 영역 검사
     if (msg->message == WM_NCHITTEST)
     {
         RECT window_rect;
@@ -184,11 +172,11 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
         if (x >= border_width && x <= window_rect.right - window_rect.left - border_width && y >= border_width && y <= titlebar_height)
         {
+            // qml에서 클릭되지 않고 윈도우에서 클릭 메시지를 직접 전달해야 하는 영역 검사
+            // qml 함수를 C++에서 이용
             if (IsTitleBarClickEventAllowedZone(global_x, global_y))
                 return false;
 
-            // The mouse is over the toolbar area & is NOT over a child of the toolbar, so pass this message
-            // through to the native window for HTCAPTION dragging
             *result = HTTRANSPARENT;
             return true;
         }
@@ -236,84 +224,47 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         return false;
     }
 
-    if (msg->message == WM_LBUTTONDOWN ||
-        msg->message == WM_RBUTTONDOWN ||
-        msg->message == WM_MBUTTONDOWN)
-    {
-        if (!m_window.isActive())
-            BringWindowToTop(GetParentHandle());
-    }
-
     return false;
 }
 
+// qml 윈도우용 eventFilter
 bool QmlConnectObj::eventFilter(QObject *obj, QEvent *evt)
 {
     // auto quick_window = reinterpret_cast<QQuickWindow *>(obj);
 
-    // if (GetForegroundWindow() != (HWND)quick_window->winId())
+    // switch (evt->type())
     // {
-    //     SetForegroundWindow((HWND)quick_window->winId());
+    // case QEvent::FocusOut:
+    //     break;
+    // case QEvent::FocusIn:
+    //     break;
+    // default:
+    //     break;
     // }
-
-    // qDebug() << evt->type();
-
-    // HWND top_window = nullptr;
-    // GetTopWindow(top_window);
-    //
-    // if (top_window == m_quick_window.GetParentHandle())
-    // {
-    //     BringWindowToTop(m_quick_window.GetHandle());
-    //     // return true;
-    // }
-
-    switch (evt->type())
-    {
-        // case QEvent::FocusOut: {
-        //     // if (GetForegroundWindow() == native_hwnd)
-        //     //{
-        //     SetForegroundWindow((HWND)quick_window->winId());
-        //     //}
-        //     break;
-        // }
-        //
-
-        // case QEvent::FocusIn: {
-        //     qDebug() << "Focus in";
-        //     BringWindowToTop((HWND)quick_window->winId());
-        //     break;
-        // }
-
-        //
-        // case QEvent::FocusAboutToChange: {
-        //     qDebug() << "Focust About to Change!";
-        //     break;
-        // }
-    default:
-        break;
-    }
 
     return QObject::eventFilter(obj, evt);
 }
 
+// 최소화 버튼 클릭시 수행됨, qml에 cppConnector로 연동됨
 void QmlConnectObj::onMinimizeButtonClicked()
 {
     SendMessage(m_quick_window.GetParentHandle(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 }
 
+// 최대화 버튼 클릭시 수행됨, qml에 cppConnector로 연동됨
 void QmlConnectObj::onMaximizeButtonClicked()
 {
     bool checked = m_quick_window.m_window.findChild<QObject *>("maximumButton")->property("checked").toBool();
     SendMessage(m_quick_window.GetParentHandle(), WM_SYSCOMMAND, checked ? SC_MAXIMIZE : SC_RESTORE, 0);
 }
 
+// 닫기 버튼 클릭시 수행됨, qml에 cppConnector로 연동됨
 void QmlConnectObj::onCloseButtonClicked()
 {
-    if (true) // 종료되지 말아야할 옵션이 있다면 true 대신에 교체, (qml에서 작성하는 것이 바람직함)
+    if (true)
     {
-        // Safe to close, so hide the parent window
         ShowWindow(m_quick_window.GetParentHandle(), false);
-
-        QGuiApplication::quit();
+        QEvent evt(QEvent::Close);
+        QGuiApplication::sendEvent(&m_quick_window.m_window, &evt);
     }
 }

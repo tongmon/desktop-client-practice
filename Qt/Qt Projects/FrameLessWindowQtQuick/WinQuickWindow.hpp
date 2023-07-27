@@ -60,6 +60,7 @@ class QmlConnectObj : public QObject
 
     bool eventFilter(QObject *obj, QEvent *evt);
 
+    // Q_INVOKABLE 함수들은 qml에서 직접 사용해야 하기에 첫글자를 소문자로 함
     Q_INVOKABLE void onMinimizeButtonClicked();
 
     Q_INVOKABLE void onMaximizeButtonClicked();
