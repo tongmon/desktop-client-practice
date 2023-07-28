@@ -184,7 +184,7 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         if (child_hwnd)
         {
             SendMessage(child_hwnd, message, 0, 0);
-            return 0;
+            // return 0;
         }
         break;
     }

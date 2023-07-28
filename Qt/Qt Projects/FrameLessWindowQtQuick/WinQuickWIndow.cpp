@@ -35,10 +35,11 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
 
     if (GetParentHandle())
     {
-        m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
+        // m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
         // SetWindowLong(m_hwnd, GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-        SetParent(m_hwnd, GetParentHandle());
+        // SetParent(m_hwnd, GetParentHandle());
 
+        m_window.setParent(QWindow::fromWinId((WId)GetParentHandle()));
         QEvent e(QEvent::EmbeddingControl);
         QGuiApplication::sendEvent(&m_window, &e);
     }
@@ -67,7 +68,7 @@ WinQuickWindow::~WinQuickWindow()
 void WinQuickWindow::Show()
 {
     ShowWindow(GetParentHandle(), true);
-    BringWindowToTop(m_hwnd);
+    BringWindowToTop(GetParentHandle());
 }
 
 void WinQuickWindow::Center()
@@ -274,7 +275,6 @@ void QmlConnectObj::onCloseButtonClicked()
     if (true)
     {
         ShowWindow(m_quick_window.GetParentHandle(), false);
-        QEvent evt(QEvent::Close);
-        QGuiApplication::sendEvent(&m_quick_window.m_window, &evt);
+        SendMessage(m_quick_window.GetParentHandle(), WM_CLOSE, 0, 0);
     }
 }
