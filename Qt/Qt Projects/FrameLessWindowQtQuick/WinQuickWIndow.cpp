@@ -223,15 +223,16 @@ bool QmlConnectObj::eventFilter(QObject *obj, QEvent *evt)
 {
     // auto quick_window = reinterpret_cast<QQuickWindow *>(obj);
 
-    // switch (evt->type())
-    // {
-    // case QEvent::FocusOut:
-    //     break;
-    // case QEvent::FocusIn:
-    //     break;
-    // default:
-    //     break;
-    // }
+    switch (evt->type())
+    {
+    case QEvent::Enter:
+        m_quick_window.m_window.setCursor(QCursor(Qt::ArrowCursor));
+        break;
+    case QEvent::Leave:
+        break;
+    default:
+        break;
+    }
 
     return QObject::eventFilter(obj, evt);
 }
