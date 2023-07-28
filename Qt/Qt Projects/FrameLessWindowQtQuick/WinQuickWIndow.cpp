@@ -116,25 +116,6 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
     switch (msg->message)
     {
-    // 최상위 창이 클릭으로 인해 해당 창으로 바뀌는 경우에 대한 로직
-    case WM_MBUTTONDOWN:
-    case WM_RBUTTONDOWN:
-    case WM_LBUTTONDOWN: {
-        if (!m_window.isActive())
-            SetFocus(GetParentHandle());
-        break;
-    }
-
-    case WM_NCLBUTTONDOWN: {
-        // if (!m_window.isActive())
-        //     SetFocus(GetParentHandle());
-        break;
-    }
-
-    case WM_SETFOCUS: {
-        break;
-    }
-
     case WM_CLOSE: {
         if (true) // 종료 불가한 상황이 있다면 true 대신에 교체
         {
@@ -160,9 +141,8 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         break;
     }
 
-    // Native 부모창에 가해지는 메시지를 제외하고는 모두 qml에서 받기에 qml에서 ALT + SPACE 혹은 F10이 트리거되는지를 봐야할 것이다.
     case WM_SYSKEYDOWN: {
-        // ALT + SPACE 혹은 F10 시스템 메뉴 발동
+        // ALT + SPACE 혹은 F10로 시스템 메뉴 트리거
         if (msg->wParam == VK_SPACE || (msg->wParam == SC_KEYMENU && msg->lParam == VK_SPACE))
             DefWindowProc(GetParentHandle(), msg->message, msg->wParam, msg->lParam);
         break;

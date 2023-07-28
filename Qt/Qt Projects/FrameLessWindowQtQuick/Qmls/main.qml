@@ -187,7 +187,7 @@ ApplicationWindow {
                                                                               1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: active ? "qrc:/icon/Close.png" : "qrc:/icon/CloseDeactivated.png"
+                        source: closeButton.hovered ? "qrc:/icon/CloseHoverOrPressed.png" : (active ? "qrc:/icon/Close.png" : "qrc:/icon/CloseDeactivated.png")
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }

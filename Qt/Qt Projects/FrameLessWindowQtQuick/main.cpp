@@ -6,11 +6,10 @@
 
 int main(int argc, char *argv[])
 {
-    // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
+    // HiDPI 지원 디스플레이에서 HiDPI 스케일링 사용
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    // This has QPixmap images use the @2x images when available
-    // See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
+    // https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     QGuiApplication app(argc, argv);

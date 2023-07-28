@@ -60,7 +60,6 @@ WinNativeWindow::WinNativeWindow(const int x, const int y, const int width, cons
 
 WinNativeWindow::~WinNativeWindow()
 {
-    // Hide the window & send the destroy message
     ShowWindow(m_hwnd, SW_HIDE);
     DestroyWindow(m_hwnd);
 }
@@ -138,54 +137,56 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         return 0;
     }
 
-    case WM_NCACTIVATE: {
-        if (!child_window)
-            return 0;
+        // case WM_NCACTIVATE: {
+        //     if (!child_window)
+        //         return 0;
+        //
+        //     const LONG border_width = 8 * child_window->devicePixelRatio();
+        //     RECT winrect;
+        //     GetWindowRect(hwnd, &winrect);
+        //     auto x = QCursor::pos().x();
+        //     auto y = QCursor::pos().y();
+        //
+        //     if ((x >= winrect.left && x < winrect.left + border_width &&
+        //          y < winrect.bottom && y >= winrect.bottom - border_width) ||
+        //         (x < winrect.right && x >= winrect.right - border_width &&
+        //          y < winrect.bottom && y >= winrect.bottom - border_width) ||
+        //         (x >= winrect.left && x < winrect.left + border_width &&
+        //          y >= winrect.top && y < winrect.top + border_width) ||
+        //         (x < winrect.right && x >= winrect.right - border_width &&
+        //          y >= winrect.top && y < winrect.top + border_width) ||
+        //         (x >= winrect.left && x < winrect.left + border_width) ||
+        //         (x < winrect.right && x >= winrect.right - border_width) ||
+        //         (y < winrect.bottom && y >= winrect.bottom - border_width) ||
+        //         (y >= winrect.top && y < winrect.top + border_width))
+        //         return 0;
+        //
+        //     break;
+        // }
 
-        const LONG border_width = 8 * child_window->devicePixelRatio();
-        RECT winrect;
-        GetWindowRect(hwnd, &winrect);
-        auto x = QCursor::pos().x();
-        auto y = QCursor::pos().y();
+        // 활성화될 때 qml 창을 최상위로 바꿈
+        // case WM_ACTIVATE: {
+        //     if (wparam != WA_INACTIVE && child_hwnd)
+        //         BringWindowToTop(child_hwnd);
+        //     break;
+        // }
 
-        if ((x >= winrect.left && x < winrect.left + border_width &&
-             y < winrect.bottom && y >= winrect.bottom - border_width) ||
-            (x < winrect.right && x >= winrect.right - border_width &&
-             y < winrect.bottom && y >= winrect.bottom - border_width) ||
-            (x >= winrect.left && x < winrect.left + border_width &&
-             y >= winrect.top && y < winrect.top + border_width) ||
-            (x < winrect.right && x >= winrect.right - border_width &&
-             y >= winrect.top && y < winrect.top + border_width) ||
-            (x >= winrect.left && x < winrect.left + border_width) ||
-            (x < winrect.right && x >= winrect.right - border_width) ||
-            (y < winrect.bottom && y >= winrect.bottom - border_width) ||
-            (y >= winrect.top && y < winrect.top + border_width))
-            return 0;
-
+    case WM_NCLBUTTONUP:
+        qDebug() << "WM_NCLBUTTONUP";
         break;
-    }
 
-    case WM_SETFOCUS:
-        break;
-
-    // 활성화될 때 qml 창을 최상위로 바꿈
-    case WM_ACTIVATE: {
-        if (wparam != WA_INACTIVE && child_hwnd)
-            BringWindowToTop(child_hwnd);
+    case WM_SETFOCUS: {
+        SetFocus(child_hwnd);
         break;
     }
 
     case WM_ACTIVATEAPP:
-        qDebug() << "WM_ACTIVATEAPP";
         break;
 
-    // WM_CLOSE 메시지는 자식창에게 넘김
+    // WM_CLOSE 메시지는 자식창에게도 넘김
     case WM_CLOSE: {
         if (child_hwnd)
-        {
             SendMessage(child_hwnd, message, 0, 0);
-            // return 0;
-        }
         break;
     }
 
