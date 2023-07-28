@@ -5,16 +5,26 @@ import QtQuick.Layouts 1.12
 
 ApplicationWindow {
     visible: true
-    // height: 700
-    // width: 1280
+    x: 100
+    y: 100
+    width: 1024
+    height: 768
+    minimumWidth: 400
+    minimumHeight: 300
     flags: Qt.Window | Qt.FramelessWindowHint
     // title: "CMake and Qt Quick"
 
-    // 타이틀바 높이, C++에서 초기화해줌
-    property int titlebarHeight: 0
+    // 창 크기 재조절 외각 부분, C++에서 받아서 처리
+    property int resizeBorderWidth: 6
+
+    // 타이틀바 높이, C++에서 받아서 처리
+    property int titleBarHeight: 35
 
     // C++에서 메시지를 받을 영역인지 구분하는 함수
     function isTitleBarClickEventAllowedZone(x, y) {
+        if (titleMenuBar.contains(titleMenuBar.mapFromGlobal(x, y)) === true)
+            return true
+
         if (minimumButton.contains(minimumButton.mapFromGlobal(x, y)) === true)
             return true
 
@@ -22,9 +32,6 @@ ApplicationWindow {
             return true
 
         if (closeButton.contains(closeButton.mapFromGlobal(x, y)) === true)
-            return true
-
-        if (titleMenuBar.contains(titleMenuBar.mapFromGlobal(x, y)) === true)
             return true
 
         return false
@@ -39,7 +46,7 @@ ApplicationWindow {
             color: Qt.rgba(0.117, 0.133, 0.152, 1.0)
 
             Layout.fillWidth: true
-            Layout.preferredHeight: titlebarHeight
+            Layout.preferredHeight: titleBarHeight
             Layout.alignment: Qt.AlignTop
 
             RowLayout {
@@ -99,14 +106,14 @@ ApplicationWindow {
                             elide: Text.ElideRight
                         }
                         background: Rectangle {
-                            implicitHeight: titlebarHeight
+                            implicitHeight: titleBarHeight
                             color: menuBarItem.highlighted ? Qt.rgba(
                                                                  1.0, 1.0, 1.0,
                                                                  0.2) : "transparent"
                         }
                     }
                     background: Rectangle {
-                        implicitHeight: titlebarHeight
+                        implicitHeight: titleBarHeight
                         color: "transparent"
                         Rectangle {
                             color: "#21be2b"

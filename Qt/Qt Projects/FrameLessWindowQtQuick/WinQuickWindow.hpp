@@ -26,8 +26,8 @@ class WinQuickWindow : public QAbstractNativeEventFilter
     WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine &engine);
     ~WinQuickWindow();
 
-    int border_width = 6;
-    int titlebar_height = 35;
+    int border_width;
+    int titlebar_height;
 
     void Show();
     void Center();

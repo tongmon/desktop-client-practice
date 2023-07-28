@@ -19,26 +19,16 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
                                                                1 * m_window.devicePixelRatio());
 
     // 초반 윈도우 크기, 위치 설정
-    int window_x, window_y, window_width, window_height;
-    window_x = 100;
-    window_y = 100;
-    window_width = 1024;
-    window_height = 768;
-
-    SetGeometry(window_x, window_y, window_width, window_height);
+    SetGeometry(m_window.x(), m_window.y(), m_window.width(), m_window.height());
 
     // 창 최소 크기 설정
-    m_parent_native_window->SetMinimumSize(400, 300);
+    m_parent_native_window->SetMinimumSize(m_window.minimumWidth(), m_window.minimumHeight());
 
     // 창 최대 크기 설정
-    // m_parent_native_window->setMaximumSize(1920, 1080);
+    // m_parent_native_window->setMaximumSize(m_window.maximumWidth(), m_window.maximumHeight());
 
     if (GetParentHandle())
     {
-        // m_window.setProperty("_q_embedded_native_parent_handle", (WId)GetParentHandle());
-        // SetWindowLong(m_hwnd, GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-        // SetParent(m_hwnd, GetParentHandle());
-
         m_window.setParent(QWindow::fromWinId((WId)GetParentHandle()));
         QEvent e(QEvent::EmbeddingControl);
         QGuiApplication::sendEvent(&m_window, &e);
@@ -51,10 +41,8 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
     m_window.installEventFilter(m_qml_connector.get());
     engine.rootContext()->setContextProperty("cppConnector", m_qml_connector.get());
 
-    border_width *= m_window.devicePixelRatio();
-    titlebar_height *= m_window.devicePixelRatio();
-
-    m_window.setProperty("titlebarHeight", titlebar_height);
+    border_width = m_window.property("resizeBorderWidth").toInt() * m_window.devicePixelRatio();
+    titlebar_height = m_window.property("titleBarHeight").toInt() * m_window.devicePixelRatio();
 
     SendMessage(GetParentHandle(), WM_SIZE, 0, 0);
 
@@ -68,7 +56,6 @@ WinQuickWindow::~WinQuickWindow()
 void WinQuickWindow::Show()
 {
     ShowWindow(GetParentHandle(), true);
-    BringWindowToTop(GetParentHandle());
 }
 
 void WinQuickWindow::Center()

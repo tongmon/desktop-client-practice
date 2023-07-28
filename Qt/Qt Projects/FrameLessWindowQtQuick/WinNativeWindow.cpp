@@ -167,21 +167,20 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
         // 활성화될 때 qml 창을 최상위로 바꿈
         // case WM_ACTIVATE: {
         //     if (wparam != WA_INACTIVE && child_hwnd)
-        //         BringWindowToTop(child_hwnd);
+        //         SetFocus(child_hwnd);
         //     break;
         // }
-
-    case WM_NCLBUTTONUP:
-        qDebug() << "WM_NCLBUTTONUP";
-        break;
 
     case WM_SETFOCUS: {
         SetFocus(child_hwnd);
         break;
     }
 
-    case WM_ACTIVATEAPP:
-        break;
+    // case WM_ACTIVATEAPP: {
+    //     if (child_hwnd && wparam)
+    //         SetFocus(child_hwnd);
+    //     break;
+    // }
 
     // WM_CLOSE 메시지는 자식창에게도 넘김
     case WM_CLOSE: {
