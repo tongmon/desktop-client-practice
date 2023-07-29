@@ -98,18 +98,14 @@ ApplicationWindow {
                         contentItem: Text {
                             text: menuBarItem.text
                             font: menuBarItem.font
-                            color: active ? Qt.rgba(0.8, 0.8, 0.8,
-                                                    1.0) : Qt.rgba(0.5, 0.5,
-                                                                   0.5, 1.0)
+                            color: active ? Qt.rgba(0.8, 0.8, 0.8, 1.0) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
                             horizontalAlignment: Text.AlignLeft
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                         }
                         background: Rectangle {
                             implicitHeight: titleBarHeight
-                            color: menuBarItem.highlighted ? Qt.rgba(
-                                                                 1.0, 1.0, 1.0,
-                                                                 0.2) : "transparent"
+                            color: menuBarItem.highlighted ? Qt.rgba(1.0, 1.0, 1.0, 0.2) : "transparent"
                         }
                     }
                     background: Rectangle {
@@ -135,12 +131,8 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.alignment: Qt.AlignRight
                     background: Rectangle {
-                        color: parent.down ? Qt.rgba(
-                                                 1.0, 1.0, 1.0,
-                                                 0.4) : (parent.hovered ? Qt.rgba(
-                                                                              1.0, 1.0, 1.0,
-                                                                              0.2) : Qt.rgba(
-                                                                              1.0, 1.0, 1.0, 0.0))
+                        color: parent.down ? Qt.rgba(1.0, 1.0, 1.0, 0.4) : (parent.hovered ? Qt.rgba(1.0, 1.0, 1.0, 0.2) :
+                                                                            Qt.rgba(1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
                         source: active ? "qrc:/icon/Minimize.png" : "qrc:/icon/MinimizeDeactivated.png"
@@ -149,7 +141,6 @@ ApplicationWindow {
                     }
                     onClicked: {
                         cppConnector.onMinimizeButtonClicked()
-                        // console.info("image clicked!")
                     }
                 }
 
@@ -162,21 +153,17 @@ ApplicationWindow {
                     checkable: true
                     checked: false
                     background: Rectangle {
-                        color: parent.down ? Qt.rgba(
-                                                 1.0, 1.0, 1.0,
-                                                 0.4) : (parent.hovered ? Qt.rgba(
-                                                                              1.0, 1.0, 1.0,
-                                                                              0.2) : Qt.rgba(
-                                                                              1.0, 1.0, 1.0, 0.0))
+                        color: parent.down ? Qt.rgba(1.0, 1.0, 1.0, 0.4) : (parent.hovered ? Qt.rgba(1.0, 1.0, 1.0, 0.2) :
+                                                                                             Qt.rgba(1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: maximumButton.checked ? (active ? "qrc:/icon/Restore.png" : "qrc:/icon/RestoreDeactivated.png") : (active ? "qrc:/icon/Maximize.png" : "qrc:/icon/MaximizeDeactivated.png")
+                        source: maximumButton.checked ? (active ? "qrc:/icon/Restore.png" : "qrc:/icon/RestoreDeactivated.png") :
+                                                        (active ? "qrc:/icon/Maximize.png" : "qrc:/icon/MaximizeDeactivated.png")
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
                         cppConnector.onMaximizeButtonClicked()
-                        // console.info("image clicked!")
                     }
                 }
 
@@ -186,21 +173,17 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.alignment: Qt.AlignRight
                     background: Rectangle {
-                        color: parent.down ? Qt.rgba(
-                                                 0.78, 0.16, 0.184,
-                                                 0.6) : (parent.hovered ? Qt.rgba(
-                                                                              0.86, 0.16, 0.184,
-                                                                              0.9) : Qt.rgba(
-                                                                              1.0, 1.0, 1.0, 0.0))
+                        color: parent.down ? Qt.rgba(0.78, 0.16, 0.184, 0.6) : (parent.hovered ? Qt.rgba(0.86, 0.16, 0.184, 0.9) :
+                                                                                                 Qt.rgba(1.0, 1.0, 1.0, 0.0))
                     }
                     Image {
-                        source: closeButton.hovered ? "qrc:/icon/CloseHoverOrPressed.png" : (active ? "qrc:/icon/Close.png" : "qrc:/icon/CloseDeactivated.png")
+                        source: closeButton.hovered ? "qrc:/icon/CloseHoverOrPressed.png" :
+                                                      (active ? "qrc:/icon/Close.png" : "qrc:/icon/CloseDeactivated.png")
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
                     onClicked: {
                         cppConnector.onCloseButtonClicked()
-                        // console.info("image clicked!")
                     }
                 }
             }
