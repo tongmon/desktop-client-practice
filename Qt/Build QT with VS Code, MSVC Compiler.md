@@ -34,10 +34,13 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     설명도 ```D:\Projects\Development\Qt\Qt-5.15.8``` 경로 기준으로 하겠다.  
 
 3. **필요 항목 다운로드**  
-    Visual Studio, Jom, Python을 설치해야 한다.  
+    Visual Studio, Jom, Python 등을 설치해야 한다.  
 
     1. **Visual Studio**  
         [이곳](https://visualstudio.microsoft.com/ko/)에서 설치 파일 다운로드하고 설치 진행하자.  
+        중요한 것은 컴파일하는 Visual Studio 버전에 따라 지원하는 운영체제가 달라진다.  
+        MSVC 2022를 사용하여 빌드한 프로젝트는 Windows 10 미만에서는 작동하지 않는다.  
+        자세한 정보는 [이곳](https://doc.qt.io/qt-5/supported-platforms.html)에 적혀있다.  
 
     2. **Jom**  
         Visual Studio의 nmake를 사용할 것이라면 건너뛰어도 된다.  
@@ -54,27 +57,27 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
         1. Windows Terminal 설치  
             Microsoft Store에 들어가서 Windows Terminal을 설치해준다. (그냥 깔려져있는 Powershell을 이용해도 되지만 편의성을 위해서 설치해준다.)  
 
-        1. PowerShell 버전 확인  
+        2. PowerShell 버전 확인  
             Windows Terminal에서 PowerShell 탭을 열고 ```$PSVersionTable``` 명령어를 수행한 뒤에 출력된 PSVersion이 3 이상인지 확인한다. (3이하라면 PowerShell을 업데이트해준다.)  
 
-        1. .NET Framework 설치  
+        3. .NET Framework 설치  
             .NET Framework 4.5 버전 이상이 설치되어 있는지 확인한다.  
             Visual Studio에서 ```.NET 테스크톱 개발``` 항목을 선택하면 알아서 최신버전의 .NET Framework를 설치해준다.  
 
-        1. ExecutionPolicy 확인  
+        4. ExecutionPolicy 확인  
             Windows Terminal을 관리자 모드로 열고 PowerShell 탭을 띄운후에 Get-ExecutionPolicy 명령어를 수행 후에 Restricted인지 확인한다.  
             Restricted이라면 Set-ExecutionPolicy AllSigned 명령어를 추가적으로 수행해준다.  
 
-        1. Chocolatey 설치  
+        5. Chocolatey 설치  
             ```Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]       ::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))``` 명령어를 수행해 Chocolatey를 설치해준다.  
 
-        1. Chocolatey 설치 확인  
+        6. Chocolatey 설치 확인  
             설치가 끝났으면 Windows Terminal를 관리자 모드로 재시작해주고 PowerShell 탭을 띄우고 choco 명령어를 수행해 Chocolatey가 잘 설치되었는지 확인한다.  
 
-        1. python 버전 2 설치  
+        7. python 버전 2 설치  
             ```choco install python2```으로 python2를 설치해준다.  
 
-        1. python 설치 버전 확인  
+        8. python 설치 버전 확인  
             만약 python2 보다 상위 버전의 python이 이미 설치되어 있는 경우 python2의 환경 변수를 덮어씌우고 있어 ```python --version``` 명령어를 수행해도 이미 설치된 상위 버전의 python 버전으로 출력될 것이다.  
             따라서 Qt 빌드 시에는 python2 보다 상위 버전의 python에서 설정한 환경 변수 Path를 잠시 빼주자.  
             예를 들어 python 2.7.18 버전을 사용하고 싶은데 python 3.1.1 버전이 이미 설치되어 있다면 보통 환경 변수 path에 ```C:\Python311```, ```C:\Python311\Scripts\``` 요런 녀석들이 들어 있을텐데 저 두 경로를 Qt 빌드할 때 빼주자.  
@@ -84,7 +87,8 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
         
         1. OpenSSL 설치  
             [이곳](https://slproweb.com/products/Win32OpenSSL.html)에 자신의 아키텍쳐에 맞는 OpenSSL 설치 파일을 받고 설치하자.  
-            필자는 ```Win64 OpenSSL v3.1.1```를 설치했다.  
+            어떤 버전을 받을지가 중요한데 Qt 5는 1.1.1 이하의 버전을 지원하고 Qt 6은 3 버전도 지원한다.  
+            필자는 Qt 5를 이용할 것이기에 ```Win64 OpenSSL v1.1.1```를 설치했다.  
 
         2. 환경 변수 세팅  
             Windows 10 기준으로 ```고급 시스템 설정 보기``` -> ```환경 변수```에 경로를 추가해줘야 한다.  
@@ -118,7 +122,13 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     ```
     Visual Studio 2022에서는 정상적으로 되었다면 위와 같은 처리 텍스트가 뜬다.  
 
-6. **라이브러리 옵션 설정**  
+6. **빌드 설정 전 주의사항**  
+    다른 모듈은 크게 상관이 없는데 Qt WebEngine 모듈을 빌드해야 한다면 반드시 Windows의 시스템 locale을 영어로 변경해줘야 한다.  
+    Qt WebEngine에서 요구하는 chromium을 빌드할 때 ninja가 사용되는 데 ninja가 한국어 관련 오류를 발생시키기에 필수적이다.  
+    왠만하면 Qt를 빌드할 때 만이라도 locale을 영어로 설정하고 빌드하자.  
+    Windows 10에서는 ```설정``` -> ```시간 및 언어``` -> ```언어``` -> ```기본 언어 설정``` -> ```시스템 로켈 변경``` 항목에서 변경이 가능하고 설정 후에는 재부팅을 해야 한다. 
+
+7. **라이브러리 옵션 설정**  
     cmd 창에서 ```cd D:\Projects\Development\Qt\Qt-5.15.8``` 명령으로 현재 위치를 바꿔준다.  
     현재 상태에서 configure 명령을 통해 Qt 모듈들을 빌드하게 되는데 옵션이 많다.  
     필수적인 옵션 몇 가지를 보자.  
@@ -162,23 +172,26 @@ Qt 소스 코드 빌드에 대한 공식 가이드 라인은 [이곳](https://do
     * -static  
     Qt 라이브러리를 정적 링크로 사용한다.  
 
-    필자는 LGPLv3 라이센스가 적용되지 않는 대부분의 모듈들을 제외하기 위해 밑과 같은 명령을 사용하겠다.  
-    ```cmd
-    configure -debug-and-release -opensource -skip qtwebengine -skip qtactiveqt -skip qtcharts -skip qtdatavis3d -skip qtnetworkauth -skip qtvirtualkeyboard -skip qtquick3d -skip qtquicktimeline -skip qtlottie -shared -confirm-license -platform win32-msvc2022 -prefix "D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared"
-    ```
-    더 많은 옵션에 대한 정보는 ```configure -help```를 통해 알 수 있다.  
+    * -openssl-linked  
+    Qt의 네트워크 관련 모듈에 openssl을 연동할 것인지 해당 옵션으로 설정이 가능하다.  
+    예를 들어 openssl이 ```C:\Program Files\OpenSSL-Win64```에 설치되어 있다고 하고 QtNetwork 모듈에 openssl을 static 방식으로 연결하고 싶다면 밑과 같은 옵션을 추가적으로 달아주면 된다.  
+        ```
+        -openssl-linked OPENSSL_INCDIR="C:\Program Files\OpenSSL-Win64\include" OPENSSL_LIBDIR="C:\Program Files\OpenSSL-Win64\lib\VC\static"     OPENSSL_LIBS="-lWs2_32 -lGdi32 -lAdvapi32 -lCrypt32 -lUser32" OPENSSL_LIBS_DEBUG="-llibssl64MDd -llibcrypto64MDd" OPENSSL_LIBS_RELEASE="-llibssl64MD -llibcrypto64MD"
+        ```
+    자세한 내용은 [이곳](https://doc.qt.io/qt-5/windows-requirements.html)에 적혀있다.  
 
-7. **빌드 전 주의사항**  
-    다른 모듈은 크게 상관이 없는데 Qt WebEngine 모듈을 빌드해야 한다면 반드시 Windows의 시스템 locale을 영어로 변경해줘야 한다.  
-    Qt WebEngine에서 요구하는 chromium을 빌드할 때 ninja가 사용되는 데 ninja가 한국어 관련 오류를 발생시키기에 필수적이다.  
-    왠만하면 Qt를 빌드할 때 만이라도 locale을 영어로 설정하고 빌드하자.  
-    Windows 10에서는 ```설정``` -> ```시간 및 언어``` -> ```언어``` -> ```기본 언어 설정``` -> ```시스템 로켈 변경``` 항목에서 변경이 가능하고 설정 후에는 재부팅을 해야 한다.  
+    필자는 LGPLv3 라이센스가 적용되지 않는 대부분의 모듈들을 제외하고 openssl을 static으로 QtNetwork에 묶기 위해 밑과 같은 명령을 사용하겠다.  
+    ```cmd
+    configure -debug-and-release -opensource -skip qtwebengine -skip qtactiveqt -skip qtcharts -skip qtdatavis3d -skip qtnetworkauth -skip qtvirtualkeyboard -skip qtquick3d -skip qtquicktimeline -skip qtlottie -shared -confirm-license -platform win32-msvc2022 -openssl-linked OPENSSL_INCDIR="C:\Program Files\OpenSSL-Win64\include" OPENSSL_LIBDIR="C:\Program Files\OpenSSL-Win64\lib\VC\static" OPENSSL_LIBS="-lWs2_32 -lGdi32 -lAdvapi32 -lCrypt32 -lUser32" OPENSSL_LIBS_DEBUG="-llibssl64MDd -llibcrypto64MDd" OPENSSL_LIBS_RELEASE="-llibssl64MD -llibcrypto64MD" -prefix "D:\Projects\Development\Qt\5.15.8-MSVC-x64-shared"
+    ```
+    더 많은 옵션에 대한 정보는 ```configure -help```를 통해 알 수 있다.   
 
 8. **빌드 및 설치**  
     ```Developer Command Prompt for [Visual Studio 버전]```을 관리자 모드로 열어 ```cd D:\Projects\Development\Qt\Qt-5.15.8```로 Qt 소스 코드 위치로 이동한다.  
     ```jom``` (nmake 사용자는 ```nmake```) 명령어를 수행하여 빌드를 진행한다.  
     빌드가 완료되면 ```jom install``` (nmake 사용자는 ```nmake install```) 명령어를 수행해 설치를 진행한다.  
-    설치까지 완료했으면 컴퓨터를 재부팅한다.  
+    설치가 완료되었다면 컴퓨터를 재부팅해준다.  
+    이제 원본 소스 폴더(여기선 ```D:\Projects\Development\Qt\Qt-5.15.8```)와 qt5vars.cmd 파일을 지워줘도 된다.  
 
 9.  **재빌드**  
     QT의 configure 옵션을 바꾸고 싶은 경우가 있을 것이다.  
@@ -218,20 +231,25 @@ QtQuick.Project
     # Qt의 시그널 기능을 만들어주는 MOC 활성화  
     set(CMAKE_AUTOMOC ON)
 
-    # Qt Widget 모듈과 .ui 파일을 사용한다면 밑 주석을 해제하자.  
-    # set(CMAKE_AUTOUIC ON)
-
     # .qrc 파일을 자동으로 리소스 타겟에 포함 시키기 위해 사용
     set(CMAKE_AUTORCC ON)
 
     # C++ 버전
     set(CMAKE_CXX_STANDARD 17)
 
-    # Qt5Config.cmake 파일의 경로를 적어준다.  
-    set(Qt5_DIR "D:\\Projects\\Development\\Qt\\5.15.8-MSVC-x64-shared\\lib\\cmake\\Qt5")
+    # QT_DIR 설정, Qt5Config.cmake 혹은 Qt6Config.cmake 파일의 경로를 적어준다.  
+    set(QT_DIR "C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cmake/Qt5")
 
-    # Qt 모듈 포함 (현재는 Quick, Qml만 포함)
-    find_package(Qt5 REQUIRED Quick Qml)
+    # Qt 모듈 포함
+    # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
+    # 일단 QT_VERSION_MAJOR 선언이 목적이기에 Core 모듈만 포함한다.
+    find_package(QT NAMES Qt6 Qt5 REQUIRED Core)
+
+    # Major Version에 대한 경로도 설정해줘야 한다.
+    set(Qt${QT_VERSION_MAJOR}_DIR ${QT_DIR})
+
+    # Qt 모듈 포함
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED Quick Qml)
 
     # 소스 파일들을 SRC_FILES 변수에 저장
     file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
@@ -240,21 +258,24 @@ QtQuick.Project
     # CMAKE_AUTORCC 옵션이 꺼져있다면 밑 함수를 주석 처리하자.
     file(GLOB QRC_FILES CONFIGURE_DEPENDS ./*.qrc)
 
-    # CMAKE_AUTORCC 옵션이 꺼져있다면 밑 함수를 주석 해제하자.
-    # qt5_add_resources(QRC_FILES qml.qrc)
-
     # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
-    # qrc 파일도 함께 넣어줘야 함  
+    # qrc 파일도 함께 넣어줘야 함
     add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${QRC_FILES})
 
     # 포함한 모듈들을 링크해준다.  
     target_link_libraries(
         ${CMAKE_PROJECT_NAME}
-        Qt5::Quick
-        Qt5::Qml
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Quick
+        Qt${QT_VERSION_MAJOR}::Qml
+    )
+
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+         COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir ${CMAKE_SOURCE_DIR}/QmlDir ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+         WORKING_DIRECTORY ${QT_DIR}/../../../bin
     )
     ```
-    Qt5_DIR 설정은 ```[Qt 설치 경로]/lib/cmake/[Qt5 or Qt6]```로 해주면 된다.  
+    QT_DIR 설정은 ```[Qt 설치 경로]/lib/cmake/[Qt5 or Qt6]```로 해주면 된다.  
 
 * CMakePresets.json
     ```json
@@ -500,16 +521,24 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
     set(CMAKE_AUTOUIC ON)
 
     # qt5_add_resources()와 같은 별도의 CMake 명령 없이 .qrc 파일을 리소스 타겟에 포함하려면 주석을 해제하자.
-    # set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTORCC ON)
 
     # C++ 버전
     set(CMAKE_CXX_STANDARD 17)
 
-    # Qt5Config.cmake 파일의 경로를 적어준다.  
-    set(Qt5_DIR "D:\\Projects\\Development\\Qt\\5.15.8-MSVC-x64-shared\\lib\\cmake\\Qt5")
+    # QT_DIR 설정, Qt5Config.cmake 혹은 Qt6Config.cmake 파일의 경로를 적어준다.  
+    set(QT_DIR "C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cmake/Qt5")
 
-    # Qt 모듈 포함 (현재는 Widgets만 포함)
-    find_package(Qt5 REQUIRED Widgets)
+    # Qt 모듈 포함
+    # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
+    # 일단 QT_VERSION_MAJOR 선언이 목적이기에 Core 모듈만 포함한다.
+    find_package(QT NAMES Qt6 Qt5 REQUIRED Core)
+
+    # Major Version에 대한 경로도 설정해줘야 한다.
+    set(Qt${QT_VERSION_MAJOR}_DIR ${QT_DIR})
+
+    # Qt 모듈 포함
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED Widgets)
 
     # 소스 파일들을 SRC_FILES 변수에 저장
     file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
@@ -517,14 +546,23 @@ Widget 프로젝트이기에 qml은 없고 ui 파일이 있다.
     # ui 파일들을 UI_FILES 변수에 저장
     file(GLOB UI_FILES CONFIGURE_DEPENDS ./*.ui)
 
+    # qrc 파일들을 UI_FILES 변수에 저장
+    file(GLOB QRC_FILES CONFIGURE_DEPENDS ./*.qrc)
+
     # 실행 파일 추가할 때 윈도우라면 꼭 WIN32를 정의해줘야 한다. (리눅스나 맥은 따로 안해줘도 됨)
     # ui 파일도 함께 넣어줘야 함
-    add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${UI_FILES})
+    add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${UI_FILES} ${QRC_FILES})
 
     # 포함한 모듈들을 링크해준다.  
     target_link_libraries(
         ${CMAKE_PROJECT_NAME}
-        Qt5::Widgets
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Widgets
+    )
+
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+         COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> ${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}$ {CMAKE_EXECUTABLE_SUFFIX}
+         WORKING_DIRECTORY ${QT_DIR}/../../../bin
     )
     ```
     Qml 프로젝트와 크게 다른 점은 .ui 파일에 대한 처리이다.  
