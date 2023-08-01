@@ -5,6 +5,8 @@
 #include <Windows.h>
 #include <Windowsx.h>
 
+class WinQuickWindow;
+
 class WinNativeWindow
 {
     DWORD aero_borderless = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CLIPCHILDREN;
@@ -46,6 +48,7 @@ class WinNativeWindow
 
     void SetGeometry(const int x, const int y, const int width, const int height);
 
+    inline static WinQuickWindow *quick_window = nullptr;
     inline static HWND child_hwnd = nullptr;
     inline static QQuickWindow *child_window = nullptr;
 

@@ -34,6 +34,7 @@ WinQuickWindow::WinQuickWindow(QQuickWindow &quick_window, QQmlApplicationEngine
         QGuiApplication::sendEvent(&m_window, &e);
     }
 
+    m_parent_native_window->quick_window = this;
     m_parent_native_window->child_window = &m_window;
     m_parent_native_window->child_hwnd = m_hwnd;
 
@@ -71,7 +72,7 @@ void WinQuickWindow::SetGeometry(int x, int y, int w, int h)
     m_parent_native_window->SetGeometry(x * m_window.devicePixelRatio(), y * m_window.devicePixelRatio(), w * m_window.devicePixelRatio(), h * m_window.devicePixelRatio());
 }
 
-void WinQuickWindow::SetWidnowTitle(const QString &title)
+void WinQuickWindow::SetWindowTitle(const QString &title)
 {
 }
 

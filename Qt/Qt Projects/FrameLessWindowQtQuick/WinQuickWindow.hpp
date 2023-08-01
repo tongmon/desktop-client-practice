@@ -33,7 +33,7 @@ class WinQuickWindow : public QAbstractNativeEventFilter
     void Center();
     void ShowCentered();
     void SetGeometry(int x, int y, int w, int h);
-    void SetWidnowTitle(const QString &title);
+    void SetWindowTitle(const QString &title);
     HWND GetParentHandle() const;
     HWND GetHandle() const;
 

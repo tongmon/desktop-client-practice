@@ -1,4 +1,5 @@
 #include "WinNativeWindow.hpp"
+#include "WinQuickWindow.hpp"
 
 #include <QDebug>
 #include <QGuiApplication>
@@ -195,7 +196,7 @@ LRESULT CALLBACK WinNativeWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam
     }
 
     case WM_NCHITTEST: {
-        const LONG border_width = 8 * child_window->devicePixelRatio();
+        static const LONG border_width = quick_window->border_width;
         RECT winrect;
         GetWindowRect(hwnd, &winrect);
         long x = GET_X_LPARAM(lparam);
