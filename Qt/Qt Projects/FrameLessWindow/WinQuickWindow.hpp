@@ -6,17 +6,14 @@
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QScreen>
-#include <Windows.h>
-#include <Windowsx.h>
-#include <dwmapi.h>
-#include <memory>
-#include <stdexcept>
 
 class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
 
-    friend class NativeFilter;
+    QQuickWindow *m_quick_window;
+    HWND m_hwnd;
+    int m_resize_border_width;
 
   public:
     WinQuickWindow(QQuickWindow *quick_window = nullptr);
@@ -25,6 +22,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     HWND GetHandle();
     bool SetQuickWindow(QQuickWindow *quick_window);
     void OnScreenChanged(QScreen *screen);
+    bool IsMovableArea(const int &x, const int &y);
 
     bool eventFilter(QObject *obj, QEvent *evt);
     bool nativeEventFilter(const QByteArray &event_type, void *message, long *result);
@@ -34,10 +32,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     Q_INVOKABLE void onMaximizeButtonClicked();
     Q_INVOKABLE void onCloseButtonClicked();
 
-  private:
-    QQuickWindow *m_quick_window;
-    HWND m_hwnd;
-    int m_resize_border_width;
+    Q_INVOKABLE void onMouseTest();
 };
 
 #endif /* HEADER__FILE__WINQUICKWINDOW */

@@ -1,18 +1,18 @@
 #include "WinQuickWindow.hpp"
 
-#include <QDebug>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQmlProperty>
 #include <QQuickWindow>
 #include <QScreen>
-#include <memory>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    // QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // Qt::AA_UseSoftwareOpenGL, Qt::AA_UseDesktopOpenGL, Qt::AA_UseOpenGLES 등 많다.
+    QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     QGuiApplication app(argc, argv);
 

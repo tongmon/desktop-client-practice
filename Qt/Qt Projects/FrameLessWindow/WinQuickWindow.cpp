@@ -1,5 +1,12 @@
 #include "WinQuickWindow.hpp"
 
+#include <QMetaObject>
+#include <Windows.h>
+#include <Windowsx.h>
+#include <dwmapi.h>
+#include <memory>
+#include <stdexcept>
+
 WinQuickWindow::WinQuickWindow(QQuickWindow *quick_window)
     : m_quick_window{quick_window}
 {
@@ -32,11 +39,23 @@ bool WinQuickWindow::SetQuickWindow(QQuickWindow *quick_window)
     return true;
 }
 
+// 듀얼 모니터 이상에서 현재 화면이 바뀔때 프레임 창 렌더링이 잘못되는 현상 방지
 void WinQuickWindow::OnScreenChanged(QScreen *screen)
 {
     SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
+}
+
+bool WinQuickWindow::IsMovableArea(const int &x, const int &y)
+{
+    QVariant ret;
+    QMetaObject::invokeMethod(m_quick_window,
+                              "isMovableArea",
+                              Q_RETURN_ARG(QVariant, ret),
+                              Q_ARG(QVariant, x),
+                              Q_ARG(QVariant, y));
+    return ret.toBool();
 }
 
 bool WinQuickWindow::eventFilter(QObject *obj, QEvent *evt)
@@ -73,16 +92,37 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
                 sz->rgrc[0].top += 8;
                 sz->rgrc[0].right -= 8;
                 sz->rgrc[0].bottom -= 8;
+
+                m_quick_window->findChild<QObject *>("maximumButton")->setProperty("checked", true);
             }
+
+            if (wp.showCmd == SW_NORMAL)
+                m_quick_window->findChild<QObject *>("maximumButton")->setProperty("checked", false);
         }
         return true;
     }
 
     case WM_NCHITTEST: {
+
+        // if (msg->lParam == -123)
+        // {
+        //     qDebug() << "msg->lParam = -123";
+        //     *result = HTCAPTION;
+        //     return true;
+        // }
+
         RECT winrect;
         GetWindowRect(msg->hwnd, &winrect);
         long x = GET_X_LPARAM(msg->lParam);
         long y = GET_Y_LPARAM(msg->lParam);
+
+        qDebug() << "x: " << x << "y: " << y;
+
+        // if (IsMovableArea(x, y))
+        // {
+        //     *result = HTCAPTION;
+        //     return true;
+        // }
 
         if (x >= winrect.left && x < winrect.left + m_resize_border_width &&
             y < winrect.bottom && y >= winrect.bottom - m_resize_border_width)
@@ -146,20 +186,6 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         // }
 
         *result = HTTRANSPARENT;
-        break;
-    }
-
-    case WM_SIZE: {
-        if (!m_quick_window)
-            break;
-
-        WINDOWPLACEMENT wp;
-        GetWindowPlacement(m_hwnd, &wp);
-
-        // 최대화면 버튼을 체크하여 버튼 이미지를 복구 이미지로 변경
-        // 노말 상태면 버튼을 체크 해제하여 버튼 이미지를 최대화 이미지로 변경
-        m_quick_window->findChild<QObject *>("maximumButton")->setProperty("checked", wp.showCmd == SW_MAXIMIZE ? true : false);
-
         break;
     }
 
@@ -244,4 +270,9 @@ void WinQuickWindow::onMaximizeButtonClicked()
 void WinQuickWindow::onCloseButtonClicked()
 {
     SendMessage(m_hwnd, WM_CLOSE, 0, 0);
+}
+
+Q_INVOKABLE void WinQuickWindow::onMouseTest()
+{
+    SendMessage(m_hwnd, WM_NCHITTEST, 0, -123);
 }
