@@ -33,6 +33,7 @@ bool WinQuickWindow::SetQuickWindow(QQuickWindow *quick_window)
 
     QObject::connect(m_quick_window, &QQuickWindow::screenChanged, this, &WinQuickWindow::OnScreenChanged);
 
+    // 윈도우 그림자 설정
     const MARGINS aero_shadow_on = {1, 1, 1, 1};
     ::DwmExtendFrameIntoClientArea(m_hwnd, &aero_shadow_on);
 
@@ -47,16 +48,16 @@ void WinQuickWindow::OnScreenChanged(QScreen *screen)
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 }
 
-bool WinQuickWindow::IsMovableArea(const int &x, const int &y)
-{
-    QVariant ret;
-    QMetaObject::invokeMethod(m_quick_window,
-                              "isMovableArea",
-                              Q_RETURN_ARG(QVariant, ret),
-                              Q_ARG(QVariant, x),
-                              Q_ARG(QVariant, y));
-    return ret.toBool();
-}
+// bool WinQuickWindow::IsMovableArea(const int &x, const int &y)
+// {
+//     QVariant ret;
+//     QMetaObject::invokeMethod(m_quick_window,
+//                               "isMovableArea",
+//                               Q_RETURN_ARG(QVariant, ret),
+//                               Q_ARG(QVariant, x),
+//                               Q_ARG(QVariant, y));
+//     return ret.toBool();
+// }
 
 bool WinQuickWindow::eventFilter(QObject *obj, QEvent *evt)
 {
@@ -102,21 +103,37 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         return true;
     }
 
-    case WM_NCHITTEST: {
-
-        // if (msg->lParam == -123)
-        // {
-        //     qDebug() << "msg->lParam = -123";
-        //     *result = HTCAPTION;
-        //     return true;
+        // case WM_MOVE: {
+        //     qDebug() << "WM_MOVE";
+        //     break;
         // }
+        //
+        // case WM_WINDOWPOSCHANGING: {
+        //    qDebug() << "WM_WINDOWPOSCHANGING";
+        //    break;
+        //}
+        // case WM_SIZING: {
+        //    qDebug() << "WM_SIZING";
+        //    break;
+        //}
+        //
+        // case WM_ENTERSIZEMOVE: {
+        //    qDebug() << "WM_ENTERSIZEMOVE";
+        //    break;
+        //}
+        //
+        // case WM_EXITSIZEMOVE: {
+        //    qDebug() << "WM_EXITSIZEMOVE";
+        //    break;
+        //}
 
+    case WM_NCHITTEST: {
         RECT winrect;
         GetWindowRect(msg->hwnd, &winrect);
         long x = GET_X_LPARAM(msg->lParam);
         long y = GET_Y_LPARAM(msg->lParam);
 
-        qDebug() << "x: " << x << "y: " << y;
+        // qDebug() << "x: " << x << "y: " << y;
 
         // if (IsMovableArea(x, y))
         // {
@@ -175,15 +192,6 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
             *result = HTTOP;
             return true;
         }
-
-        // 밑과 같이 타이틀바 윈도우 이동을 C++에서 영역 체크하여 직접 수행할 수도 있음
-        // x -= winrect.left;
-        // y -= winrect.top;
-        // if (x >= border_width && x <= winrect.right - winrect.left - border_width && y >= border_width && y <= titlebar_heigh
-        // {
-        //     *result = HTCAPTION;
-        //     return true;
-        // }
 
         *result = HTTRANSPARENT;
         break;
@@ -272,7 +280,12 @@ void WinQuickWindow::onCloseButtonClicked()
     SendMessage(m_hwnd, WM_CLOSE, 0, 0);
 }
 
-Q_INVOKABLE void WinQuickWindow::onMouseTest()
+Q_INVOKABLE void WinQuickWindow::sendEnterSizeMoveEvent()
 {
-    SendMessage(m_hwnd, WM_NCHITTEST, 0, -123);
+    SendMessage(m_hwnd, WM_ENTERSIZEMOVE, 0, 0);
+}
+
+Q_INVOKABLE void WinQuickWindow::sendExitSizeMoveEvent()
+{
+    SendMessage(m_hwnd, WM_EXITSIZEMOVE, 0, 0);
 }

@@ -16,6 +16,9 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+    // 아이콘 설정
+    app.setWindowIcon(QIcon(":/icon/ApplicationIcon.png"));
+
     WinQuickWindow win_quick_window;
 
     // 이 시점에 native event filter를 적용해주는 것이 중요하다.

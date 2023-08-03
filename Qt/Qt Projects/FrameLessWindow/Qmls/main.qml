@@ -13,7 +13,7 @@ ApplicationWindow {
     minimumWidth: 400
     minimumHeight: 300
     title: qsTr("FrameLess Window")
-    // flags: Qt.Window | Qt.FramelessWindowHint
+    flags: Qt.Window
     // color: Qt.rgba(0,0,0,0)
 
     // 창 크기 재조절 외각 부분, C++에서 받아서 처리
@@ -21,14 +21,6 @@ ApplicationWindow {
 
     // 타이틀바 높이
     property int titleBarHeight: 35
-
-    // 마우스가 창 이동을 가능하게 하는 영역에 있는지 검사
-    function isMovableArea(x, y)
-    {
-        if(movableArea.contains(movableArea.mapFromGlobal(x, y)) === true)
-            return true;
-        return false;
-    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -114,48 +106,45 @@ ApplicationWindow {
                 }
 
                 Item {
-                    id: movableArea
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    // MouseArea {
-                    //     anchors.fill: parent
-                    //
-                    //     onPressed: {
-                    //         applicationWindow.startSystemMove()
-                    //     }
-
-                    //     onDoubleClicked: {
-                    //         applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
-                    //     }
-                    // }
-
                     MouseArea {
                         anchors.fill: parent
-
-                        property real lastMouseX: 0
-                        property real lastMouseY: 0
-
+                        onPressed: {
+                            applicationWindow.startSystemMove()
+                        }
                         onDoubleClicked: {
                             applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
                         }
-                        onPressed: {
-                            lastMouseX = mouseX
-                            lastMouseY = mouseY
-                            // cppConnector.onMouseTest()
-                        }
-                        onMouseXChanged: {
-                            applicationWindow.x += (mouseX - lastMouseX)
-                        }
-                        onMouseYChanged: {
-                            applicationWindow.y += (mouseY - lastMouseY)
-                        }
-                        onPositionChanged: {
-                            // var globalMousePos = mapToGlobal(mouseX, mouseY)
-                            // if(globalMousePos.y <= 0)
-                            //     applicationWindow.startSystemMove()
-                        }
                     }
+
+                    // MouseArea {
+                    //     anchors.fill: parent
+                    //     property real lastMouseX: 0
+                    //     property real lastMouseY: 0
+                    //     onDoubleClicked: {
+                    //         applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
+                    //     }
+                    //     onPressed: {
+                    //         lastMouseX = mouseX
+                    //         lastMouseY = mouseY
+                    //     }
+                    //     onMouseXChanged: {
+                    //         applicationWindow.x += (mouseX - lastMouseX)
+                    //     }
+                    //     onMouseYChanged: {
+                    //         applicationWindow.y += (mouseY - lastMouseY)
+                    //     }
+                    //     onPositionChanged: {
+                    //         // var globalMousePos = mapToGlobal(mouseX, mouseY)
+                    //         // if(globalMousePos.y <= 0)
+                    //         //     applicationWindow.startSystemMove()
+                    //     }
+                    //     onPressedChanged: {
+                    //        this.pressed ? cppConnector.sendEnterSizeMoveEvent() : cppConnector.sendExitSizeMoveEvent()
+                    //     }
+                    // }
                 }
 
                 Button {

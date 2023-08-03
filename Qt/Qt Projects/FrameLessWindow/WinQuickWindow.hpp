@@ -22,7 +22,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     HWND GetHandle();
     bool SetQuickWindow(QQuickWindow *quick_window);
     void OnScreenChanged(QScreen *screen);
-    bool IsMovableArea(const int &x, const int &y);
+    // bool IsMovableArea(const int &x, const int &y);
 
     bool eventFilter(QObject *obj, QEvent *evt);
     bool nativeEventFilter(const QByteArray &event_type, void *message, long *result);
@@ -31,8 +31,8 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     Q_INVOKABLE void onMinimizeButtonClicked();
     Q_INVOKABLE void onMaximizeButtonClicked();
     Q_INVOKABLE void onCloseButtonClicked();
-
-    Q_INVOKABLE void onMouseTest();
+    Q_INVOKABLE void sendEnterSizeMoveEvent();
+    Q_INVOKABLE void sendExitSizeMoveEvent();
 };
 
 #endif /* HEADER__FILE__WINQUICKWINDOW */
