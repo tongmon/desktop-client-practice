@@ -107,6 +107,7 @@
         "hash_set": "cpp",
         "qspaceritem": "cpp",
         "qmainwindow": "cpp",
-        "qdebug": "cpp"
+        "qdebug": "cpp",
+        "qapplication": "cpp"
     }
 }

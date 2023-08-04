@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef HEADER__FILE__MAINWINDOW
+#define HEADER__FILE__MAINWINDOW
 
 #include <QApplication>
 #include <QLayout>
@@ -39,4 +39,4 @@ class MainWindow : public QMainWindow
     void OnCloseButtonClicked();
 };
 
-#endif // MAINWINDOW_H
+#endif // HEADER__FILE__MAINWINDOW

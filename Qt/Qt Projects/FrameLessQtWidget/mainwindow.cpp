@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "MainWindow.hpp"
 
 #include <QDebug>
 #include <QMenu>
@@ -221,8 +221,11 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *main_widget_layout = new QVBoxLayout(this);
     main_widget->setLayout(main_widget_layout);
 
-    QPushButton *btn = new QPushButton("hi", this);
+    // 버튼 추가
+    QPushButton *btn = new QPushButton("This is Button!", this);
+    btn->setFixedSize(180, 35);
     main_widget_layout->addWidget(btn);
+    main_widget_layout->setAlignment(btn, Qt::AlignHCenter);
 }
 
 MainWindow::~MainWindow()
