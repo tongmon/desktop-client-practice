@@ -107,6 +107,40 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         //     qDebug() << "WM_MOVE";
         //     break;
         // }
+
+        // case WM_WINDOWPOSCHANGED: {
+        //     qDebug() << "WM_WINDOWPOSCHANGED";
+        //     auto t = (LPWINDOWPOS)msg->lParam;
+        //     qDebug() << "x: " << t->x << " y: " << t->y << "\nhwnd: " << (int)t->hwnd << " insert after: " << (int)t->hwndInsertAfter << " flag: " << t->flags;
+        //     break;
+        // }
+
+        // case WM_WINDOWPOSCHANGING: {
+        //     qDebug() << "WM_WINDOWPOSCHANGED";
+        //     auto t = (LPWINDOWPOS)msg->lParam;
+        //     qDebug() << "x: " << t->x << " y: " << t->y << "\nhwnd: " << (int)t->hwnd << " insert after: " << (int)t->hwndInsertAfter << " flag: " << t->flags;
+        //     break;
+        // }
+
+        // case WM_SIZE: {
+        //     qDebug() << "WM_SIZE";
+        //     break;
+        // }
+
+    case WM_GETMINMAXINFO: {
+        // auto t = (LPMINMAXINFO)msg->lParam;
+        // qDebug() << "ptMaxPosition x: " << t->ptMaxPosition.x << " y: " << t->ptMaxPosition.y;
+        // qDebug() << "ptMaxSize x: " << t->ptMaxSize.x << " y: " << t->ptMaxSize.y;
+        // qDebug() << "ptMaxTrackSize x: " << t->ptMaxTrackSize.x << " y: " << t->ptMaxTrackSize.y;
+        // qDebug() << "ptMinTrackSize x: " << t->ptMinTrackSize.x << " y: " << t->ptMinTrackSize.y;
+        // qDebug() << "ptReserved x: " << t->ptReserved.x << " y: " << t->ptReserved.y;
+        break;
+    }
+
+        // case WM_MOVING: {
+        //     qDebug() << "WM_MOVING";
+        //     break;
+        // }
         //
         // case WM_WINDOWPOSCHANGING: {
         //    qDebug() << "WM_WINDOWPOSCHANGING";
@@ -288,4 +322,22 @@ Q_INVOKABLE void WinQuickWindow::sendEnterSizeMoveEvent()
 Q_INVOKABLE void WinQuickWindow::sendExitSizeMoveEvent()
 {
     SendMessage(m_hwnd, WM_EXITSIZEMOVE, 0, 0);
+}
+
+Q_INVOKABLE void WinQuickWindow::sendMoveEvent(int left, int top)
+{
+    // SendMessage(m_hwnd, WM_MOVE, 0, MAKELPARAM(left, top));
+
+    // auto rect = m_quick_window->geometry();
+    //
+    // WINDOWPOS pos{
+    //     m_hwnd,
+    //     0,
+    //     rect.left(),
+    //     rect.top(),
+    //     rect.right(),
+    //     rect.bottom(),
+    //     532};
+    //
+    // SendMessage(m_hwnd, WM_WINDOWPOSCHANGED, 0, reinterpret_cast<LPARAM>(&pos));
 }

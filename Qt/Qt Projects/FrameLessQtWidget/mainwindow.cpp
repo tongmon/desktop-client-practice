@@ -22,9 +22,12 @@ MainWindow::MainWindow(QWidget *parent)
     // 아이콘 설정
     setWindowIcon(QIcon(":/icon/ApplicationIcon.png"));
 
+    // 초반 크기 설정
     setGeometry(100, 100, 1024, 768);
     setMinimumSize(400, 300);
 
+    // 다중 스크린에서 렌더링 모니터 바뀌는 signal 처리 함수 연결
+    // 따로 처리 안해주면 위젯 위치가 밀림
     QObject::connect(windowHandle(), &QWindow::screenChanged, this, &MainWindow::OnScreenChanged);
 
     // 메인 윈도우라 위젯을 먼저 추가함

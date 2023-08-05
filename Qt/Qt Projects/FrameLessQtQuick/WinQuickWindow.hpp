@@ -33,6 +33,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     Q_INVOKABLE void onCloseButtonClicked();
     Q_INVOKABLE void sendEnterSizeMoveEvent();
     Q_INVOKABLE void sendExitSizeMoveEvent();
+    Q_INVOKABLE void sendMoveEvent(int left, int top);
 };
 
 #endif /* HEADER__FILE__WINQUICKWINDOW */

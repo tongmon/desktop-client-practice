@@ -19,9 +19,6 @@ ApplicationWindow {
     // 창 크기 재조절 외각 부분, C++에서 받아서 처리
     property int resizeBorderWidth: 6
 
-    // 타이틀바 높이
-    property int titleBarHeight: 35
-
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
@@ -31,7 +28,7 @@ ApplicationWindow {
             color: Qt.rgba(0.117, 0.133, 0.152, 1.0)
 
             Layout.fillWidth: true
-            Layout.preferredHeight: titleBarHeight
+            Layout.preferredHeight: 35
             Layout.alignment: Qt.AlignTop
 
             RowLayout {
@@ -89,12 +86,12 @@ ApplicationWindow {
                             elide: Text.ElideRight
                         }
                         background: Rectangle {
-                            implicitHeight: titleBarHeight
+                            implicitHeight: titleBar.height
                             color: menuBarItem.highlighted ? Qt.rgba(1.0, 1.0, 1.0, 0.2) : "transparent"
                         }
                     }
                     background: Rectangle {
-                        implicitHeight: titleBarHeight
+                        implicitHeight: titleBar.height
                         color: "transparent"
                         Rectangle {
                             color: "#21be2b"
@@ -109,42 +106,44 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onPressed: {
-                            applicationWindow.startSystemMove()
-                        }
-                        onDoubleClicked: {
-                            applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
-                        }
-                    }
-
                     // MouseArea {
                     //     anchors.fill: parent
-                    //     property real lastMouseX: 0
-                    //     property real lastMouseY: 0
+                    //     onPressed: {
+                    //         applicationWindow.startSystemMove()
+                    //     }
                     //     onDoubleClicked: {
                     //         applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
                     //     }
-                    //     onPressed: {
-                    //         lastMouseX = mouseX
-                    //         lastMouseY = mouseY
-                    //     }
-                    //     onMouseXChanged: {
-                    //         applicationWindow.x += (mouseX - lastMouseX)
-                    //     }
-                    //     onMouseYChanged: {
-                    //         applicationWindow.y += (mouseY - lastMouseY)
-                    //     }
-                    //     onPositionChanged: {
-                    //         // var globalMousePos = mapToGlobal(mouseX, mouseY)
-                    //         // if(globalMousePos.y <= 0)
-                    //         //     applicationWindow.startSystemMove()
-                    //     }
-                    //     onPressedChanged: {
-                    //        this.pressed ? cppConnector.sendEnterSizeMoveEvent() : cppConnector.sendExitSizeMoveEvent()
-                    //     }
                     // }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        property real lastMouseX: 0
+                        property real lastMouseY: 0
+                        onDoubleClicked: {
+                            applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
+                        }
+                        onPressed: {
+                            lastMouseX = mouseX
+                            lastMouseY = mouseY
+                        }
+                        onMouseXChanged: {
+                            applicationWindow.x += (mouseX - lastMouseX)
+                        }
+                        onMouseYChanged: {
+                            applicationWindow.y += (mouseY - lastMouseY)
+                        }
+                        onPositionChanged: {
+                            cppConnector.sendMoveEvent(applicationWindow.x, applicationWindow.y)
+                            // var globalMousePos = mapToGlobal(mouseX, mouseY)
+                            // if(globalMousePos.y <= 0)
+                            //     applicationWindow.startSystemMove()
+                            // WM_MOVE 발생시키기
+                        }
+                        onPressedChanged: {
+                           this.pressed ? cppConnector.sendEnterSizeMoveEvent() : cppConnector.sendExitSizeMoveEvent()
+                        }
+                    }
                 }
 
                 Button {
