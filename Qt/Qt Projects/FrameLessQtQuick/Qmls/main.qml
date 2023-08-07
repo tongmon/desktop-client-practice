@@ -14,8 +14,7 @@ ApplicationWindow {
     minimumHeight: 300
     title: qsTr("FrameLess Window")
     flags: Qt.Window
-    // color: Qt.rgba(0,0,0,0)
-
+    
     // 창 크기 재조절 외각 부분, C++에서 받아서 처리
     property int resizeBorderWidth: 6
 
@@ -106,42 +105,13 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    // MouseArea {
-                    //     anchors.fill: parent
-                    //     onPressed: {
-                    //         applicationWindow.startSystemMove()
-                    //     }
-                    //     onDoubleClicked: {
-                    //         applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
-                    //     }
-                    // }
-
                     MouseArea {
                         anchors.fill: parent
-                        property real lastMouseX: 0
-                        property real lastMouseY: 0
+                        onPressed: {
+                            applicationWindow.startSystemMove()
+                        }
                         onDoubleClicked: {
                             applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
-                        }
-                        onPressed: {
-                            lastMouseX = mouseX
-                            lastMouseY = mouseY
-                        }
-                        onMouseXChanged: {
-                            applicationWindow.x += (mouseX - lastMouseX)
-                        }
-                        onMouseYChanged: {
-                            applicationWindow.y += (mouseY - lastMouseY)
-                        }
-                        onPositionChanged: {
-                            cppConnector.sendMoveEvent(applicationWindow.x, applicationWindow.y)
-                            // var globalMousePos = mapToGlobal(mouseX, mouseY)
-                            // if(globalMousePos.y <= 0)
-                            //     applicationWindow.startSystemMove()
-                            // WM_MOVE 발생시키기
-                        }
-                        onPressedChanged: {
-                           this.pressed ? cppConnector.sendEnterSizeMoveEvent() : cppConnector.sendExitSizeMoveEvent()
                         }
                     }
                 }
@@ -162,7 +132,6 @@ ApplicationWindow {
                     }
                     onClicked: {
                         cppConnector.onMinimizeButtonClicked()
-                        // applicationWindow.visibility = Window.Minimized
                     }
                 }
 
@@ -186,7 +155,6 @@ ApplicationWindow {
                     }
                     onClicked: {
                         cppConnector.onMaximizeButtonClicked()
-                        // applicationWindow.visibility = checked ? Window.Maximized : Window.Windowed
                     }
                 }
 
@@ -207,7 +175,6 @@ ApplicationWindow {
                     }
                     onClicked: {
                         cppConnector.onCloseButtonClicked()
-                        // applicationWindow.close()
                     }
                 }
             }

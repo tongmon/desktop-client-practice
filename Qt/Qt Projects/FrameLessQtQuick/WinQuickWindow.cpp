@@ -48,17 +48,6 @@ void WinQuickWindow::OnScreenChanged(QScreen *screen)
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 }
 
-// bool WinQuickWindow::IsMovableArea(const int &x, const int &y)
-// {
-//     QVariant ret;
-//     QMetaObject::invokeMethod(m_quick_window,
-//                               "isMovableArea",
-//                               Q_RETURN_ARG(QVariant, ret),
-//                               Q_ARG(QVariant, x),
-//                               Q_ARG(QVariant, y));
-//     return ret.toBool();
-// }
-
 bool WinQuickWindow::eventFilter(QObject *obj, QEvent *evt)
 {
     switch (evt->type())
@@ -80,6 +69,7 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
     switch (msg->message)
     {
+    // 윈도우 기본 프레임 제거
     case WM_NCCALCSIZE: {
         if (msg->lParam)
         {
@@ -103,77 +93,12 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         return true;
     }
 
-        // case WM_MOVE: {
-        //     qDebug() << "WM_MOVE";
-        //     break;
-        // }
-
-        // case WM_WINDOWPOSCHANGED: {
-        //     qDebug() << "WM_WINDOWPOSCHANGED";
-        //     auto t = (LPWINDOWPOS)msg->lParam;
-        //     qDebug() << "x: " << t->x << " y: " << t->y << "\nhwnd: " << (int)t->hwnd << " insert after: " << (int)t->hwndInsertAfter << " flag: " << t->flags;
-        //     break;
-        // }
-
-        // case WM_WINDOWPOSCHANGING: {
-        //     qDebug() << "WM_WINDOWPOSCHANGED";
-        //     auto t = (LPWINDOWPOS)msg->lParam;
-        //     qDebug() << "x: " << t->x << " y: " << t->y << "\nhwnd: " << (int)t->hwnd << " insert after: " << (int)t->hwndInsertAfter << " flag: " << t->flags;
-        //     break;
-        // }
-
-        // case WM_SIZE: {
-        //     qDebug() << "WM_SIZE";
-        //     break;
-        // }
-
-    case WM_GETMINMAXINFO: {
-        // auto t = (LPMINMAXINFO)msg->lParam;
-        // qDebug() << "ptMaxPosition x: " << t->ptMaxPosition.x << " y: " << t->ptMaxPosition.y;
-        // qDebug() << "ptMaxSize x: " << t->ptMaxSize.x << " y: " << t->ptMaxSize.y;
-        // qDebug() << "ptMaxTrackSize x: " << t->ptMaxTrackSize.x << " y: " << t->ptMaxTrackSize.y;
-        // qDebug() << "ptMinTrackSize x: " << t->ptMinTrackSize.x << " y: " << t->ptMinTrackSize.y;
-        // qDebug() << "ptReserved x: " << t->ptReserved.x << " y: " << t->ptReserved.y;
-        break;
-    }
-
-        // case WM_MOVING: {
-        //     qDebug() << "WM_MOVING";
-        //     break;
-        // }
-        //
-        // case WM_WINDOWPOSCHANGING: {
-        //    qDebug() << "WM_WINDOWPOSCHANGING";
-        //    break;
-        //}
-        // case WM_SIZING: {
-        //    qDebug() << "WM_SIZING";
-        //    break;
-        //}
-        //
-        // case WM_ENTERSIZEMOVE: {
-        //    qDebug() << "WM_ENTERSIZEMOVE";
-        //    break;
-        //}
-        //
-        // case WM_EXITSIZEMOVE: {
-        //    qDebug() << "WM_EXITSIZEMOVE";
-        //    break;
-        //}
-
+    // 클릭 처리
     case WM_NCHITTEST: {
         RECT winrect;
         GetWindowRect(msg->hwnd, &winrect);
         long x = GET_X_LPARAM(msg->lParam);
         long y = GET_Y_LPARAM(msg->lParam);
-
-        // qDebug() << "x: " << x << "y: " << y;
-
-        // if (IsMovableArea(x, y))
-        // {
-        //     *result = HTCAPTION;
-        //     return true;
-        // }
 
         if (x >= winrect.left && x < winrect.left + m_resize_border_width &&
             y < winrect.bottom && y >= winrect.bottom - m_resize_border_width)
@@ -312,32 +237,4 @@ void WinQuickWindow::onMaximizeButtonClicked()
 void WinQuickWindow::onCloseButtonClicked()
 {
     SendMessage(m_hwnd, WM_CLOSE, 0, 0);
-}
-
-Q_INVOKABLE void WinQuickWindow::sendEnterSizeMoveEvent()
-{
-    SendMessage(m_hwnd, WM_ENTERSIZEMOVE, 0, 0);
-}
-
-Q_INVOKABLE void WinQuickWindow::sendExitSizeMoveEvent()
-{
-    SendMessage(m_hwnd, WM_EXITSIZEMOVE, 0, 0);
-}
-
-Q_INVOKABLE void WinQuickWindow::sendMoveEvent(int left, int top)
-{
-    // SendMessage(m_hwnd, WM_MOVE, 0, MAKELPARAM(left, top));
-
-    // auto rect = m_quick_window->geometry();
-    //
-    // WINDOWPOS pos{
-    //     m_hwnd,
-    //     0,
-    //     rect.left(),
-    //     rect.top(),
-    //     rect.right(),
-    //     rect.bottom(),
-    //     532};
-    //
-    // SendMessage(m_hwnd, WM_WINDOWPOSCHANGED, 0, reinterpret_cast<LPARAM>(&pos));
 }

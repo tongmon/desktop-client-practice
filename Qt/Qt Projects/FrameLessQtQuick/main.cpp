@@ -6,13 +6,19 @@
 #include <QQmlProperty>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QSurfaceFormat>
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     // Qt::AA_UseSoftwareOpenGL, Qt::AA_UseDesktopOpenGL, Qt::AA_UseOpenGLES 등 많다.
     QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    // Qt Quick 렌더링 옵션 조정
+    QSurfaceFormat format;
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer); // 화면 깜빡이지 않게 더블 버퍼링 활성화
+    format.setSwapInterval(0);                            // 수직동기화를 0으로 끄지 않으면 윈도우 이동시 버벅거린다.
+    QSurfaceFormat::setDefaultFormat(format);
 
     QGuiApplication app(argc, argv);
 
