@@ -24,7 +24,7 @@ ApplicationWindow {
 
         Rectangle {
             id: titleBar
-            color: "#1d1f24"
+            color: "#1f0830"
 
             Layout.fillWidth: true
             Layout.preferredHeight: 35
@@ -41,16 +41,13 @@ ApplicationWindow {
                     Menu {
                         title: "File"
                         Action {
-                            text: "New..."
+                            text: "New Text File"
                         }
                         Action {
-                            text: "Open..."
+                            text: "New File"
                         }
                         Action {
-                            text: "Save"
-                        }
-                        Action {
-                            text: "Save As..."
+                            text: "New Window"
                         }
                         MenuSeparator {
                             contentItem: Rectangle {
@@ -58,21 +55,24 @@ ApplicationWindow {
                                 color: "#21be2b"
                             }
                             background: Rectangle {
-                                color: "#14161a"
+                                color: "#170624"
                             }
                         }
                         Action {
-                            text: "Quit"
+                            text: "Open File"
+                        }
+                        Action {
+                            text: "Open Directory"
                         }
 
                         delegate: MenuItem {
-                            id: menuItem
+                            id: menuItem1
                             implicitHeight: titleBar.height
 
                             contentItem: Text {
-                                text: menuItem.text
-                                font: menuItem.font
-                                color: menuItem.highlighted ? "#ffffff" : "#a5abb5"
+                                text: menuItem1.text
+                                font: menuItem1.font
+                                color: active ? (menuItem1.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
                                 horizontalAlignment: Text.AlignLeft
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
@@ -80,13 +80,19 @@ ApplicationWindow {
 
                             background: Rectangle {
                                 anchors.fill: parent
-                                opacity: menuItem.highlighted ? 0.7 : 1.0
-                                color: "#14161a"
+                                opacity: menuItem1.highlighted ? 0.7 : 1.0
+                                color: "#170624"
                             }
                         }
                     }
                     Menu {
                         title: "Edit"
+                        Action {
+                            text: "Undo"
+                        }
+                        Action {
+                            text: "Redo"
+                        }
                         Action {
                             text: "Cut"
                         }
@@ -97,16 +103,100 @@ ApplicationWindow {
                             text: "Paste"
                         }
 
-                        // delegate: menuItem
+                        delegate: MenuItem {
+                            id: menuItem2
+                            implicitHeight: titleBar.height
+
+                            contentItem: Text {
+                                text: menuItem2.text
+                                font: menuItem2.font
+                                color: active ? (menuItem2.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                opacity: menuItem2.highlighted ? 0.7 : 1.0
+                                color: "#170624"
+                            }
+                        }
                     }
                     Menu {
-                        title: "Help"
+                        title: "Selected Zone"
                         Action {
-                            text: "About"
+                            text: "Select All"
+                        }
+                        Action {
+                            text: "Expand Select Zone"
+                        }
+                        Action {
+                            text: "Collapse Select Zone"
+                        }
+                        Action {
+                            text: "Add Cursor"
+                        }
+                        Action {
+                            text: "Select Line Mode"
                         }
 
-                        // delegate: menuItem
+                        delegate: MenuItem {
+                            id: menuItem3
+                            implicitHeight: titleBar.height
+
+                            contentItem: Text {
+                                text: menuItem3.text
+                                font: menuItem3.font
+                                color: active ? (menuItem3.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                opacity: menuItem3.highlighted ? 0.7 : 1.0
+                                color: "#170624"
+                            }
+                        }
                     }
+                    Menu {
+                        title: "View"
+                        Action {
+                            text: "Command Pallete"
+                        }
+                        Action {
+                            text: "Open View"
+                        }
+                        Action {
+                            text: "Shape"
+                        }
+                        Action {
+                            text: "Edit Layout"
+                        }
+
+                        delegate: MenuItem {
+                            id: menuItem4
+                            implicitHeight: titleBar.height
+
+                            contentItem: Text {
+                                text: menuItem4.text
+                                font: menuItem4.font
+                                color: active ? (menuItem4.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                opacity: menuItem4.highlighted ? 0.7 : 1.0
+                                color: "#170624"
+                            }
+                        }
+                    }
+
                     delegate: MenuBarItem {
                         id: menuBarItem
                         contentItem: Text {
@@ -122,6 +212,7 @@ ApplicationWindow {
                             color: menuBarItem.highlighted ? Qt.rgba(1.0, 1.0, 1.0, 0.2) : "transparent"
                         }
                     }
+
                     background: Rectangle {
                         implicitHeight: titleBar.height
                         color: "transparent"
@@ -215,12 +306,12 @@ ApplicationWindow {
 
         Rectangle {
             id: mainContent
-            color: "#2c2f36"
+            color: "#280a3d"
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignBottom
             Button {
-                text: "hi"
+                text: "This is Button!"
                 anchors.centerIn: parent
             }
         }
