@@ -24,7 +24,7 @@ ApplicationWindow {
 
         Rectangle {
             id: titleBar
-            color: Qt.rgba(0.117, 0.133, 0.152, 1.0)
+            color: "#1d1f24"
 
             Layout.fillWidth: true
             Layout.preferredHeight: 35
@@ -37,6 +37,7 @@ ApplicationWindow {
                 MenuBar {
                     id: titleMenuBar
                     Layout.alignment: Qt.AlignLeft
+
                     Menu {
                         title: "File"
                         Action {
@@ -51,9 +52,37 @@ ApplicationWindow {
                         Action {
                             text: "Save As..."
                         }
-                        MenuSeparator {}
+                        MenuSeparator {
+                            contentItem: Rectangle {
+                                implicitHeight: 1
+                                color: "#21be2b"
+                            }
+                            background: Rectangle {
+                                color: "#14161a"
+                            }
+                        }
                         Action {
                             text: "Quit"
+                        }
+
+                        delegate: MenuItem {
+                            id: menuItem
+                            implicitHeight: titleBar.height
+
+                            contentItem: Text {
+                                text: menuItem.text
+                                font: menuItem.font
+                                color: menuItem.highlighted ? "#ffffff" : "#a5abb5"
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                opacity: menuItem.highlighted ? 0.7 : 1.0
+                                color: "#14161a"
+                            }
                         }
                     }
                     Menu {
@@ -67,12 +96,16 @@ ApplicationWindow {
                         Action {
                             text: "Paste"
                         }
+
+                        // delegate: menuItem
                     }
                     Menu {
                         title: "Help"
                         Action {
                             text: "About"
                         }
+
+                        // delegate: menuItem
                     }
                     delegate: MenuBarItem {
                         id: menuBarItem
@@ -182,7 +215,7 @@ ApplicationWindow {
 
         Rectangle {
             id: mainContent
-            color: Qt.rgba(0.137, 0.152, 0.18, 1.0)
+            color: "#2c2f36"
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignBottom

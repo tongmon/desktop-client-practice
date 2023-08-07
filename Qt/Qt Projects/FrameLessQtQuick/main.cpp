@@ -5,14 +5,13 @@
 #include <QQmlContext>
 #include <QQmlProperty>
 #include <QQuickWindow>
-#include <QScreen>
 #include <QSurfaceFormat>
 
 int main(int argc, char *argv[])
 {
     // Qt::AA_UseSoftwareOpenGL, Qt::AA_UseDesktopOpenGL, Qt::AA_UseOpenGLES 등 많다.
-    QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_UseOpenGLES);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     // Qt Quick 렌더링 옵션 조정
     QSurfaceFormat format;
@@ -22,14 +21,13 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    // 아이콘 설정
-    app.setWindowIcon(QIcon(":/icon/ApplicationIcon.png"));
-
-    WinQuickWindow win_quick_window;
-
     // 이 시점에 native event filter를 적용해주는 것이 중요하다.
     // QQuickWindow가 생성된 이후에 native event filter가 적용되면 윈도우를 frameless로 만들기 어렵다.
+    WinQuickWindow win_quick_window;
     app.installNativeEventFilter(&win_quick_window);
+
+    // 아이콘 설정
+    app.setWindowIcon(QIcon(":/icon/ApplicationIcon.png"));
 
     QQmlApplicationEngine engine;
 

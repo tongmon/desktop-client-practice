@@ -86,8 +86,7 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
 
                 m_quick_window->findChild<QObject *>("maximumButton")->setProperty("checked", true);
             }
-
-            if (wp.showCmd == SW_NORMAL)
+            else if (wp.showCmd == SW_NORMAL)
                 m_quick_window->findChild<QObject *>("maximumButton")->setProperty("checked", false);
         }
         return true;

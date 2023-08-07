@@ -2,8 +2,6 @@
 #define HEADER__FILE__WINQUICKWINDOW
 
 #include <QAbstractNativeEventFilter>
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QScreen>
 
