@@ -40,6 +40,7 @@ END_MESSAGE_MAP()
 void WebViewDialog::OnSize(UINT opt, int width, int height)
 {
 	// MoveWindow(0, 0, m_window_width, m_window_height);
+
 	m_window_width = width;
 	m_window_height = height;
 	ResizeEverything();
@@ -255,7 +256,6 @@ void WebViewDialog::CloseWebView(bool cleanup_user_data_folder)
 
 HRESULT WebViewDialog::OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView2Environment* environment)
 {
-	// m_webview_environment = environment;
 	environment->QueryInterface(IID_PPV_ARGS(&m_webview_environment));
 	environment->QueryInterface(IID_PPV_ARGS(&m_webview_environment_2));
 
@@ -281,10 +281,10 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 #endif
 			m_creation_mode_id == 195); // IDM_CREATION_MODE_TARGET_DCOMP
 
-		coreWebView2->QueryInterface(IID_PPV_ARGS(&m_webview_2));
-		// coreWebView2->QueryInterface(IID_PPV_ARGS(&m_webview_16));
+		m_webview->QueryInterface(IID_PPV_ARGS(&m_webview_2));
+		// m_webview->QueryInterface(IID_PPV_ARGS(&m_webview_16));
 
-		coreWebView2->get_Settings(&m_web_settings);
+		m_webview->get_Settings(&m_web_settings);
 
 		EventRegistrationToken token;
 

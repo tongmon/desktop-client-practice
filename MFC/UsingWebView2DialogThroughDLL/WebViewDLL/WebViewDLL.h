@@ -35,6 +35,11 @@ struct WebViewParam
 	std::unordered_map<std::wstring, std::wstring> html_result = {};
 };
 
+void RunWebViewDialog(WebViewParam* wvp)
+{
+
+}
+
 void RunWebView(WebViewParam* wvp)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());

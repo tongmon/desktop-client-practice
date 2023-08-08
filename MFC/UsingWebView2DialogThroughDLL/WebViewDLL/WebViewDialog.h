@@ -80,8 +80,6 @@ public:
 	HRESULT WebCloseMessageReceived(ICoreWebView2* sender, IUnknown* args);
 	HRESULT WebMessageReceived(ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args);
 
-	void OnSize(UINT opt, int width, int height);
-
 	ICoreWebView2Controller* GetWebViewController() { return m_controller.get(); }
 	ICoreWebView2* GetWebView() { return m_webview.get(); }
 	ICoreWebView2Environment* GetWebViewEnvironment() { return m_webview_environment.get(); }
@@ -114,6 +112,7 @@ private:
 	virtual BOOL DestroyWindow();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
+	afx_msg void OnSize(UINT opt, int width, int height);
 	afx_msg void OnClose();
 	afx_msg HCURSOR OnQueryDragIcon();
 	void DoDataExchange(CDataExchange* pDX);
