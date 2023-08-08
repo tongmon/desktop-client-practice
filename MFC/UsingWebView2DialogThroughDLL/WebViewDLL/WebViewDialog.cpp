@@ -232,16 +232,22 @@ HRESULT WebViewDialog::DCompositionCreateDevice2(IUnknown* renderingDevice, REFI
 	return hr;
 }
 
-void WebViewDialog::CloseWebView(bool cleanupUserDataFolder)
+void WebViewDialog::CloseWebView(bool cleanup_user_data_folder)
 {
 	if (m_controller)
 	{
 		m_controller->Close();
 		m_controller = nullptr;
 		m_webview = nullptr;
+		m_webview_2 = nullptr;
+		// m_webview_16 = nullptr;
+		m_web_settings = nullptr;
 	}
+
 	m_webview_environment = nullptr;
-	if (cleanupUserDataFolder)
+	m_webview_environment_2 = nullptr;
+
+	if (cleanup_user_data_folder)
 	{
 		//Clean user data        
 	}
@@ -249,8 +255,12 @@ void WebViewDialog::CloseWebView(bool cleanupUserDataFolder)
 
 HRESULT WebViewDialog::OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView2Environment* environment)
 {
-	m_webview_environment = environment;
-	m_webview_environment->CreateCoreWebView2Controller(this->GetSafeHwnd(), Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(this, &WebViewDialog::OnCreateCoreWebView2ControllerCompleted).Get());
+	// m_webview_environment = environment;
+	environment->QueryInterface(IID_PPV_ARGS(&m_webview_environment));
+	environment->QueryInterface(IID_PPV_ARGS(&m_webview_environment_2));
+
+	m_webview_environment->CreateCoreWebView2Controller(this->GetSafeHwnd(), 
+														Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(this, &WebViewDialog::OnCreateCoreWebView2ControllerCompleted).Get());
 
 	return S_OK;
 }
@@ -271,6 +281,11 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 #endif
 			m_creation_mode_id == 195); // IDM_CREATION_MODE_TARGET_DCOMP
 
+		coreWebView2->QueryInterface(IID_PPV_ARGS(&m_webview_2));
+		// coreWebView2->QueryInterface(IID_PPV_ARGS(&m_webview_16));
+
+		coreWebView2->get_Settings(&m_web_settings);
+
 		EventRegistrationToken token;
 
 		// 웹 닫기 메시지 리시버
@@ -282,12 +297,20 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 		// 웹에서 뿌린 메시지 받는 리시버
 		m_webview->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(this, &WebViewDialog::WebMessageReceived).Get(), &token);
 
+		// 이 외에도 많은 이벤트 종류가 있음
+
+		if (m_url.empty())
+		{
+			ResizeEverything();
+			return S_OK;
+		}
+
 		HRESULT hresult = m_webview->Navigate(
 #if defined(UNICODE) || defined(_UNICODE)
 			Utf8ToWStr(WStrToUtf8(m_url)).c_str()
 #else
 			Utf8ToWStr(StrToUtf8(m_url)).c_str()
-#endif
+#endif 
 		);
 
 		if (hresult == S_OK)
@@ -301,6 +324,117 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 		TRACE("Failed to create webview");
 	}
 	return S_OK;
+}
+
+// 웹 주소 탐색
+void WebViewDialog::Navigate(const universal_string& url)
+{
+	if (!m_webview)
+		return;
+
+	m_url = url;
+
+	m_webview->Navigate(
+#if defined(UNICODE) || defined(_UNICODE)
+		Utf8ToWStr(WStrToUtf8(m_url)).c_str()
+#else
+		Utf8ToWStr(StrToUtf8(m_url)).c_str()
+#endif
+	);
+}
+
+// Post 방식으로 웹 주소 탐색
+void WebViewDialog::NavigatePost(const universal_string& url, const universal_string& content, const universal_string& headers)
+{
+	if (!m_webview)
+		return;
+
+	std::wstring final_url;
+
+#if defined(UNICODE) || defined(_UNICODE)
+	final_url = Utf8ToWStr(WStrToUtf8(m_url)).c_str();
+#else
+	final_url = Utf8ToWStr(StrToUtf8(m_url)).c_str();
+#endif
+
+	wil::com_ptr<ICoreWebView2WebResourceRequest> web_resource_request;
+	wil::com_ptr<IStream> post_data_stream = SHCreateMemStream(reinterpret_cast<const BYTE*>(content.c_str()),
+															   content.length() + 1);
+
+	m_webview_environment_2->CreateWebResourceRequest(
+		final_url.c_str(),
+		L"POST",
+		post_data_stream.get(),
+#if defined(UNICODE) || defined(_UNICODE)
+		headers.c_str(),
+#else
+		StrToWStr(headers).c_str(),
+#endif
+		&web_resource_request);
+
+	m_webview_2->NavigateWithWebResourceRequest(web_resource_request.get());
+}
+
+void WebViewDialog::Stop()
+{
+	if (!m_webview)
+		return;
+
+	m_webview->Stop();
+}
+
+void WebViewDialog::Reload()
+{
+	if (!m_webview)
+		return;
+
+	m_webview->Reload();
+}
+
+void WebViewDialog::GoBack()
+{
+	if (!m_webview)
+		return;
+
+	BOOL can_go_back = FALSE;
+	m_webview->get_CanGoBack(&can_go_back);
+
+	if (can_go_back)
+		m_webview->GoBack();
+}
+
+void WebViewDialog::GoForward()
+{
+	if (!m_webview)
+		return;
+
+	BOOL can_go_forward = FALSE;
+	m_webview->get_CanGoForward(&can_go_forward);
+
+	if (can_go_forward)
+		m_webview->GoForward();
+}
+
+void WebViewDialog::DisablePopups()
+{
+	if (!m_web_settings)
+		return;
+
+	m_web_settings->put_AreDefaultScriptDialogsEnabled(FALSE);
+}
+
+void WebViewDialog::ExecuteScript(const universal_string& code, std::function<HRESULT(HRESULT, PCWSTR)> callback)
+{
+	if (!m_webview)
+		return;
+
+	m_webview->ExecuteScript(
+#if defined(UNICODE) || defined(_UNICODE)
+		code.c_str(),
+#else
+		StrToWStr(code).c_str(),
+#endif
+		Callback<ICoreWebView2ExecuteScriptCompletedHandler>(callback).Get());
 }
 
 // 웹에서 준 메시지를 받는 함수
@@ -363,3 +497,56 @@ std::wstring WebViewDialog::GetElementValue(const std::wstring& key)
 		m_message_from_web = std::move(Utf8ToWStr(DecodeBase64(WStrToUtf8(m_message_from_web))));
 	return m_html_result[key];
 }
+
+/*
+https://mariusbancila.ro/blog/2021/01/27/using-microsoft-edge-in-a-native-windows-desktop-app-part-4/
+void CWebBrowser::PrintToPDF(bool const landscape, std::function<void(bool, CString)> callback)
+{
+   WCHAR defaultName[MAX_PATH] = L"default.pdf";
+
+   OPENFILENAME openFileName = {};
+   openFileName.lStructSize   = sizeof(openFileName);
+   openFileName.hwndOwner     = nullptr;
+   openFileName.hInstance     = nullptr;
+   openFileName.lpstrFile     = defaultName;
+   openFileName.lpstrFilter   = L"PDF File\0*.pdf\0";
+   openFileName.nMaxFile      = MAX_PATH;
+   openFileName.Flags         = OFN_OVERWRITEPROMPT;
+
+   if (::GetSaveFileName(&openFileName))
+   {
+	  wil::com_ptr<ICoreWebView2PrintSettings> printSettings = nullptr;
+	  wil::com_ptr<ICoreWebView2Environment6> webviewEnvironment6;
+	  CHECK_FAILURE(m_pImpl->m_webViewEnvironment->QueryInterface(IID_PPV_ARGS(&webviewEnvironment6)));
+
+	  if (webviewEnvironment6)
+	  {
+		 CHECK_FAILURE(webviewEnvironment6->CreatePrintSettings(&printSettings));
+		 CHECK_FAILURE(printSettings->put_Orientation(landscape ? COREWEBVIEW2_PRINT_ORIENTATION_LANDSCAPE :
+																  COREWEBVIEW2_PRINT_ORIENTATION_PORTRAIT));
+	  }
+
+	  wil::com_ptr<ICoreWebView2_7> webview2_7;
+	  CHECK_FAILURE(m_pImpl->m_webView->QueryInterface(IID_PPV_ARGS(&webview2_7)));
+	  if (webview2_7)
+	  {
+		 m_printToPdfInProgress = true;
+
+		 CHECK_FAILURE(webview2_7->PrintToPdf(
+			openFileName.lpstrFile,
+			printSettings.get(),
+			Callback<ICoreWebView2PrintToPdfCompletedHandler>(
+			   [this, callback, &openFileName](HRESULT errorCode, BOOL isSuccessful) -> HRESULT {
+				  CHECK_FAILURE(errorCode);
+
+				  m_printToPdfInProgress = false;
+
+				  callback(isSuccessful, openFileName.lpstrFile);
+
+				  return S_OK;
+			   })
+			.Get()));
+	  }
+   }
+}
+*/

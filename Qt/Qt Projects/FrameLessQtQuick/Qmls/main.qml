@@ -34,11 +34,30 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 0
 
+                component TitleBarMenuItem : MenuItem {
+                    id: menuItem
+                    implicitHeight: titleBar.height
+                    contentItem: Text {
+                        text: menuItem.text
+                        font: menuItem.font
+                        color: active ? (menuItem.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    background: Rectangle {
+                        anchors.fill: parent
+                        opacity: menuItem.highlighted ? 0.7 : 1.0
+                        color: "#170624"
+                    }
+                }
+
                 MenuBar {
                     id: titleMenuBar
                     Layout.alignment: Qt.AlignLeft
 
                     Menu {
+                        id: menu1
                         title: "File"
                         Action {
                             text: "New Text File"
@@ -65,25 +84,7 @@ ApplicationWindow {
                             text: "Open Directory"
                         }
 
-                        delegate: MenuItem {
-                            id: menuItem1
-                            implicitHeight: titleBar.height
-
-                            contentItem: Text {
-                                text: menuItem1.text
-                                font: menuItem1.font
-                                color: active ? (menuItem1.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
-                                horizontalAlignment: Text.AlignLeft
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                            }
-
-                            background: Rectangle {
-                                anchors.fill: parent
-                                opacity: menuItem1.highlighted ? 0.7 : 1.0
-                                color: "#170624"
-                            }
-                        }
+                        delegate: TitleBarMenuItem { }
                     }
                     Menu {
                         title: "Edit"
@@ -103,25 +104,7 @@ ApplicationWindow {
                             text: "Paste"
                         }
 
-                        delegate: MenuItem {
-                            id: menuItem2
-                            implicitHeight: titleBar.height
-
-                            contentItem: Text {
-                                text: menuItem2.text
-                                font: menuItem2.font
-                                color: active ? (menuItem2.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
-                                horizontalAlignment: Text.AlignLeft
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                            }
-
-                            background: Rectangle {
-                                anchors.fill: parent
-                                opacity: menuItem2.highlighted ? 0.7 : 1.0
-                                color: "#170624"
-                            }
-                        }
+                        delegate: TitleBarMenuItem { }
                     }
                     Menu {
                         title: "Selected Zone"
@@ -141,25 +124,7 @@ ApplicationWindow {
                             text: "Select Line Mode"
                         }
 
-                        delegate: MenuItem {
-                            id: menuItem3
-                            implicitHeight: titleBar.height
-
-                            contentItem: Text {
-                                text: menuItem3.text
-                                font: menuItem3.font
-                                color: active ? (menuItem3.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
-                                horizontalAlignment: Text.AlignLeft
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                            }
-
-                            background: Rectangle {
-                                anchors.fill: parent
-                                opacity: menuItem3.highlighted ? 0.7 : 1.0
-                                color: "#170624"
-                            }
-                        }
+                        delegate: TitleBarMenuItem { }
                     }
                     Menu {
                         title: "View"
@@ -176,25 +141,7 @@ ApplicationWindow {
                             text: "Edit Layout"
                         }
 
-                        delegate: MenuItem {
-                            id: menuItem4
-                            implicitHeight: titleBar.height
-
-                            contentItem: Text {
-                                text: menuItem4.text
-                                font: menuItem4.font
-                                color: active ? (menuItem4.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
-                                horizontalAlignment: Text.AlignLeft
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                            }
-
-                            background: Rectangle {
-                                anchors.fill: parent
-                                opacity: menuItem4.highlighted ? 0.7 : 1.0
-                                color: "#170624"
-                            }
-                        }
+                        delegate: TitleBarMenuItem { }
                     }
 
                     delegate: MenuBarItem {

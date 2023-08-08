@@ -10,6 +10,9 @@
 #include <unordered_map>
 #include <winnt.h>
 #include <afxwin.h>
+#include <shlobj.h>
+#include <shlwapi.h>
+#pragma comment(lib,"shlwapi.lib")
 
 #ifdef __windows__
 #undef __windows__
@@ -25,11 +28,13 @@ using universal_string = std::basic_string<TCHAR, std::char_traits<TCHAR>, std::
 
 class WebViewDialog : public CDialog
 {
-private:
-
-	wil::com_ptr<ICoreWebView2Environment> m_webview_environment;
-	wil::com_ptr<ICoreWebView2Controller> m_controller;
 	wil::com_ptr<ICoreWebView2> m_webview;
+	wil::com_ptr<ICoreWebView2_2> m_webview_2;
+	//wil::com_ptr<ICoreWebView2_16> m_webview_16;
+	wil::com_ptr<ICoreWebView2Environment> m_webview_environment;
+	wil::com_ptr<ICoreWebView2Environment2> m_webview_environment_2;
+	wil::com_ptr<ICoreWebView2Controller> m_controller;
+	wil::com_ptr<ICoreWebView2Settings> m_web_settings;
 	wil::com_ptr<IDCompositionDevice> m_dcomp_device;
 	std::vector<std::unique_ptr<ComponentBase>> m_components;
 	HWND m_main_window = nullptr;
@@ -66,10 +71,10 @@ public:
 
 	void InitializeWebView();
 	void CloseWebView(bool cleanup_user_data_folder = false);
-	HRESULT OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView2Environment* environment);
-	HRESULT OnCreateCoreWebView2ControllerCompleted(HRESULT result, ICoreWebView2Controller* controller);
 	void RunAsync(std::function<void(void)> callback);
 	void ResizeEverything();
+	HRESULT OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView2Environment* environment);
+	HRESULT OnCreateCoreWebView2ControllerCompleted(HRESULT result, ICoreWebView2Controller* controller);
 	HRESULT DCompositionCreateDevice2(IUnknown* renderingDevice, REFIID riid, void** ppv);
 	HRESULT WebNavigationCompleteMessageReceived(ICoreWebView2* sender, IUnknown* args);
 	HRESULT WebCloseMessageReceived(ICoreWebView2* sender, IUnknown* args);
@@ -81,6 +86,18 @@ public:
 	ICoreWebView2* GetWebView() { return m_webview.get(); }
 	ICoreWebView2Environment* GetWebViewEnvironment() { return m_webview_environment.get(); }
 	HWND GetMainWindow() { return this->GetSafeHwnd(); }
+
+	void Navigate(const universal_string& url);
+	void NavigatePost(const universal_string& url, const universal_string& content, const universal_string& headers);
+	
+	void Stop();
+	void Reload();
+	void GoBack();
+	void GoForward();
+
+	void DisablePopups();
+
+	void ExecuteScript(const universal_string& code, std::function<HRESULT(HRESULT, PCWSTR)> callback = [](HRESULT e, PCWSTR str)->HRESULT { return S_OK; });
 
 	inline void SetSize(int width, int height) { m_window_width = width; m_window_height = height; }
 
