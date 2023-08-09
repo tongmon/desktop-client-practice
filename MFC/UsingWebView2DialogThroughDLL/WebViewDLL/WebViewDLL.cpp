@@ -49,10 +49,14 @@ CWebViewDLLApp::CWebViewDLLApp()
 	// InitInstance에 모든 중요한 초기화 작업을 배치합니다.
 }
 
+CWebViewDLLApp::~CWebViewDLLApp()
+{
+	delete webview_dlg;
+}
 
 // 유일한 CWebViewDLLApp 개체입니다.
 
-CWebViewDLLApp theApp;
+CWebViewDLLApp app;
 
 
 // CWebViewDLLApp 초기화
@@ -61,16 +65,36 @@ BOOL CWebViewDLLApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
+	webview_dlg = nullptr;
+
 	return TRUE;
 }
 
-void RunWebViewDialog(WebViewParam* wvp)
+#ifdef __cplusplus
+extern "C"
 {
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+#endif 
 
-	if (webview_dlg)
-		delete webview_dlg;
+	void RunWebViewDialog(WebViewParam* wvp)
+	{
+		AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
-	webview_dlg = new WebViewDialog(wvp->url, wvp->hwnd, wvp->title, wvp->size, wvp->callbacks.data());
-	webview_dlg->DoModal();
+		if (app.webview_dlg)
+			delete app.webview_dlg;
+
+		app.webview_dlg = new WebViewDialog(wvp->url, wvp->hwnd, wvp->title, wvp->size, wvp->callbacks.data());
+		app.webview_dlg->DoModal();
+	}
+
+	bool ExecuteScript(const universal_string& script, HRESULT(*callback)(HRESULT, const WCHAR*))
+	{
+		if (!app.webview_dlg)
+			return false;
+
+		app.webview_dlg->ExecuteScript(script, callback);
+		return true;
+	}
+
+#ifdef __cplusplus
 }
+#endif

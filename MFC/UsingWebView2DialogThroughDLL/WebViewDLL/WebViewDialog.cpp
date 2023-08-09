@@ -29,9 +29,9 @@ WebViewDialog::WebViewDialog(const universal_string& url, HWND parent, const uni
 		m_callbacks.push_back(callbacks[i]);
 }
 
-void WebViewDialog::DoDataExchange(CDataExchange* pDX)
+void WebViewDialog::DoDataExchange(CDataExchange* pdx)
 {
-	CDialog::DoDataExchange(pDX);
+	CDialog::DoDataExchange(pdx);
 }
 
 BEGIN_MESSAGE_MAP(WebViewDialog, CDialog)
@@ -55,13 +55,19 @@ std::wstring WebViewDialog::NormalizeUrl(const universal_string& url)
 
 void WebViewDialog::OnSize(UINT opt, int width, int height)
 {
-	// MoveWindow(0, 0, m_window_width, m_window_height);
-
-	window_width = width;
-	window_height = height;
-	ResizeEverything();
-
-	CDialog::OnSize(opt, width, height);
+	static bool first_load = true;
+	if (first_load)
+	{
+		MoveWindow(0, 0, window_width, window_height);
+		first_load = false;
+	}
+	else
+	{
+		window_width = width;
+		window_height = height;
+		ResizeEverything();
+	}
+	CDialog::OnSize(opt, window_width, window_height);
 }
 
 BOOL WebViewDialog::OnInitDialog()
@@ -98,9 +104,9 @@ afx_msg void WebViewDialog::OnClose()
 	CDialog::OnClose();
 }
 
-void WebViewDialog::OnSysCommand(UINT nID, LPARAM lParam)
+void WebViewDialog::OnSysCommand(UINT n_id, LPARAM lparam)
 {
-	CDialog::OnSysCommand(nID, lParam);
+	CDialog::OnSysCommand(n_id, lparam);
 }
 
 void WebViewDialog::OnPaint()
@@ -112,12 +118,12 @@ void WebViewDialog::OnPaint()
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// Center icon in client rectangle
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int cx_icon = GetSystemMetrics(SM_CXICON);
+		int cy_icon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - cx_icon + 1) / 2;
+		int y = (rect.Height() - cy_icon + 1) / 2;
 
 		// Draw the icon
 		dc.DrawIcon(x, y, m_icon);
@@ -435,8 +441,8 @@ HRESULT WebViewDialog::WebMessageReceived(ICoreWebView2* sender, ICoreWebView2We
 // window.close(); 등의 스크립트가 수행되면 작동해야 하나... 트리거가 잘 안되는 듯 함
 HRESULT WebViewDialog::WebCloseMessageReceived(ICoreWebView2* sender, IUnknown* args)
 {
-	if (m_callbacks[WebViewParam::OnDialogClose])
-		m_callbacks[WebViewParam::OnDialogClose](L"close");
+	if (m_callbacks[WebViewParam::OnCloseMessageReceived])
+		m_callbacks[WebViewParam::OnCloseMessageReceived](L"close");
 
 	EndDialog(0);
 	return S_OK;
@@ -447,8 +453,8 @@ HRESULT WebViewDialog::WebNavigationCompleteMessageReceived(ICoreWebView2* sende
 	BOOL is_success = FALSE;
 	args->get_IsSuccess(&is_success);
 	
-	if (m_callbacks[WebViewParam::OnCloseMessageReceived])
-		m_callbacks[WebViewParam::OnCloseMessageReceived](is_success ? L"success" : L"fail");
+	if (m_callbacks[WebViewParam::OnNavigationCompleteMessageReceived])
+		m_callbacks[WebViewParam::OnNavigationCompleteMessageReceived](is_success ? L"success" : L"fail");
 
 	return S_OK;
 }

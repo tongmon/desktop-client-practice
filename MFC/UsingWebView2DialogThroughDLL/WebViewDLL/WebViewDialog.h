@@ -45,18 +45,12 @@ class WebViewDialog : public CDialog
 	DWORD m_creation_mode_id;
 	universal_string m_title;
 	std::wstring m_url;
-	// std::unordered_map<std::wstring, std::wstring>& m_html_result; // 태그 ID별로 결과값 저장, key = element id, value = id에 저장된 값
-	// std::wstring m_message_from_web; // 스크립트 수행으로 전달되는 결과값
 
 	std::vector<std::function<void(LPCWSTR)>> m_callbacks;
 
 public:
 	int window_width;
 	int window_height;
-
-	// bool is_base64_encoded;
-	// bool is_direct_close; // 직접 다이얼로그 프레임의 X 버튼을 눌러 껐는지 여부, 반환값이라고 보면 된다.
-	// bool should_get_msg_when_closed;
 
 	// 웹에서 전달받을 element id들을 해쉬맵에 미리 넣어준다.  
 	// 예를 들어 Element_ID에 해당하는 값을 웹에서 던져주고 싶다면 웹 페이지 로직은 document.getElementById('Element_ID').textContent = str; 와 같을 것이다.
@@ -77,7 +71,7 @@ public:
 	void ConnectEventHandlers();
 	HRESULT OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView2Environment* environment);
 	HRESULT OnCreateCoreWebView2ControllerCompleted(HRESULT result, ICoreWebView2Controller* controller);
-	HRESULT DCompositionCreateDevice2(IUnknown* renderingDevice, REFIID riid, void** ppv);
+	HRESULT DCompositionCreateDevice2(IUnknown* rendering_device, REFIID riid, void** ppv);
 	HRESULT WebNavigationCompleteMessageReceived(ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs* args);
 	HRESULT WebNavigationStartMessageReceived(ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args);
 	HRESULT WebCloseMessageReceived(ICoreWebView2* sender, IUnknown* args);
@@ -98,13 +92,7 @@ public:
 
 	void DisablePopups();
 
-	void ExecuteScript(const universal_string& code, std::function<HRESULT(HRESULT, PCWSTR)> callback = [](HRESULT e, PCWSTR str)->HRESULT { return S_OK; });
-
-	inline void SetUrl(LPCTSTR url) { m_url = NormalizeUrl(url); }
-
-	// inline auto GetFullWebResult() { return m_html_result; }
-
-	// std::wstring GetElementValue(const std::wstring& key);
+	void ExecuteScript(const universal_string& code, std::function<HRESULT(HRESULT, PCWSTR)> callback = {});
 
 private:
 	template <class ComponentType> ComponentType* GetComponent();
@@ -112,12 +100,12 @@ private:
 	virtual BOOL OnInitDialog();
 	virtual BOOL DestroyWindow();
 	virtual BOOL PreTranslateMessage(MSG* msg);
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT n_id, LPARAM lparam);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT opt, int width, int height);
 	afx_msg void OnClose();
 	afx_msg HCURSOR OnQueryDragIcon();
-	void DoDataExchange(CDataExchange* pDX);
+	void DoDataExchange(CDataExchange* pdx);
 	DECLARE_MESSAGE_MAP()
 };
 

@@ -115,27 +115,61 @@ struct WebViewParam
 
 void CWebViewProjectDlg::OnWebViewButtonClicked()
 {
-	using WebViewFunc = void(*)(WebViewParam*);
+	using RunWebViewDlg = void(*)(WebViewParam*);
+
+	using ExecuteScript = bool(*)(
+#if defined(UNICODE) || defined(_UNICODE)
+		const std::wstring& script,
+#else
+		const std::string& script,
+#endif
+		HRESULT(*)(HRESULT, const WCHAR*));
 
 	HINSTANCE h_instance = LoadLibrary(_T("WebViewDLL.dll"));
 	if (!h_instance)
 		return;
 
-	WebViewFunc webview_func = reinterpret_cast<WebViewFunc>(GetProcAddress(h_instance, "RunWebViewDialog"));
+	// 웹 뷰 다이얼로그 수행하는 함수
+	RunWebViewDlg fn_runwebview = reinterpret_cast<RunWebViewDlg>(GetProcAddress(h_instance, "RunWebViewDialog"));
 
-	if (webview_func)
+	// 스크립트 수행 함수
+	ExecuteScript fn_executescript = reinterpret_cast<ExecuteScript>(GetProcAddress(h_instance, "ExecuteScript"));
+
+
+	if (!fn_runwebview)
+		return;
+
+	WebViewParam wvp
 	{
-		WebViewParam wvp
-		{
-			_T("https://www.google.com/"),
-			_T("google"),
-			m_hWnd,
-			{900, 700},
-			{} 
-		};
+		_T("https://www.google.com/"),
+		_T("google"),
+		m_hWnd,
+		{900, 700}
+	};
 
-		webview_func(&wvp);
-	}
+	wvp.callbacks[WebViewParam::OnNavigationCompleteMessageReceived] = [&](LPCWSTR str)->void
+	{
+		// url 탐색이 완료되면 해당 함수가 실행되면서 html을 읽는 스크립트를 실행하게 만듦
+		fn_executescript(LR"(document.documentElement.innerHTML)",
+						 [](HRESULT err, const WCHAR* str)->HRESULT
+						 {
+							 // str에 html 정보가 담기게 됨.
+							 return S_OK;
+						 });
+
+		/*
+		// 밑과 같이 특정 태그에 대한 정보를 가져올 수도 있음.
+		ExecuteScript fn_executescript = reinterpret_cast<ExecuteScript>(GetProcAddress(h_instance, "ExecuteScript"));
+		fn_executescript(LR"(document.getElementById("Specific_ID").innerText)",
+						 [](HRESULT err, const WCHAR* str)->HRESULT
+						 {
+						 	 // str에 Specific_ID에 대한 내용이 담겨져있음.
+						 	 return S_OK;
+						 });
+		*/
+	};
+
+	fn_runwebview(&wvp);
 
 	FreeLibrary(h_instance);
 }

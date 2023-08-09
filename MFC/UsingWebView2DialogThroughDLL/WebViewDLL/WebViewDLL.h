@@ -15,6 +15,9 @@ class CWebViewDLLApp : public CWinApp
 {
 public:
 	CWebViewDLLApp();
+	~CWebViewDLLApp();
+
+	WebViewDialog* webview_dlg;
 
 // 재정의입니다.
 public:
@@ -42,6 +45,15 @@ struct WebViewParam
 	std::array<std::function<void(LPCWSTR)>, CallBackCnt> callbacks;
 };
 
-static WebViewDialog* webview_dlg = nullptr;
+#ifdef __cplusplus
+extern "C"
+{
+#endif 
 
-void RunWebViewDialog(WebViewParam* wvp);
+	void RunWebViewDialog(WebViewParam* wvp);
+
+	bool ExecuteScript(const universal_string& script, HRESULT(*callback)(HRESULT, const WCHAR*) = nullptr);
+
+#ifdef __cplusplus 
+}
+#endif 
