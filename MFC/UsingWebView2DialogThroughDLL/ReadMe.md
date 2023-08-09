@@ -61,9 +61,11 @@ Visual Studio IDE를 기준으로 ```링커 -> 입력 -> 모듈 정의 파일```
 LIBRARY
 
 EXPORTS
-    PrintHelloWorld
+    PrintHelloWorld @1
 ```
 위와 같이 .def를 수정해줬다면 MainFunc()는 잘 작동할 것이다.  
+@1는 함수 순번이다.  
+여러 함수를 Export 할 때는 ```함수 이름 @2``` 처럼 @ 뒤의 숫자를 증가시켜야 한다.  
 &nbsp;  
 
 ### __declspec(dllexport) 이용  
@@ -80,7 +82,37 @@ __declspec(dllexport)는 Windows에서 미리 정의된 매크로인 AFX_API_EXP
 이렇게 함수 형태만 위와 같이 바꿔주면 따로 .def 파일 없이도 MainFunc가 잘 작동한다.  
 &nbsp;  
 
-## DLL Export 주의점  
+## Name Mangling  
+
+간혹 라이브러리 Export 할 때 LNK 4022 빌드 오류가 발생할 때가 있다.  
+이는 Name Mangling과 관련있다.  
+C는 함수 오버로딩을 지원하지 않기에 ```Sum(int a, int b)``` 함수의 이름은 Sum으로 정해진다.  
+반면 C++은 ```Sum(int a, int b)```, ```Sum(double a, double b)```와 같이 동일한 이름의 각기 다른 함수를 구분해야 하는데 내부적으로 예를들어 ```Sum(int a, int b)```은 ```?Sum@HAY12```, ```Sum(double a, double b)```은 ```?Sum@HAZZ7``` 이렇게 이름이 바뀌게 된다.  
+
+여기서 정의한 [def 파일](#def-파일-이용)을 보면 EXPORTS란에 PrintHelloWorld라고 함수 이름이 정직하게 쓰여져 있는데 이러면 LNK 4022 빌드 오류가 발생할 수 있다.  
+def 파일에 적힌 PrintHelloWorld 이름을 Name Mangling이 발생한 후의 이름(ex: ?PrintHelloWorld@YAXHD@Z)으로 바꾸거나 ```extern "C"```를 이용해야 한다.  
+
+```extern "C"```는 밑과 같이 사용할 수 있다.  
+```c++
+#ifdef __cplusplus
+extern "C"
+{
+#endif 
+
+	void PrintHelloWorld()
+	{
+		std::cout << "Hello World";
+	}
+
+#ifdef __cplusplus 
+}
+#endif 
+```
+C 파일은 ```extern "C"```를 이용할 필요가 없기에 ```__cplusplus```인 경우에만 Name Mangling을 방지한다.  
+만약 PrintHelloWorld 함수가 .hpp, .cpp로 나누어진다면 함수 선언부, 정의부를 모두 ```extern "C"```로 덮어줘야 한다.  
+&nbsp;  
+
+## Libraray Runtime Type  
 
 DLL을 Export하는 경우 런타임 라이브러리 유형을 주의해야 한다.  
 특히 메모리의 할당과 해제가 발생하는 부분에서 특정 모듈과 메인 프로젝트의 런타임 라이브러리가 다르다면 실행 도중 런타임 에러가 발생한다.  
