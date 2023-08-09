@@ -175,7 +175,7 @@ void WebViewDialog::InitializeWebView()
 		if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
 		{
 			// 웹뷰 설치가 안되어 있는 경우 웹뷰 설치
-			
+
 			// 1. 온라인 연결이 가능하여 웹뷰를 설치할 수 있는 경우 편하게 MicrosoftEdgeWebview2Setup를 이용
 			// MicrosoftEdgeWebview2Setup.exe는 경로에 따라 달라져야됨.
 			// std::system("MicrosoftEdgeWebview2Setup.exe /silent /install");
@@ -193,8 +193,8 @@ void WebViewDialog::InitializeWebView()
 			{
 				// Regstry Key 탐색
 				result = RegOpenKeyEx((i % 2 ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE),
-									   (i ? _T("SOFTWARE\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}") : _T("SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")),
-									   0, KEY_READ, &hkey);
+									  (i ? _T("SOFTWARE\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}") : _T("SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")),
+									  0, KEY_READ, &hkey);
 				if (result != ERROR_SUCCESS)
 					continue;
 
@@ -212,7 +212,7 @@ void WebViewDialog::InitializeWebView()
 			// AfxMessageBox(_T("WebView2를 설치해야 합니다."));
 		}
 		else
-			AfxMessageBox(_T("웹뷰 환경 구성에 실패하였습니다."));		
+			AfxMessageBox(_T("웹뷰 환경 구성에 실패하였습니다."));
 	}
 }
 
@@ -262,7 +262,7 @@ HRESULT WebViewDialog::OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView
 	environment->QueryInterface(IID_PPV_ARGS(&m_webview_environment));
 	environment->QueryInterface(IID_PPV_ARGS(&m_webview_environment_2));
 
-	m_webview_environment->CreateCoreWebView2Controller(this->GetSafeHwnd(), 
+	m_webview_environment->CreateCoreWebView2Controller(this->GetSafeHwnd(),
 														Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(this, &WebViewDialog::OnCreateCoreWebView2ControllerCompleted).Get());
 
 	return S_OK;
@@ -346,7 +346,7 @@ void WebViewDialog::NavigatePost(const universal_string& url, const universal_st
 
 	wil::com_ptr<ICoreWebView2WebResourceRequest> web_resource_request;
 	wil::com_ptr<IStream> post_data_stream = SHCreateMemStream(reinterpret_cast<const BYTE*>(content.c_str()),
-															   content.length() + 1);
+															   static_cast<UINT>(content.length() + 1));
 
 	m_webview_environment_2->CreateWebResourceRequest(
 		m_url.c_str(),
@@ -357,7 +357,7 @@ void WebViewDialog::NavigatePost(const universal_string& url, const universal_st
 #else
 		StrToWStr(headers).c_str(),
 #endif
-		&web_resource_request);
+		& web_resource_request);
 
 	m_webview_2->NavigateWithWebResourceRequest(web_resource_request.get());
 }
@@ -452,7 +452,7 @@ HRESULT WebViewDialog::WebNavigationCompleteMessageReceived(ICoreWebView2* sende
 {
 	BOOL is_success = FALSE;
 	args->get_IsSuccess(&is_success);
-	
+
 	if (m_callbacks[WebViewParam::OnNavigationCompleteMessageReceived])
 		m_callbacks[WebViewParam::OnNavigationCompleteMessageReceived](is_success ? L"success" : L"fail");
 

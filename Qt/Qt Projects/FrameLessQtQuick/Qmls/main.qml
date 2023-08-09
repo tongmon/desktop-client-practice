@@ -57,7 +57,6 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignLeft
 
                     Menu {
-                        id: menu1
                         title: "File"
                         Action {
                             text: "New Text File"
@@ -172,15 +171,21 @@ ApplicationWindow {
                     }
                 }
 
+                // 윈도우 드래그 가능 상태로 만들어주는 부분
                 Item {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
                     MouseArea {
                         anchors.fill: parent
+
+                        // 누르고 있는 경우 startSystemMove() 함수 수행
+                        // startSystemMove()는 윈도우를 드래그 가능 상태로 만들고 aero snap, aero shake와 같은 윈도우 기본 기능도 부여함
                         onPressed: {
                             applicationWindow.startSystemMove()
                         }
+
+                        // startSystemMove()를 하더라도 더블 클릭시 maximize / restore 기능은 부여하지 않기에 직접 구현
                         onDoubleClicked: {
                             applicationWindow.visibility = maximumButton.checked ? Window.Windowed : Window.Maximized
                         }
@@ -201,6 +206,8 @@ ApplicationWindow {
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
+
+                    // C++에 구현되어 있는 최소화 버튼에 대한 Invoke 함수 onMinimizeButtonClicked()를 수행
                     onClicked: {
                         cppConnector.onMinimizeButtonClicked()
                     }
@@ -224,6 +231,8 @@ ApplicationWindow {
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
+
+                    // C++에 구현되어 있는 최대/복구 버튼에 대한 Invoke 함수 onMaximizeButtonClicked()를 수행
                     onClicked: {
                         cppConnector.onMaximizeButtonClicked()
                     }
@@ -244,6 +253,8 @@ ApplicationWindow {
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectFit
                     }
+
+                    // C++에 구현되어 있는 닫기 버튼에 대한 Invoke 함수 onMaximizeButtonClicked()를 수행
                     onClicked: {
                         cppConnector.onCloseButtonClicked()
                     }

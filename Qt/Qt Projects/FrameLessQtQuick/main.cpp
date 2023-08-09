@@ -42,7 +42,10 @@ int main(int argc, char *argv[])
             {
                 if (win_quick_window.SetQuickWindow(qobject_cast<QQuickWindow *>(engine.rootObjects().at(0))))
                 {
+                    // qml 창에 대한 이벤트 핸들러 등록
                     engine.installEventFilter(&win_quick_window);
+
+                    // qml에 cppConnector 객체 등록, 해당 객체에 minimize, maximize / restore, close 기능 연결되어 있음
                     engine.rootContext()->setContextProperty("cppConnector", &win_quick_window);
                 }
             }
