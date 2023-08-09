@@ -9,6 +9,8 @@
 #include "afxdialogex.h"
 #include <vector>
 #include <unordered_map>
+#include <array>
+#include <functional>
 #include <string>
 
 #ifdef _DEBUG
@@ -94,14 +96,21 @@ HCURSOR CWebViewProjectDlg::OnQueryDragIcon()
 // WebViewDLL의 구조체와 동일해야 한다.
 struct WebViewParam
 {
-	bool is_base64_encoded = false;
-	bool should_get_msg_when_closed = false;
-	bool is_direct_close = false;
+	enum CallBackType
+	{
+		OnDialogClose,
+		OnCloseMessageReceived,
+		OnNavigationCompleteMessageReceived,
+		OnNavigationStartMessageReceived,
+		OnMessageReceived,
+		CallBackCnt
+	};
+
 	LPCTSTR url = nullptr;
 	LPCTSTR title = nullptr;
 	HWND hwnd = nullptr;
 	SIZE size = { 500,500 };
-	std::unordered_map<std::wstring, std::wstring> html_result = {};
+	std::array<std::function<void(LPCWSTR)>, CallBackCnt> callbacks;
 };
 
 void CWebViewProjectDlg::OnWebViewButtonClicked()
@@ -112,18 +121,15 @@ void CWebViewProjectDlg::OnWebViewButtonClicked()
 	if (!h_instance)
 		return;
 
-	WebViewFunc webview_func = reinterpret_cast<WebViewFunc>(GetProcAddress(h_instance, "RunWebView"));
+	WebViewFunc webview_func = reinterpret_cast<WebViewFunc>(GetProcAddress(h_instance, "RunWebViewDialog"));
 
 	if (webview_func)
 	{
 		WebViewParam wvp
 		{
-			false,
-			false,
-			false,
 			_T("https://www.google.com/"),
 			_T("google"),
-			this->m_hWnd,
+			m_hWnd,
 			{900, 700},
 			{} 
 		};

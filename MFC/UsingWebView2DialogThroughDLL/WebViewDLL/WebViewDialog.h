@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <string>
+#include <array>
 #include <unordered_map>
 #include <winnt.h>
 #include <afxwin.h>
@@ -28,6 +29,7 @@ using universal_string = std::basic_string<TCHAR, std::char_traits<TCHAR>, std::
 
 class WebViewDialog : public CDialog
 {
+	HWND m_main_window;
 	wil::com_ptr<ICoreWebView2> m_webview;
 	wil::com_ptr<ICoreWebView2_2> m_webview_2;
 	//wil::com_ptr<ICoreWebView2_16> m_webview_16;
@@ -37,33 +39,32 @@ class WebViewDialog : public CDialog
 	wil::com_ptr<ICoreWebView2Settings> m_web_settings;
 	wil::com_ptr<IDCompositionDevice> m_dcomp_device;
 	std::vector<std::unique_ptr<ComponentBase>> m_components;
-	HWND m_main_window = nullptr;
-	HINSTANCE g_hinstance;
-	static constexpr size_t s_max_laod_strLoadString = 100;
 	template <class ComponentType, class... Args> void NewComponent(Args&&... args);
 
 	HICON m_icon;
-	DWORD m_creation_mode_id = 0;
+	DWORD m_creation_mode_id;
 	universal_string m_title;
-	universal_string m_url;
-	std::wstring m_message_from_web; // 스크립트 수행으로 전달되는 결과값
-	int m_window_width;
-	int m_window_height;
-	std::unordered_map<std::wstring, std::wstring>& m_html_result; // 태그 ID별로 결과값 저장, key = element id, value = id에 저장된 값
+	std::wstring m_url;
+	// std::unordered_map<std::wstring, std::wstring>& m_html_result; // 태그 ID별로 결과값 저장, key = element id, value = id에 저장된 값
+	// std::wstring m_message_from_web; // 스크립트 수행으로 전달되는 결과값
+
+	std::vector<std::function<void(LPCWSTR)>> m_callbacks;
 
 public:
-	bool is_base64_encoded;
-	bool is_direct_close; // 직접 다이얼로그 프레임의 X 버튼을 눌러 껐는지 여부, 반환값이라고 보면 된다.
-	bool should_get_msg_when_closed;
+	int window_width;
+	int window_height;
+
+	// bool is_base64_encoded;
+	// bool is_direct_close; // 직접 다이얼로그 프레임의 X 버튼을 눌러 껐는지 여부, 반환값이라고 보면 된다.
+	// bool should_get_msg_when_closed;
 
 	// 웹에서 전달받을 element id들을 해쉬맵에 미리 넣어준다.  
 	// 예를 들어 Element_ID에 해당하는 값을 웹에서 던져주고 싶다면 웹 페이지 로직은 document.getElementById('Element_ID').textContent = str; 와 같을 것이다.
-	WebViewDialog(universal_string url, 
+	WebViewDialog(const universal_string& url,
 				  HWND parent, 
 				  const universal_string& title, 
-				  int width, 
-				  int height, 
-				  std::unordered_map<std::wstring, std::wstring>& element_ids);
+				  SIZE size,
+				  std::function<void(LPCWSTR)> *callbacks);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_WEBVIEW2_DIALOG };
@@ -71,12 +72,14 @@ public:
 
 	void InitializeWebView();
 	void CloseWebView(bool cleanup_user_data_folder = false);
-	void RunAsync(std::function<void(void)> callback);
+	void RunAsync(std::function<void()> callback);
 	void ResizeEverything();
+	void ConnectEventHandlers();
 	HRESULT OnCreateEnvironmentCompleted(HRESULT result, ICoreWebView2Environment* environment);
 	HRESULT OnCreateCoreWebView2ControllerCompleted(HRESULT result, ICoreWebView2Controller* controller);
 	HRESULT DCompositionCreateDevice2(IUnknown* renderingDevice, REFIID riid, void** ppv);
-	HRESULT WebNavigationCompleteMessageReceived(ICoreWebView2* sender, IUnknown* args);
+	HRESULT WebNavigationCompleteMessageReceived(ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs* args);
+	HRESULT WebNavigationStartMessageReceived(ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args);
 	HRESULT WebCloseMessageReceived(ICoreWebView2* sender, IUnknown* args);
 	HRESULT WebMessageReceived(ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args);
 
@@ -97,19 +100,18 @@ public:
 
 	void ExecuteScript(const universal_string& code, std::function<HRESULT(HRESULT, PCWSTR)> callback = [](HRESULT e, PCWSTR str)->HRESULT { return S_OK; });
 
-	inline void SetSize(int width, int height) { m_window_width = width; m_window_height = height; }
+	inline void SetUrl(LPCTSTR url) { m_url = NormalizeUrl(url); }
 
-	inline void SetUrl(LPCTSTR url) { m_url = url; }
+	// inline auto GetFullWebResult() { return m_html_result; }
 
-	inline auto GetFullWebResult() { return m_html_result; }
-
-	std::wstring GetElementValue(const std::wstring& key);
+	// std::wstring GetElementValue(const std::wstring& key);
 
 private:
 	template <class ComponentType> ComponentType* GetComponent();
-
+	std::wstring NormalizeUrl(const universal_string& url);
 	virtual BOOL OnInitDialog();
 	virtual BOOL DestroyWindow();
+	virtual BOOL PreTranslateMessage(MSG* msg);
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT opt, int width, int height);

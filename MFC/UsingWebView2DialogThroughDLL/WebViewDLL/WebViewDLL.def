@@ -4,4 +4,4 @@ LIBRARY
 
 EXPORTS
     ; 명시적 내보내기를 여기에 사용할 수 있습니다.
-    RunWebView
+    RunWebViewDialog

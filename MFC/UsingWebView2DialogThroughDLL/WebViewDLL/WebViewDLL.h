@@ -25,31 +25,23 @@ public:
 
 struct WebViewParam
 {
-	bool is_base64_encoded = false;
-	bool should_get_msg_when_closed = false;
-	bool is_direct_close = false;
+	enum CallBackType
+	{
+		OnDialogClose,
+		OnCloseMessageReceived,
+		OnNavigationCompleteMessageReceived,
+		OnNavigationStartMessageReceived,
+		OnMessageReceived,
+		CallBackCnt
+	};
+
 	LPCTSTR url = nullptr;
 	LPCTSTR title = nullptr;
 	HWND hwnd = nullptr;
 	SIZE size = { 500,500 };
-	std::unordered_map<std::wstring, std::wstring> html_result = {};
+	std::array<std::function<void(LPCWSTR)>, CallBackCnt> callbacks;
 };
 
-void RunWebViewDialog(WebViewParam* wvp)
-{
+static WebViewDialog* webview_dlg = nullptr;
 
-}
-
-void RunWebView(WebViewParam* wvp)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-
-	WebViewDialog wvd(wvp->url, wvp->hwnd, wvp->title, wvp->size.cx, wvp->size.cy, wvp->html_result);
-
-	wvd.is_base64_encoded = wvp->is_base64_encoded;
-	wvd.should_get_msg_when_closed = wvp->should_get_msg_when_closed;
-
-	wvd.DoModal();
-
-	wvp->is_direct_close = wvd.is_direct_close;
-}
+void RunWebViewDialog(WebViewParam* wvp);

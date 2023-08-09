@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "framework.h"
 #include "WebViewDLL.h"
+#include "WebViewDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -61,4 +62,15 @@ BOOL CWebViewDLLApp::InitInstance()
 	CWinApp::InitInstance();
 
 	return TRUE;
+}
+
+void RunWebViewDialog(WebViewParam* wvp)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+	if (webview_dlg)
+		delete webview_dlg;
+
+	webview_dlg = new WebViewDialog(wvp->url, wvp->hwnd, wvp->title, wvp->size, wvp->callbacks.data());
+	webview_dlg->DoModal();
 }

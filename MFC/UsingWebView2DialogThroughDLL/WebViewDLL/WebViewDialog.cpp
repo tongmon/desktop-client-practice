@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "WebViewDialog.h"
+#include "WebViewDLL.h"
 #include "winuser.h"
 #include "ViewComponent.h"
 #include "resource.h"
@@ -7,19 +8,25 @@
 #include <Shellapi.h>
 #include <ShlObj_core.h>
 #include <regex>
+#include <algorithm>
 
 #ifdef __windows__
 #undef __windows__
 #endif
 
 using Microsoft::WRL::Callback;
-static constexpr UINT s_runAsyncWindowMessage = WM_APP;
+static constexpr UINT WM_WEBVIEW2_APP_CALLBACK = WM_APP + 123;
 
-WebViewDialog::WebViewDialog(universal_string url, HWND parent, const universal_string& title, int width, int height, std::unordered_map<std::wstring, std::wstring>& html_ret)
-	: CDialog(IDD_WEBVIEW2_DIALOG, CWnd::FromHandle(parent)), m_url{ url }, m_title{ title }, m_window_width{ width }, m_window_height{ height }, m_html_result{ html_ret }
+WebViewDialog::WebViewDialog(const universal_string& url, HWND parent, const universal_string& title, SIZE size, std::function<void(LPCWSTR)>* callbacks)
+	: CDialog(IDD_WEBVIEW2_DIALOG, CWnd::FromHandle(parent)), m_main_window{ nullptr },
+	m_url(NormalizeUrl(url)),
+	m_title{ title },
+	window_width{ size.cx },
+	window_height{ size.cy },
+	m_creation_mode_id{ 0 }
 {
-	is_direct_close = is_base64_encoded = should_get_msg_when_closed = false;
-	m_message_from_web = L"";
+	for (size_t i = 0; i < WebViewParam::CallBackCnt; i++)
+		m_callbacks.push_back(callbacks[i]);
 }
 
 void WebViewDialog::DoDataExchange(CDataExchange* pDX)
@@ -37,12 +44,21 @@ BEGIN_MESSAGE_MAP(WebViewDialog, CDialog)
 	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
+std::wstring WebViewDialog::NormalizeUrl(const universal_string& url)
+{
+#if defined(UNICODE) || defined(_UNICODE)
+	return Utf8ToWStr(WStrToUtf8(url));
+#else
+	return Utf8ToWStr(StrToUtf8(url));
+#endif
+}
+
 void WebViewDialog::OnSize(UINT opt, int width, int height)
 {
 	// MoveWindow(0, 0, m_window_width, m_window_height);
 
-	m_window_width = width;
-	m_window_height = height;
+	window_width = width;
+	window_height = height;
 	ResizeEverything();
 
 	CDialog::OnSize(opt, width, height);
@@ -76,26 +92,8 @@ BOOL WebViewDialog::DestroyWindow()
 
 afx_msg void WebViewDialog::OnClose()
 {
-	is_direct_close = true;
-
-	// 닫는 경우 받을 웹 메시지 태그 ID가 뭔지 결정해야 한다.
-	// 일단 임시로 Result로 설정해놨다.
-	std::wstring element_id = L"Result", script_content = L"document.getElementById(\"%ELEMENT_ID%\").innerText";
-	script_content = std::regex_replace(script_content, std::wregex(L"%ELEMENT_ID%"), element_id.c_str());
-
-	// 직접 닫는 경우에도 웹에서 전달한 결과물을 받으려면 밑의 로직을 활성화하면 된다.  
-	if (should_get_msg_when_closed)
-	{
-		m_webview->ExecuteScript(script_content.c_str(),
-								 Callback<ICoreWebView2ExecuteScriptCompletedHandler>([this](HRESULT errorCode, LPCWSTR result)-> HRESULT
-								 {
-									 m_message_from_web = result;
-									 m_message_from_web = std::regex_replace(m_message_from_web, std::wregex(L"\\n\\r"), L"\n\r");
-									 m_message_from_web = std::regex_replace(m_message_from_web, std::wregex(L"\\n"), L"\n");
-									 m_message_from_web = std::move(m_message_from_web.substr(1, m_message_from_web.length() - 2));
-									 return S_OK;
-								 }).Get());
-	}
+	if (m_callbacks[WebViewParam::OnDialogClose])
+		m_callbacks[WebViewParam::OnDialogClose](L"close");
 
 	CDialog::OnClose();
 }
@@ -149,12 +147,11 @@ void WebViewDialog::ResizeEverything()
 void WebViewDialog::RunAsync(std::function<void()> callback)
 {
 	auto* task = new std::function<void()>(callback);
-	PostMessage(s_runAsyncWindowMessage, reinterpret_cast<WPARAM>(task), 0);
+	PostMessage(WM_WEBVIEW2_APP_CALLBACK, reinterpret_cast<WPARAM>(task), 0);
 }
 
 void WebViewDialog::InitializeWebView()
 {
-
 	CloseWebView();
 	m_dcomp_device = nullptr;
 
@@ -213,22 +210,22 @@ void WebViewDialog::InitializeWebView()
 	}
 }
 
-HRESULT WebViewDialog::DCompositionCreateDevice2(IUnknown* renderingDevice, REFIID riid, void** ppv)
+HRESULT WebViewDialog::DCompositionCreateDevice2(IUnknown* rendering_device, REFIID riid, void** ppv)
 {
 	HRESULT hr = E_FAIL;
-	static decltype(::DCompositionCreateDevice2)* fnCreateDCompDevice2 = nullptr;
-	if (fnCreateDCompDevice2 == nullptr)
+	static decltype(::DCompositionCreateDevice2)* fn_create_dcomp_device2 = nullptr;
+	if (!fn_create_dcomp_device2)
 	{
 		HMODULE hmod = ::LoadLibraryEx(_T("dcomp.dll"), nullptr, 0);
-		if (hmod != nullptr)
+		if (hmod)
 		{
-			fnCreateDCompDevice2 = reinterpret_cast<decltype(::DCompositionCreateDevice2)*>(
+			fn_create_dcomp_device2 = reinterpret_cast<decltype(::DCompositionCreateDevice2)*>(
 				::GetProcAddress(hmod, "DCompositionCreateDevice2"));
 		}
 	}
-	if (fnCreateDCompDevice2 != nullptr)
+	if (fn_create_dcomp_device2)
 	{
-		hr = fnCreateDCompDevice2(renderingDevice, riid, ppv);
+		hr = fn_create_dcomp_device2(rendering_device, riid, ppv);
 	}
 	return hr;
 }
@@ -286,32 +283,10 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 
 		m_webview->get_Settings(&m_web_settings);
 
-		EventRegistrationToken token;
+		// 웹 이벤트 등록
+		ConnectEventHandlers();
 
-		// 웹 닫기 메시지 리시버
-		m_webview->add_WindowCloseRequested(Callback<ICoreWebView2WindowCloseRequestedEventHandler>(this, &WebViewDialog::WebCloseMessageReceived).Get(), &token);
-
-		// 웹 주소 바뀔 때 호출되는 리시버
-		m_webview->add_NavigationCompleted(Callback<ICoreWebView2NavigationCompletedEventHandler>(this, &WebViewDialog::WebNavigationCompleteMessageReceived).Get(), &token);
-
-		// 웹에서 뿌린 메시지 받는 리시버
-		m_webview->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(this, &WebViewDialog::WebMessageReceived).Get(), &token);
-
-		// 이 외에도 많은 이벤트 종류가 있음
-
-		if (m_url.empty())
-		{
-			ResizeEverything();
-			return S_OK;
-		}
-
-		HRESULT hresult = m_webview->Navigate(
-#if defined(UNICODE) || defined(_UNICODE)
-			Utf8ToWStr(WStrToUtf8(m_url)).c_str()
-#else
-			Utf8ToWStr(StrToUtf8(m_url)).c_str()
-#endif 
-		);
+		HRESULT hresult = m_webview->Navigate(m_url.c_str());
 
 		if (hresult == S_OK)
 		{
@@ -326,21 +301,33 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 	return S_OK;
 }
 
+void WebViewDialog::ConnectEventHandlers()
+{
+	EventRegistrationToken token;
+
+	// 웹 닫기 메시지 리시버
+	m_webview->add_WindowCloseRequested(Callback<ICoreWebView2WindowCloseRequestedEventHandler>(this, &WebViewDialog::WebCloseMessageReceived).Get(), &token);
+
+	// 웹 주소 변환 시작시 호출되는 리시버
+	m_webview->add_NavigationStarting(Callback<ICoreWebView2NavigationStartingEventHandler>(this, &WebViewDialog::WebNavigationStartMessageReceived).Get(), &token);
+
+	// 웹 주소 변환 성공시 호출되는 리시버
+	m_webview->add_NavigationCompleted(Callback<ICoreWebView2NavigationCompletedEventHandler>(this, &WebViewDialog::WebNavigationCompleteMessageReceived).Get(), &token);
+
+	// 웹에서 뿌린 메시지 받는 리시버
+	m_webview->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(this, &WebViewDialog::WebMessageReceived).Get(), &token);
+
+	// 이 외에도 많은 이벤트 종류가 있음
+}
+
 // 웹 주소 탐색
 void WebViewDialog::Navigate(const universal_string& url)
 {
 	if (!m_webview)
 		return;
 
-	m_url = url;
-
-	m_webview->Navigate(
-#if defined(UNICODE) || defined(_UNICODE)
-		Utf8ToWStr(WStrToUtf8(m_url)).c_str()
-#else
-		Utf8ToWStr(StrToUtf8(m_url)).c_str()
-#endif
-	);
+	m_url = NormalizeUrl(url);
+	m_webview->Navigate(m_url.c_str());
 }
 
 // Post 방식으로 웹 주소 탐색
@@ -349,20 +336,14 @@ void WebViewDialog::NavigatePost(const universal_string& url, const universal_st
 	if (!m_webview)
 		return;
 
-	std::wstring final_url;
-
-#if defined(UNICODE) || defined(_UNICODE)
-	final_url = Utf8ToWStr(WStrToUtf8(m_url)).c_str();
-#else
-	final_url = Utf8ToWStr(StrToUtf8(m_url)).c_str();
-#endif
+	m_url = NormalizeUrl(url);
 
 	wil::com_ptr<ICoreWebView2WebResourceRequest> web_resource_request;
 	wil::com_ptr<IStream> post_data_stream = SHCreateMemStream(reinterpret_cast<const BYTE*>(content.c_str()),
 															   content.length() + 1);
 
 	m_webview_environment_2->CreateWebResourceRequest(
-		final_url.c_str(),
+		m_url.c_str(),
 		L"POST",
 		post_data_stream.get(),
 #if defined(UNICODE) || defined(_UNICODE)
@@ -442,35 +423,11 @@ void WebViewDialog::ExecuteScript(const universal_string& code, std::function<HR
 // some message 메시지는 TryGetWebMessageAsString를 통해 획득할 수 있음
 HRESULT WebViewDialog::WebMessageReceived(ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args)
 {
-	LPWSTR web_msg;
-	args->TryGetWebMessageAsString(&web_msg);
-	std::wstring received_message = web_msg;
+	LPWSTR web_msg = nullptr;
+	if (args->TryGetWebMessageAsString(&web_msg) != E_INVALIDARG && m_callbacks[WebViewParam::OnMessageReceived])
+		m_callbacks[WebViewParam::OnMessageReceived](web_msg);
 
-	// 밑은 some message라는 웹에서 전달한 메시지를 받는 로직 예시
-	if (received_message == L"some message")
-	{
-		if (!m_html_result.empty())
-		{
-			std::wstring base_script = L"document.getElementById(\"%ELEMENT_ID%\").innerText";
-
-			for (auto& content : m_html_result)
-			{
-				std::wstring script = std::regex_replace(base_script, std::wregex(L"%ELEMENT_ID%"), content.first);
-
-				m_webview->ExecuteScript(script.c_str(),
-										 Callback<ICoreWebView2ExecuteScriptCompletedHandler>([this](HRESULT errorCode, LPCWSTR result)-> HRESULT
-										 {
-											 m_message_from_web = result;
-											 m_message_from_web = std::regex_replace(m_message_from_web, std::wregex(L"\\n\\r"), L"\n\r");
-											 m_message_from_web = std::regex_replace(m_message_from_web, std::wregex(L"\\n"), L"\n");
-											 m_message_from_web = std::move(m_message_from_web.substr(1, m_message_from_web.length() - 2));
-											 return S_OK;
-										 }).Get());
-
-				m_html_result[content.first] = m_message_from_web;
-			}
-		}
-	}
+	CoTaskMemFree(web_msg);
 	return S_OK;
 }
 
@@ -478,29 +435,55 @@ HRESULT WebViewDialog::WebMessageReceived(ICoreWebView2* sender, ICoreWebView2We
 // window.close(); 등의 스크립트가 수행되면 작동해야 하나... 트리거가 잘 안되는 듯 함
 HRESULT WebViewDialog::WebCloseMessageReceived(ICoreWebView2* sender, IUnknown* args)
 {
+	if (m_callbacks[WebViewParam::OnDialogClose])
+		m_callbacks[WebViewParam::OnDialogClose](L"close");
+
 	EndDialog(0);
 	return S_OK;
 }
 
-// 웹 주소 바뀌는 경우 이벤트 핸들러
-HRESULT WebViewDialog::WebNavigationCompleteMessageReceived(ICoreWebView2* sender, IUnknown* args)
+HRESULT WebViewDialog::WebNavigationCompleteMessageReceived(ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs* args)
 {
+	BOOL is_success = FALSE;
+	args->get_IsSuccess(&is_success);
+	
+	if (m_callbacks[WebViewParam::OnCloseMessageReceived])
+		m_callbacks[WebViewParam::OnCloseMessageReceived](is_success ? L"success" : L"fail");
 
 	return S_OK;
 }
 
-std::wstring WebViewDialog::GetElementValue(const std::wstring& key)
+HRESULT WebViewDialog::WebNavigationStartMessageReceived(ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args)
 {
-	if (m_html_result[key] == L"null")
-		return L"";
-	if (is_base64_encoded)
-		m_message_from_web = std::move(Utf8ToWStr(DecodeBase64(WStrToUtf8(m_message_from_web))));
-	return m_html_result[key];
+	wil::unique_cotaskmem_string uri;
+	args->get_Uri(&uri);
+
+	if (m_callbacks[WebViewParam::OnNavigationStartMessageReceived])
+		m_callbacks[WebViewParam::OnNavigationStartMessageReceived](uri.get());
+
+	return S_OK;
+}
+
+BOOL WebViewDialog::PreTranslateMessage(MSG* msg)
+{
+	switch (msg->message)
+	{
+	case WM_WEBVIEW2_APP_CALLBACK: {
+		auto* task = reinterpret_cast<std::function<void()>*>(msg->wParam);
+		(*task)();
+		delete task;
+		break;
+	}
+	default:
+		break;
+	}
+
+	return CDialog::PreTranslateMessage(msg);
 }
 
 /*
 https://mariusbancila.ro/blog/2021/01/27/using-microsoft-edge-in-a-native-windows-desktop-app-part-4/
-void CWebBrowser::PrintToPDF(bool const landscape, std::function<void(bool, CString)> callback)
+void WebViewDialog::PrintToPDF(bool const landscape, std::function<void(bool, CString)> callback)
 {
    WCHAR defaultName[MAX_PATH] = L"default.pdf";
 
