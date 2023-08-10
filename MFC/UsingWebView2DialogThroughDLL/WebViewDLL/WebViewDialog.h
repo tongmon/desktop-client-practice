@@ -52,8 +52,6 @@ public:
 	int window_width;
 	int window_height;
 
-	// 웹에서 전달받을 element id들을 해쉬맵에 미리 넣어준다.  
-	// 예를 들어 Element_ID에 해당하는 값을 웹에서 던져주고 싶다면 웹 페이지 로직은 document.getElementById('Element_ID').textContent = str; 와 같을 것이다.
 	WebViewDialog(const universal_string& url,
 				  HWND parent, 
 				  const universal_string& title, 

@@ -162,7 +162,7 @@ void WebViewDialog::InitializeWebView()
 	m_dcomp_device = nullptr;
 
 #ifdef USE_WEBVIEW2_WIN10
-	m_wincompCompositor = nullptr;
+	m_wincomp_compositor = nullptr;
 #endif
 
 	auto options = Microsoft::WRL::Make<CoreWebView2EnvironmentOptions>();
@@ -280,7 +280,7 @@ HRESULT WebViewDialog::OnCreateCoreWebView2ControllerCompleted(HRESULT result, I
 		NewComponent<ViewComponent>(
 			this, m_dcomp_device.get(),
 #ifdef USE_WEBVIEW2_WIN10
-			m_wincompCompositor,
+			m_wincomp_compositor,
 #endif
 			m_creation_mode_id == 195); // IDM_CREATION_MODE_TARGET_DCOMP
 

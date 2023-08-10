@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Qt5Config.cmake 파일의 경로를 적어준다.  
 # C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5
 # C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cmake/Qt5
-set(QT_DIR "C:\\Qt\\5_15_9_msvc_x64_shared\\lib\\cmake\\Qt5")
+set(QT_DIR "C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cmake/Qt5")
 
 # Qt 모듈 포함
 # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
