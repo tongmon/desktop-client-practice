@@ -351,3 +351,30 @@ Window {
 ```
 위 처럼 따로 JS 함수를 만들지 않고 시그널을 이용할 수도 있다.  
 &nbsp;  
+
+## 위치 잡기    
+
+### Anchors  
+
+```anchors```는 특정 객체의 상대적 위치를 정하는 데 필요하다.  
+일일이 x, y를 지정해주는 것보다 기준 객체를 정하고 해당 기준 객체에서 얼마만큼 떨어져 있는지를 표현하는 것이 용이하기 때문에 존재한다.  
+해당 특성은 ```anchors.left```, ```anchors.top```, ```anchors.right```, ```anchors.bottom``` 등으로 지정할 수 있다.  
+
+```anchors.verticalCenter```, ```anchors.horizontalCenter```, ```anchors.centerIn``` 등의 특성도 존재한다.  
+특성 이름에 맞게 수직 정렬, 수평 정렬, 중앙 정렬을 나타낸다.  
+
+```anchors``` 내부 특성인 ```margin```은 ```anchors```로 정해진 기준점으로 부터 정확히 얼마나 떨어져 있는지 판단하기 위해 사용된다.   
+예를 들어 item2 객체 내부에 ```anchors.left: item1.right```이고 ```anchors.leftMargin: 5```라고 정의되어 있다면 item2는 item1 오른쪽 옆에 붙은 상태에서 5만큼 떨어져있게 된다.  
+
+주의할 점은 anchors는 상대적인 위치를 이용하긴 하지만 상대적인 객체에 대한 제약이 있다.  
+parent, child, sibling에 한하여 상대적 위치 설정이 가능하다.  
+쌩뚱맞게 parent의 sibling을 기준으로 ```anchors```를 설정해봤자 적용이 안된다.  
+&nbsp;  
+
+### Positioners  
+
+Grid, Row, Column 등의 객체는 anchors 특성을 지정할 필요없이 자동적으로 anchors 특성이 적용된다.  
+오히려 anchors를 적용하면 위치 정렬이 망가진다.  
+margin은 위 객체들에서 spacing으로 처리할 수 있다.  
+
+내부 아이템 정렬 설정은 Grid에서 예를 들어보면 ```horizontalItemAlignment: Grid.AlignRight```, ```verticalItemAlignment: Grid.AlignVCenter``` 등으로 설정할 수 있다.  
