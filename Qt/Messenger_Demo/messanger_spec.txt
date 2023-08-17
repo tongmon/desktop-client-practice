@@ -1,0 +1,18 @@
+messanger app spec
+
+os <-> i/o content <-> socket(i/o object) <-> program
+
+프론트엔드 : qml
+클라이언트 : qt, c++, boost.asio / 비동기 병렬
+백엔드 : c++, boost.asio / 비동기 병렬
+
+db : PostgreSQL
+db, c++ 연동 : SOCI
+
+DB table 구조
+
+유저: id[char 32], session_id[char 64], pw[char 256], profile_img_path[char 256]
+특정 세션: talk_id[char 530](유저 id + '_' + 숫자), chat_msg_path[char 256](과거 채팅 이력 파일 이름 규칙이 있음)
+chat_msg_path는 "talk_id_날짜"로 구성됨.
+새로운 컴퓨터에서 로긴하면 특정 세션의 모든 chat_msg_path를 로드함
+날짜가 변경되고 사용자가 처음 로그인하면 각 세션의 "session_id_날짜" 파일을 생성하고 db에 업데이트 함

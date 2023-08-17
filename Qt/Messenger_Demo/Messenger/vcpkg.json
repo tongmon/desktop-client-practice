@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "boost-asio-practice",
+  "version": "1.0.0",
+  "dependencies": [
+    {
+      "name": "boost-asio",
+      "features": [
+        "ssl"
+      ]
+    }
+  ],
+  "builtin-baseline": "77ed341f9fa24185a1540b2bd4f32e45c9f7c4cb"
+}
