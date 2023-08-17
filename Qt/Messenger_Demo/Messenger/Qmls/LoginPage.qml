@@ -18,6 +18,28 @@ ApplicationWindow {
     // 창 크기 재조절 외각 부분, C++에서 받아서 처리
     property int resizeBorderWidth: 6
 
+    Loader { 
+        id: pageLoader 
+    }
+
+    function checkLoginValidation()
+    {
+        if(4 < userIDTextField.text.length && 
+           userIDTextField.text.length < 32 &&
+           12 < passwordTextField.text.length && 
+           passwordTextField.text.length < 64)
+            return true
+        return false
+    }
+
+    function tryLogin()
+    {
+        pageLoader.source = "qrc:/qml/MainPage.qml"
+
+        // 밑은 진짜 로그인 절차 로직, Boost Asio 사용하는 cpp 함수 호출 요망
+
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
@@ -159,6 +181,17 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
 
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredHeight: 35
+                    text: qsTr("User Login")
+                }
+
+                Item {
+                    Layout.preferredHeight: 20
+                    Layout.fillWidth: true
+                }
+
                 Rectangle {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.preferredHeight: 35
@@ -194,10 +227,8 @@ ApplicationWindow {
                         }
 
                         Keys.onReturnPressed: {
-                            // if (userID.text.length > 0 && password.text.length > 0 && termsCheck.checked)
-                            //     login();
-                            // else
-                            //     password.forceActiveFocus();
+                            if (checkLoginValidation())
+                                tryLogin()
                         }
 
                         background: Rectangle {
@@ -233,10 +264,6 @@ ApplicationWindow {
                         placeholderText: "Password"
                         selectByMouse: true
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                        // validator: IntValidator { 
-                        //     bottom: 0 
-                        //     top: 31
-                        // }
 
                         anchors {
                             left: passwordImage.right                
@@ -246,15 +273,43 @@ ApplicationWindow {
                         }
 
                         Keys.onReturnPressed: {
-                            // if (userID.text.length > 0 && password.text.length > 0 && termsCheck.checked)
-                            //     login();
-                            // else
-                            //     password.forceActiveFocus();
+                            if (checkLoginValidation())
+                                tryLogin()
                         }
 
                         background: Rectangle {
                             color: "transparent"
                         }
+                    }
+                }
+
+                Item {
+                    Layout.preferredHeight: 10
+                    Layout.fillWidth: true
+                }
+
+                Row {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredHeight: 35
+                    Layout.preferredWidth: 275
+
+                    CheckBox {
+                        text: qsTr("Remember")
+                    }
+                }
+
+                Item {
+                    Layout.preferredHeight: 20
+                    Layout.fillWidth: true
+                }
+
+                Button {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: qsTr("Login")
+
+                    onClicked: {
+                        if (checkLoginValidation())
+                            tryLogin()
                     }
                 }
 
