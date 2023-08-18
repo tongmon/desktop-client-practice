@@ -1,3 +1,4 @@
+#include "LoginPageContext.hpp"
 #include "WinQuickWindow.hpp"
 
 #include <QGuiApplication>
@@ -45,8 +46,12 @@ int main(int argc, char *argv[])
                     // qml 창에 대한 이벤트 핸들러 등록
                     engine.installEventFilter(&win_quick_window);
 
-                    // qml에 cppConnector 객체 등록, 해당 객체에 minimize, maximize / restore, close 기능 연결되어 있음
-                    engine.rootContext()->setContextProperty("cppConnector", &win_quick_window);
+                    // qml에 mainWindowContext 객체 등록, 해당 객체에 minimize, maximize / restore, close 기능 연결되어 있음
+                    engine.rootContext()->setContextProperty("mainWindowContext", &win_quick_window);
+
+                    // LoginPage 관련 Context 함수 등록
+                    std::shared_ptr<LoginPageContext> lpc(new LoginPageContext);
+                    engine.rootContext()->setContextProperty("loginPageContext", lpc.get());
                 }
             }
         },

@@ -91,7 +91,7 @@ ApplicationWindow {
 
                     // C++에 구현되어 있는 최소화 버튼에 대한 Invoke 함수 onMinimizeButtonClicked()를 수행
                     onClicked: {
-                        cppConnector.onMinimizeButtonClicked()
+                        mainWindowContext.onMinimizeButtonClicked()
                     }
                 }
 
@@ -116,7 +116,7 @@ ApplicationWindow {
 
                     // C++에 구현되어 있는 최대/복구 버튼에 대한 Invoke 함수 onMaximizeButtonClicked()를 수행
                     onClicked: {
-                        cppConnector.onMaximizeButtonClicked()
+                        mainWindowContext.onMaximizeButtonClicked()
                     }
                 }
 
@@ -138,7 +138,7 @@ ApplicationWindow {
 
                     // C++에 구현되어 있는 닫기 버튼에 대한 Invoke 함수 onMaximizeButtonClicked()를 수행
                     onClicked: {
-                        cppConnector.onCloseButtonClicked()
+                        mainWindowContext.onCloseButtonClicked()
                     }
                 }
             }
