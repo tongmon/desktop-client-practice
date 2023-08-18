@@ -1,4 +1,5 @@
 #include "LoginPageContext.hpp"
+#include "TCPClient.hpp"
 
 LoginPageContext::LoginPageContext()
 {

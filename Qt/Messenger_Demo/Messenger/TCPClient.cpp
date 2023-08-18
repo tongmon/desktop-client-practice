@@ -115,8 +115,7 @@ void TCPClient::AsyncRequestAndGetData(const std::string &request,
 
 void TCPClient::CancelRequest(unsigned int request_id)
 {
-    std::unique_lock<std::mutex>
-        lock(m_active_sessions_guard);
+    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
 
     auto it = m_active_sessions.find(request_id);
     if (it != m_active_sessions.end())

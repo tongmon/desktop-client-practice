@@ -2,8 +2,12 @@
 #define HEADER__FILE__WINQUICKWINDOW
 
 #include <QAbstractNativeEventFilter>
+#include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QScreen>
+#include <memory>
+#include <tuple>
+#include <vector>
 
 class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 {
@@ -12,13 +16,14 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     QQuickWindow *m_quick_window;
     HWND m_hwnd;
     int m_resize_border_width;
+    std::vector<std::pair<std::string, std::unique_ptr<QObject>>> m_context_properties;
 
   public:
-    WinQuickWindow(QQuickWindow *quick_window = nullptr);
+    WinQuickWindow(QQmlApplicationEngine *engine = nullptr);
     ~WinQuickWindow();
 
     HWND GetHandle();
-    bool SetQuickWindow(QQuickWindow *quick_window);
+    bool InitWindow(QQmlApplicationEngine &engine);
     void OnScreenChanged(QScreen *screen);
 
     bool eventFilter(QObject *obj, QEvent *evt);

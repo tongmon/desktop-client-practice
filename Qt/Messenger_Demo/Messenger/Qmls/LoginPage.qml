@@ -10,7 +10,7 @@ Rectangle {
     {
         if(4 < userIDTextField.text.length && 
            userIDTextField.text.length < 32 &&
-           12 < passwordTextField.text.length && 
+           7 < passwordTextField.text.length && 
            passwordTextField.text.length < 64)
             return true
         return false

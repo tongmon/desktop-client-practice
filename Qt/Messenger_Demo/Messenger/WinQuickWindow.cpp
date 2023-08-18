@@ -1,16 +1,19 @@
 #include "WinQuickWindow.hpp"
+#include "LoginPageContext.hpp"
 
 #include <QMetaObject>
+#include <QQmlContext>
+#include <QQmlProperty>
 #include <Windows.h>
 #include <Windowsx.h>
 #include <dwmapi.h>
 #include <memory>
 #include <stdexcept>
 
-WinQuickWindow::WinQuickWindow(QQuickWindow *quick_window)
-    : m_quick_window{quick_window}
+WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 {
-    SetQuickWindow(quick_window);
+    if (engine)
+        InitWindow(*engine);
 }
 
 WinQuickWindow::~WinQuickWindow()
@@ -22,12 +25,13 @@ HWND WinQuickWindow::GetHandle()
     return m_hwnd;
 }
 
-bool WinQuickWindow::SetQuickWindow(QQuickWindow *quick_window)
+bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
 {
-    if (!quick_window)
+    m_quick_window = qobject_cast<QQuickWindow *>(engine.rootObjects().at(0));
+
+    if (!m_quick_window)
         return false;
 
-    m_quick_window = quick_window;
     m_hwnd = (HWND)m_quick_window->winId();
     m_resize_border_width = m_quick_window->property("resizeBorderWidth").toInt() * m_quick_window->devicePixelRatio();
 
@@ -36,6 +40,18 @@ bool WinQuickWindow::SetQuickWindow(QQuickWindow *quick_window)
     // 윈도우 그림자 설정
     const MARGINS aero_shadow_on = {1, 1, 1, 1};
     ::DwmExtendFrameIntoClientArea(m_hwnd, &aero_shadow_on);
+
+    // qml 창에 대한 이벤트 핸들러 등록
+    engine.installEventFilter(this);
+
+    // qml에 mainWindowContext 객체 등록, 해당 객체에 minimize, maximize / restore, close 기능 연결되어 있음
+    engine.rootContext()->setContextProperty("mainWindowContext", this);
+
+    // qml에 loginPageContext 객체를 등록하기 위해 사전에 m_context_properties 등록
+    // m_context_properties.push_back({"loginPageContext", std::make_unique<LoginPageContext>()});
+
+    for (const auto &prop : m_context_properties)
+        engine.rootContext()->setContextProperty(prop.first.c_str(), prop.second.get());
 
     return true;
 }

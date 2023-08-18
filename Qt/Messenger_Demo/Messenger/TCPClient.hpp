@@ -36,9 +36,9 @@ struct Session
     {
     }
 
-    asio::ip::tcp::socket m_sock; 
-    asio::ip::tcp::endpoint m_ep; 
-    std::string m_request;        
+    asio::ip::tcp::socket m_sock;
+    asio::ip::tcp::endpoint m_ep;
+    std::string m_request;
 
     asio::streambuf m_response_buf;
     std::string m_response;

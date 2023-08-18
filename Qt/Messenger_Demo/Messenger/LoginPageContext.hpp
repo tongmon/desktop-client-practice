@@ -1,8 +1,6 @@
 #ifndef HEADER__FILE__LOGINPAGECONTEXT
 #define HEADER__FILE__LOGINPAGECONTEXT
 
-#include "TCPClient.hpp"
-
 #include <QQuickWindow>
 
 class LoginPageContext : public QObject

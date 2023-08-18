@@ -1,11 +1,7 @@
-#include "LoginPageContext.hpp"
 #include "WinQuickWindow.hpp"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include <QQmlProperty>
-#include <QQuickWindow>
 #include <QSurfaceFormat>
 
 int main(int argc, char *argv[])
@@ -37,23 +33,9 @@ int main(int argc, char *argv[])
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated,
         &app, [&](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
+            if ((!obj && url == objUrl) ||
+                !win_quick_window.InitWindow(engine))
                 QCoreApplication::exit(-1);
-            else
-            {
-                if (win_quick_window.SetQuickWindow(qobject_cast<QQuickWindow *>(engine.rootObjects().at(0))))
-                {
-                    // qml 창에 대한 이벤트 핸들러 등록
-                    engine.installEventFilter(&win_quick_window);
-
-                    // qml에 mainWindowContext 객체 등록, 해당 객체에 minimize, maximize / restore, close 기능 연결되어 있음
-                    engine.rootContext()->setContextProperty("mainWindowContext", &win_quick_window);
-
-                    // LoginPage 관련 Context 함수 등록
-                    std::shared_ptr<LoginPageContext> lpc(new LoginPageContext);
-                    engine.rootContext()->setContextProperty("loginPageContext", lpc.get());
-                }
-            }
         },
         Qt::QueuedConnection);
     engine.load(url);
