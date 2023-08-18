@@ -31,8 +31,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    // const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
-    const QUrl url(QStringLiteral("qrc:/qml/LoginPage.qml"));
+    const QUrl url(QStringLiteral("qrc:/qml/MainWindow.qml"));
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated,

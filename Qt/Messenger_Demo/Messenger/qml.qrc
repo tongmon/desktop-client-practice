@@ -18,5 +18,6 @@
     <qresource prefix="/qml">
         <file alias="MainPage.qml">Qmls/MainPage.qml</file>
         <file alias="LoginPage.qml">Qmls/LoginPage.qml</file>
+        <file alias="MainWindow.qml">Qmls/MainWindow.qml</file>
     </qresource>
 </RCC>
