@@ -1,7 +1,7 @@
 #ifndef HEADER__FILE__LOGINPAGECONTEXT
 #define HEADER__FILE__LOGINPAGECONTEXT
 
-#include <QQuickWindow>
+#include <QObject>
 
 class LoginPageContext : public QObject
 {
