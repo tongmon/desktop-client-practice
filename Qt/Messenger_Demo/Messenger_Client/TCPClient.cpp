@@ -5,6 +5,17 @@ namespace TCPClientLocalNamespace
 
 TCPClient::TCPClient(unsigned char num_of_threads)
 {
+    m_work.reset(new boost::asio::io_service::work(m_ios));
+
+    for (unsigned char i = 0; i < num_of_threads; i++)
+    {
+        std::unique_ptr<std::thread> th(
+            new std::thread([this]() {
+                m_ios.run();
+            }));
+
+        m_threads.push_back(std::move(th));
+    }
 }
 
 TCPClient::~TCPClient()
@@ -83,8 +94,7 @@ void TCPClient::AsyncRequestAndGetData(const std::string &request,
                                                                 return;
                                                             }
 
-                                                            std::unique_lock<std::mutex>
-                                                                cancel_lock(session->m_cancel_guard);
+                                                            std::unique_lock<std::mutex> cancel_lock(session->m_cancel_guard);
 
                                                             if (session->m_was_cancelled)
                                                             {

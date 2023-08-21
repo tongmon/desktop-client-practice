@@ -30,9 +30,33 @@
 #include <vector>
 #pragma endregion
 
+#include <boost/system.hpp>
+
 #include "TCPServer.hpp"
 
 int main(int argc, char *argv[])
 {
+    unsigned short port_num = 8080;
+
+    try
+    {
+        TCPServer server;
+
+        unsigned int thread_pool_size = 1;
+
+        server.Start(port_num, thread_pool_size);
+
+        char a;
+        std::cin >> a;
+
+        server.Stop();
+    }
+    catch (boost::system::system_error &e)
+    {
+        std::cout << "Error occured! Error code = "
+                  << e.code() << ". Message: "
+                  << e.what();
+    }
+
     return 0;
 }
