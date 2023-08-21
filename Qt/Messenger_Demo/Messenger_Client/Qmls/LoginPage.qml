@@ -116,7 +116,9 @@ Rectangle {
                 placeholderText: "Password"
                 selectByMouse: true
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-
+                echoMode: TextField.Password // echoMode: showText ? TextField.Normal : TextField.Password
+                passwordCharacter: "*"
+                
                 anchors {
                     left: passwordImage.right                
                     top: parent.top

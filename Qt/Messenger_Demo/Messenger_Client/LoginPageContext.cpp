@@ -15,7 +15,7 @@ bool LoginPageContext::tryLogin(const QString &id, const QString &pw)
 
     std::string request = id.toStdString() + "|^|" + pw.toStdString(), result;
 
-    tcp_client.AsyncRequestAndGetData(request, "127.0.1.0", 8080, 0,
+    tcp_client.AsyncRequestAndGetData(request, "127.0.0.1", 8080, 0,
                                       [&result](unsigned int request_id, const std::string &response, const boost::system::error_code &ec) -> void {
                                           switch (ec.value())
                                           {

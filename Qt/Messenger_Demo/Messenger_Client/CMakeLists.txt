@@ -5,7 +5,7 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # 프로젝트 이름
-project("Messenger" VERSION 1.0.0 LANGUAGES C CXX)
+project("Messenger_Client" VERSION 1.0.0 LANGUAGES C CXX)
 
 # Qt의 시그널 기능을 만들어주는 MOC 활성화  
 set(CMAKE_AUTOMOC ON)
@@ -60,7 +60,7 @@ target_link_libraries(
     gdi32.lib
 )
 
-#add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-#     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir "${CMAKE_SOURCE_DIR}/Qmls"  "${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
-#     WORKING_DIRECTORY "${QT_DIR}/../../../bin"
-#)
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir "${CMAKE_SOURCE_DIR}/Qmls"  "${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
+     WORKING_DIRECTORY "${QT_DIR}/../../../bin"
+)

@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <unordered_map>
 
 // Boost.Asio Windows 7 이상을 타겟으로 설정
