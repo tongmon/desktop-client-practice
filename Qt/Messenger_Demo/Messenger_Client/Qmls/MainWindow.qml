@@ -147,6 +147,7 @@ ApplicationWindow {
         // 메인 뷰
         Loader { 
             id: mainWindowLoader 
+            objectName: "mainWindowLoader"
             source: "qrc:/qml/LoginPage.qml"
             Layout.fillWidth: true
             Layout.fillHeight: true

@@ -3,15 +3,19 @@
 
 #include <QObject>
 
+class QQuickWindow;
+
 class LoginPageContext : public QObject
 {
     Q_OBJECT
 
+    QQuickWindow *m_quick_window;
+
   public:
-    LoginPageContext();
+    LoginPageContext(QQuickWindow *quick_window = nullptr);
     ~LoginPageContext();
 
-    Q_INVOKABLE bool tryLogin(const QString &id, const QString &pw);
+    Q_INVOKABLE void tryLogin(const QString &id, const QString &pw);
 };
 
 #endif /* HEADER__FILE__LOGINPAGECONTEXT */

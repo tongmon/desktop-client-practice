@@ -18,7 +18,7 @@ Rectangle {
 
     function tryLogin()
     {
-        mainWindowLoader.source = "qrc:/qml/MainPage.qml"
+        // mainWindowLoader.source = "qrc:/qml/MainPage.qml"
 
         // 밑은 진짜 로그인 절차 로직, Boost Asio 사용하는 cpp 함수 호출 요망
         return loginPageContext.tryLogin(userIDTextField.text, passwordTextField.text)

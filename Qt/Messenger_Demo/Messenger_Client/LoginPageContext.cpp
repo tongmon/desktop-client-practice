@@ -1,7 +1,9 @@
 #include "LoginPageContext.hpp"
 #include "TCPClient.hpp"
+#include <QQuickWindow>
 
-LoginPageContext::LoginPageContext()
+LoginPageContext::LoginPageContext(QQuickWindow *quick_window)
+    : m_quick_window{quick_window}
 {
 }
 
@@ -9,29 +11,32 @@ LoginPageContext::~LoginPageContext()
 {
 }
 
-bool LoginPageContext::tryLogin(const QString &id, const QString &pw)
+void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
-    TCPClient tcp_client(1);
+    std::shared_ptr<TCPClient> tcp_client(new TCPClient(1));
 
-    std::string request = id.toStdString() + "|^|" + pw.toStdString(), result;
+    std::string request = id.toStdString() + "|^|" + pw.toStdString() + "\n";
 
-    tcp_client.AsyncRequestAndGetData(request, "127.0.0.1", 8080, 0,
-                                      [&result](unsigned int request_id, const std::string &response, const boost::system::error_code &ec) -> void {
-                                          switch (ec.value())
-                                          {
-                                          case boost::system::errc::success:
-                                              result = response;
-                                              break;
-                                          case boost::asio::error::operation_aborted:
-                                              result = "aborted";
-                                              break;
-                                          default:
-                                              result = ec.message();
-                                              break;
-                                          }
-                                      });
+    tcp_client->AsyncRequestAndGetData(request, "127.0.0.1", 3000, 0,
+                                       [this, tcp_client](unsigned int request_id, const std::string &response, const boost::system::error_code &ec) -> void {
+                                           switch (ec.value())
+                                           {
+                                           case boost::system::errc::success: {
+                                               if (response == "success")
+                                               {
+                                                   QObject *loader = m_quick_window->findChild<QObject *>("mainWindowLoader");
+                                                   loader->setProperty("source", "qrc:/qml/MainPage.qml");
+                                               }
+                                               break;
+                                           }
+                                           case boost::asio::error::operation_aborted:
 
-    tcp_client.Close();
+                                               break;
+                                           default:
+                                               // result = ec.message();
+                                               break;
+                                           }
 
-    return result == "success";
+                                           tcp_client->Close();
+                                       });
 }

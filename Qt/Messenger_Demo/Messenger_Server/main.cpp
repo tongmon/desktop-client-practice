@@ -36,7 +36,7 @@
 
 int main(int argc, char *argv[])
 {
-    unsigned short port_num = 8080;
+    unsigned short port_num = 3000;
 
     try
     {
