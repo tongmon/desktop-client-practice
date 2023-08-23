@@ -1,5 +1,6 @@
 #include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
+#include "TCPClient.hpp"
 
 #include <QMetaObject>
 #include <QQmlContext>
@@ -14,15 +15,23 @@ WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 {
     if (engine)
         InitWindow(*engine);
+
+    m_tcp_client = std::make_shared<TCPClient>(new TCPClient(4));
 }
 
 WinQuickWindow::~WinQuickWindow()
 {
+    m_tcp_client->Close();
 }
 
 HWND WinQuickWindow::GetHandle()
 {
     return m_hwnd;
+}
+
+TCPClient &WinQuickWindow::GetNetworkHandle()
+{
+    return *m_tcp_client;
 }
 
 bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
@@ -48,7 +57,7 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
     engine.rootContext()->setContextProperty("mainWindowContext", this);
 
     // qml에 loginPageContext 객체를 등록하기 위해 사전에 m_context_properties 등록
-    m_context_properties.push_back({"loginPageContext", std::make_unique<LoginPageContext>(m_quick_window)});
+    m_context_properties.push_back({"loginPageContext", std::make_unique<LoginPageContext>(this)});
 
     for (const auto &prop : m_context_properties)
         engine.rootContext()->setContextProperty(prop.first.c_str(), prop.second.get());

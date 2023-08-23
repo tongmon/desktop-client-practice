@@ -9,6 +9,8 @@
 #include <tuple>
 #include <vector>
 
+class TCPClient;
+
 class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
@@ -17,12 +19,14 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     HWND m_hwnd;
     int m_resize_border_width;
     std::vector<std::pair<std::string, std::unique_ptr<QObject>>> m_context_properties;
+    std::shared_ptr<TCPClient> m_tcp_client;
 
   public:
     WinQuickWindow(QQmlApplicationEngine *engine = nullptr);
     ~WinQuickWindow();
 
     HWND GetHandle();
+    TCPClient &GetNetworkHandle();
     bool InitWindow(QQmlApplicationEngine &engine);
     void OnScreenChanged(QScreen *screen);
 
