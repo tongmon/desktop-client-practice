@@ -1,6 +1,5 @@
-#include "WinQuickWindow.hpp"
+﻿#include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
-#include "TCPClient.hpp"
 
 #include <QMetaObject>
 #include <QQmlContext>
@@ -16,7 +15,7 @@ WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
     if (engine)
         InitWindow(*engine);
 
-    m_tcp_client = std::make_shared<TCPClient>(new TCPClient(4));
+    m_tcp_client = std::make_shared<TCPClient>(4);
 }
 
 WinQuickWindow::~WinQuickWindow()

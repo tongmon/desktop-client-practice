@@ -1,5 +1,7 @@
-#ifndef HEADER__FILE__WINQUICKWINDOW
+﻿#ifndef HEADER__FILE__WINQUICKWINDOW
 #define HEADER__FILE__WINQUICKWINDOW
+
+#include "TCPClient.hpp"
 
 #include <QAbstractNativeEventFilter>
 #include <QQmlApplicationEngine>
@@ -8,8 +10,6 @@
 #include <memory>
 #include <tuple>
 #include <vector>
-
-class TCPClient;
 
 class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 {

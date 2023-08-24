@@ -1,7 +1,4 @@
-#include "TCPClient.hpp"
-
-namespace TCPClientLocalNamespace
-{
+﻿#include "TCPClient.hpp"
 
 TCPClient::TCPClient(unsigned char num_of_threads)
 {
@@ -90,7 +87,7 @@ void TCPClient::AsyncConnect(const std::string &raw_ip_address,
     lock.unlock();
 
     session->m_sock.async_connect(session->m_ep,
-                                  [this, session, on_finish_connection](const system::error_code &ec) {
+                                  [this, session, on_finish_connection](const boost::system::error_code &ec) {
                                       if (ec != boost::system::errc::success)
                                       {
                                           session->m_ec = ec;
@@ -129,29 +126,29 @@ void TCPClient::AsyncWrite(unsigned int request_id,
     session = m_active_sessions[request_id];
     lock.unlock();
 
-    asio::async_write(session->m_sock,
-                      asio::buffer(session->m_request),
-                      [this, session, on_finish_write](const boost::system::error_code &ec, std::size_t bytes_transferred) {
-                          if (ec != boost::system::errc::success)
-                          {
-                              session->m_ec = ec;
-                              if (on_finish_write)
-                                  on_finish_write(CloseRequest(session->m_id));
-                              return;
-                          }
+    boost::asio::async_write(session->m_sock,
+                             boost::asio::buffer(session->m_request),
+                             [this, session, on_finish_write](const boost::system::error_code &ec, std::size_t bytes_transferred) {
+                                 if (ec != boost::system::errc::success)
+                                 {
+                                     session->m_ec = ec;
+                                     if (on_finish_write)
+                                         on_finish_write(CloseRequest(session->m_id));
+                                     return;
+                                 }
 
-                          std::unique_lock<std::mutex> cancel_lock(session->m_cancel_guard);
+                                 std::unique_lock<std::mutex> cancel_lock(session->m_cancel_guard);
 
-                          if (session->m_was_cancelled)
-                          {
-                              if (on_finish_write)
-                                  on_finish_write(CloseRequest(session->m_id));
-                              return;
-                          }
+                                 if (session->m_was_cancelled)
+                                 {
+                                     if (on_finish_write)
+                                         on_finish_write(CloseRequest(session->m_id));
+                                     return;
+                                 }
 
-                          if (on_finish_write)
-                              on_finish_write(session);
-                      });
+                                 if (on_finish_write)
+                                     on_finish_write(session);
+                             });
 }
 
 void TCPClient::AsyncReadUntil(unsigned int request_id,
@@ -168,26 +165,26 @@ void TCPClient::AsyncReadUntil(unsigned int request_id,
     session = m_active_sessions[request_id];
     lock.unlock();
 
-    asio::async_read_until(session->m_sock,
-                           session->m_response_buf,
-                           delim,
-                           [this, session, on_finish_read_until](const boost::system::error_code &ec, std::size_t bytes_transferred) {
-                               if (ec != boost::system::errc::success)
-                               {
-                                   session->m_ec = ec;
-                                   if (on_finish_read_until)
-                                       on_finish_read_until(CloseRequest(session->m_id));
-                                   return;
-                               }
-                               else
-                               {
-                                   std::istream strm(&session->m_response_buf);
-                                   std::getline(strm, session->m_response);
-                               }
+    boost::asio::async_read_until(session->m_sock,
+                                  session->m_response_buf,
+                                  delim,
+                                  [this, session, on_finish_read_until](const boost::system::error_code &ec, std::size_t bytes_transferred) {
+                                      if (ec != boost::system::errc::success)
+                                      {
+                                          session->m_ec = ec;
+                                          if (on_finish_read_until)
+                                              on_finish_read_until(CloseRequest(session->m_id));
+                                          return;
+                                      }
+                                      else
+                                      {
+                                          std::istream strm(&session->m_response_buf);
+                                          std::getline(strm, session->m_response);
+                                      }
 
-                               if (on_finish_read_until)
-                                   on_finish_read_until(session);
-                           });
+                                      if (on_finish_read_until)
+                                          on_finish_read_until(session);
+                                  });
 }
 
 /*
@@ -281,12 +278,12 @@ std::shared_ptr<Session> TCPClient::CloseRequest(unsigned int request_id)
 
     lock.unlock();
 
-    system::error_code ignored_ec;
+    boost::system::error_code ignored_ec;
 
-    session->m_sock.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
+    session->m_sock.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
 
-    if (session->m_ec == system::errc::success && session->m_was_cancelled)
-        session->m_ec = asio::error::operation_aborted;
+    if (session->m_ec == boost::system::errc::success && session->m_was_cancelled)
+        session->m_ec = boost::asio::error::operation_aborted;
 
     return session;
 }
@@ -314,5 +311,3 @@ void TCPClient::Close()
         thread->join();
     }
 }
-
-} // namespace TCPClientLocalNamespace

@@ -1,4 +1,4 @@
-#ifndef HEADER__FILE__TCPCLIENT
+﻿#ifndef HEADER__FILE__TCPCLIENT
 #define HEADER__FILE__TCPCLIENT
 
 #include <functional>
@@ -43,15 +43,9 @@ struct Session
     std::mutex m_cancel_guard;
 };
 
-namespace TCPClientLocalNamespace
-{
-using namespace boost;
-
-using Callback = std::function<void(unsigned int request_id, const std::string &response, const system::error_code &ec)>;
-
 class TCPClient
 {
-    asio::io_service m_ios;
+    boost::asio::io_service m_ios;
     std::map<unsigned int, std::shared_ptr<Session>> m_active_sessions;
     std::mutex m_active_sessions_guard;
     std::unique_ptr<boost::asio::io_service::work> m_work;
@@ -88,8 +82,5 @@ class TCPClient
 
     void Close();
 };
-} // namespace TCPClientLocalNamespace
-
-using TCPClientLocalNamespace::TCPClient;
 
 #endif /* HEADER__FILE__TCPCLIENT */
