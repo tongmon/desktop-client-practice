@@ -50,7 +50,7 @@ std::string Service::ProcessRequest(asio::streambuf &request)
     std::cout << req << "\n";
 
     // 실제 로직
-    std::string response = "Response\n";
+    std::string response = "success\n";
     return response;
 }
 

@@ -15,6 +15,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
 
+    QQmlApplicationEngine *m_engine;
     QQuickWindow *m_quick_window;
     HWND m_hwnd;
     int m_resize_border_width;

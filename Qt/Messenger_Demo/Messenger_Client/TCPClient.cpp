@@ -69,22 +69,23 @@ void TCPClient::OnRequestEnd(std::shared_ptr<Session> session, std::function<voi
 };
 */
 
-void TCPClient::AsyncConnect(const std::string &raw_ip_address,
+bool TCPClient::AsyncConnect(const std::string &raw_ip_address,
                              unsigned short port_num,
                              unsigned int request_id,
                              std::function<void(std::shared_ptr<Session>)> on_finish_connection)
 {
-    std::shared_ptr<Session> session(new Session(m_ios,
-                                                 raw_ip_address,
-                                                 port_num,
-                                                 "",
-                                                 request_id));
+    std::shared_ptr<Session> session;
+    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
+
+    if (m_active_sessions.find(request_id) == m_active_sessions.end())
+        session = std::make_shared<Session>(m_ios, raw_ip_address, port_num, "", request_id);
+    else
+        return false;
+    m_active_sessions[request_id] = session;
+
+    lock.unlock();
 
     session->m_sock.open(session->m_ep.protocol());
-
-    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
-    m_active_sessions[request_id] = session;
-    lock.unlock();
 
     session->m_sock.async_connect(session->m_ep,
                                   [this, session, on_finish_connection](const boost::system::error_code &ec) {
@@ -108,6 +109,8 @@ void TCPClient::AsyncConnect(const std::string &raw_ip_address,
                                       if (on_finish_connection)
                                           on_finish_connection(session);
                                   });
+
+    return true;
 }
 
 void TCPClient::AsyncWrite(unsigned int request_id,
@@ -272,7 +275,10 @@ std::shared_ptr<Session> TCPClient::CloseRequest(unsigned int request_id)
 
     auto it = m_active_sessions.find(request_id);
     if (it != m_active_sessions.end())
-        session = m_active_sessions.erase(it)->second;
+    {
+        session = it->second;
+        m_active_sessions.erase(it);
+    }
     else
         return nullptr;
 

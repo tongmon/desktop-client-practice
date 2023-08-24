@@ -5,14 +5,13 @@ import QtQuick.Layouts 1.12
 
 Rectangle {
     color: "#280a3d"
+    objectName: "loginPage"
 
     // 비밀번호, 아이디 유효성 검사
     function checkLoginValidation()
     {
-        if(4 < userIDTextField.text.length && 
-           userIDTextField.text.length < 32 &&
-           7 < passwordTextField.text.length && 
-           passwordTextField.text.length < 64)
+        if(4 < userIDTextField.text.length && userIDTextField.text.length < 32 &&
+           7 < passwordTextField.text.length && passwordTextField.text.length < 64)
             return true
         return false
     }
@@ -65,10 +64,10 @@ Rectangle {
                 placeholderText: "User ID"
                 selectByMouse: true
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                // validator: IntValidator { 
-                //     bottom: 0 
-                //     top: 31
-                // }
+                
+                validator: RegularExpressionValidator { 
+                    regularExpression: /[0-9a-zA-Z]+/
+                }
 
                 anchors {
                     left: userIDImage.right                

@@ -2,6 +2,8 @@
 #define HEADER__FILE__LOGINPAGECONTEXT
 
 #include <QObject>
+#include <QQmlComponent>
+#include <memory>
 
 class WinQuickWindow;
 

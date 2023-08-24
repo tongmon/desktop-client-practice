@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 
 Rectangle {
     color: "#280a3d"
+    objectName: "mainPage"
 
     Button {
         text: "This is Button!"

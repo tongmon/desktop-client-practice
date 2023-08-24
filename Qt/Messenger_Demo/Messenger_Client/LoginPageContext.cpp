@@ -16,9 +16,11 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
     auto &network_handle = m_window->GetNetworkHandle();
 
-    network_handle.AsyncConnect("127.0.0.1", 3000, 0);
+    if (!network_handle.AsyncConnect("127.0.0.1", 3000, 0))
+        return;
 
-    std::string request = id.toStdString() + "|^|" + pw.toStdString() + "\n";
+    std::string request = id.toStdString() + "|" + pw.toStdString() + "\n";
+
     network_handle.AsyncWrite(0, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
         if (session->m_ec != boost::system::errc::success)
             return;
@@ -30,7 +32,9 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
             // QObject *loader = m_window->GetQuickWindow().findChild<QObject *>("mainWindowLoader");
             // loader->setProperty("source", "qrc:/qml/MainPage.qml");
 
-            QMetaObject::invokeMethod(&m_window->GetQuickWindow(), "successLogin");
+            QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
+
+            network_handle.CloseRequest(session->m_id);
         });
     });
 
