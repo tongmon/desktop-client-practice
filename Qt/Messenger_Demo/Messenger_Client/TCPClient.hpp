@@ -11,8 +11,6 @@
 
 // Boost.Asio Windows 7 이상을 타겟으로 설정
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
-#define WIN32_LEAN_AND_MEAN
-
 #include <boost/asio.hpp>
 
 struct Session
@@ -59,8 +57,8 @@ class TCPClient
     std::unique_ptr<boost::asio::io_service::work> m_work;
     std::list<std::unique_ptr<std::thread>> m_threads;
 
-    void OnRequestComplete(std::shared_ptr<Session> session);
-    void OnRequestEnd(std::shared_ptr<Session> session, std::function<void(std::shared_ptr<Session>)> end_callback = {});
+    // void OnRequestComplete(std::shared_ptr<Session> session);
+    // void OnRequestEnd(std::shared_ptr<Session> session, std::function<void(std::shared_ptr<Session>)> end_callback = {});
 
   public:
     TCPClient(unsigned char num_of_threads);
@@ -76,15 +74,15 @@ class TCPClient
 
     void AsyncReadUntil(unsigned int request_id,
                         std::function<void(std::shared_ptr<Session>)> on_finish_read_until,
-                        const std::string &delim = "delime\ndelime");
+                        const std::string &delim = "\n");
 
-    void CloseRequest(unsigned int request_id);
+    std::shared_ptr<Session> CloseRequest(unsigned int request_id);
 
-    void AsyncRequestAndGetData(const std::string &request,
-                                const std::string &raw_ip_address,
-                                unsigned short port_num,
-                                unsigned int request_id,
-                                Callback callback);
+    // void AsyncRequestAndGetData(const std::string &request,
+    //                             const std::string &raw_ip_address,
+    //                             unsigned short port_num,
+    //                             unsigned int request_id,
+    //                             Callback callback);
 
     void CancelRequest(unsigned int request_id);
 

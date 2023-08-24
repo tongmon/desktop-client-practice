@@ -27,6 +27,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 
     HWND GetHandle();
     TCPClient &GetNetworkHandle();
+    QQuickWindow &GetQuickWindow();
     bool InitWindow(QQmlApplicationEngine &engine);
     void OnScreenChanged(QScreen *screen);
 

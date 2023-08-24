@@ -2,8 +2,10 @@
 #include "TCPClient.hpp"
 #include "WinQuickWindow.hpp"
 
-LoginPageContext::LoginPageContext(WinQuickWindow *quick_window)
-    : m_quick_window{quick_window}
+#include <QMetaObject>
+
+LoginPageContext::LoginPageContext(WinQuickWindow *window)
+    : m_window{window}
 {
 }
 
@@ -13,8 +15,24 @@ LoginPageContext::~LoginPageContext()
 
 void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
-    m_quick_window->GetNetworkHandle().AsyncConnect("127.0.0.1", 3000, 0, [](std::shared_ptr<Session> session) -> void {
+    auto &network_handle = m_window->GetNetworkHandle();
 
+    network_handle.AsyncConnect("127.0.0.1", 3000, 0);
+
+    std::string request = id.toStdString() + "|^|" + pw.toStdString() + "\n";
+    network_handle.AsyncWrite(0, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+        if (session->m_ec != boost::system::errc::success)
+            return;
+
+        network_handle.AsyncReadUntil(0, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+            if (session->m_ec != boost::system::errc::success)
+                return;
+
+            // QObject *loader = m_window->GetQuickWindow().findChild<QObject *>("mainWindowLoader");
+            // loader->setProperty("source", "qrc:/qml/MainPage.qml");
+
+            QMetaObject::invokeMethod(&m_window->GetQuickWindow(), "successLogin");
+        });
     });
 
     // std::shared_ptr<TCPClient> tcp_client(new TCPClient(1));

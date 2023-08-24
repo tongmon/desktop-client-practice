@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.12
 Rectangle {
     color: "#280a3d"
 
+    // 비밀번호, 아이디 유효성 검사
     function checkLoginValidation()
     {
         if(4 < userIDTextField.text.length && 
@@ -16,12 +17,10 @@ Rectangle {
         return false
     }
 
-    function tryLogin()
+    // 로그인 성공시 화면 전환
+    function successLogin()
     {
-        // mainWindowLoader.source = "qrc:/qml/MainPage.qml"
-
-        // 밑은 진짜 로그인 절차 로직, Boost Asio 사용하는 cpp 함수 호출 요망
-        loginPageContext.tryLogin(userIDTextField.text, passwordTextField.text)
+        mainWindowLoader.source = "qrc:/qml/MainPage.qml"
     }
 
     ColumnLayout {
@@ -80,7 +79,7 @@ Rectangle {
 
                 Keys.onReturnPressed: {
                     if (checkLoginValidation())
-                        tryLogin()
+                        loginPageContext.tryLogin(userIDTextField.text, passwordTextField.text)
                 }
 
                 background: Rectangle {
@@ -128,7 +127,7 @@ Rectangle {
 
                 Keys.onReturnPressed: {
                     if (checkLoginValidation())
-                        tryLogin()
+                        loginPageContext.tryLogin(userIDTextField.text, passwordTextField.text)
                 }
 
                 background: Rectangle {
@@ -163,7 +162,7 @@ Rectangle {
 
             onClicked: {
                 if (checkLoginValidation())
-                    tryLogin()
+                    loginPageContext.tryLogin(userIDTextField.text, passwordTextField.text)
             }
         }
 

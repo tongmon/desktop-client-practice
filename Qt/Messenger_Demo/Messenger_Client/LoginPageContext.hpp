@@ -9,10 +9,10 @@ class LoginPageContext : public QObject
 {
     Q_OBJECT
 
-    WinQuickWindow *m_quick_window;
+    WinQuickWindow *m_window;
 
   public:
-    LoginPageContext(WinQuickWindow *quick_window = nullptr);
+    LoginPageContext(WinQuickWindow *window = nullptr);
     ~LoginPageContext();
 
     Q_INVOKABLE void tryLogin(const QString &id, const QString &pw);

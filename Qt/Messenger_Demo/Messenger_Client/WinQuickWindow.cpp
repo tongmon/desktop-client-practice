@@ -34,6 +34,11 @@ TCPClient &WinQuickWindow::GetNetworkHandle()
     return *m_tcp_client;
 }
 
+QQuickWindow &WinQuickWindow::GetQuickWindow()
+{
+    return *m_quick_window;
+}
+
 bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
 {
     m_quick_window = qobject_cast<QQuickWindow *>(engine.rootObjects().at(0));

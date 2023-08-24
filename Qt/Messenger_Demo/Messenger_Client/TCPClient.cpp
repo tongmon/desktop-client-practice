@@ -49,6 +49,7 @@ void TCPClient::OnRequestComplete(std::shared_ptr<Session> session)
 };
 */
 
+/*
 void TCPClient::OnRequestEnd(std::shared_ptr<Session> session, std::function<void(std::shared_ptr<Session>)> end_callback)
 {
     system::error_code ignored_ec;
@@ -63,14 +64,13 @@ void TCPClient::OnRequestEnd(std::shared_ptr<Session> session, std::function<voi
 
     lock.unlock();
 
-    system::error_code ec;
-
     if (session->m_ec == system::errc::success && session->m_was_cancelled)
         session->m_ec = asio::error::operation_aborted;
 
     if (end_callback)
         end_callback(session);
 };
+*/
 
 void TCPClient::AsyncConnect(const std::string &raw_ip_address,
                              unsigned short port_num,
@@ -94,7 +94,8 @@ void TCPClient::AsyncConnect(const std::string &raw_ip_address,
                                       if (ec != boost::system::errc::success)
                                       {
                                           session->m_ec = ec;
-                                          OnRequestEnd(session, on_finish_connection);
+                                          if (on_finish_connection)
+                                              on_finish_connection(CloseRequest(session->m_id));
                                           return;
                                       }
 
@@ -102,7 +103,8 @@ void TCPClient::AsyncConnect(const std::string &raw_ip_address,
 
                                       if (session->m_was_cancelled)
                                       {
-                                          OnRequestEnd(session, on_finish_connection);
+                                          if (on_finish_connection)
+                                              on_finish_connection(CloseRequest(session->m_id));
                                           return;
                                       }
 
@@ -133,7 +135,8 @@ void TCPClient::AsyncWrite(unsigned int request_id,
                           if (ec != boost::system::errc::success)
                           {
                               session->m_ec = ec;
-                              OnRequestEnd(session, on_finish_write);
+                              if (on_finish_write)
+                                  on_finish_write(CloseRequest(session->m_id));
                               return;
                           }
 
@@ -141,7 +144,8 @@ void TCPClient::AsyncWrite(unsigned int request_id,
 
                           if (session->m_was_cancelled)
                           {
-                              OnRequestEnd(session, on_finish_write);
+                              if (on_finish_write)
+                                  on_finish_write(CloseRequest(session->m_id));
                               return;
                           }
 
@@ -169,14 +173,20 @@ void TCPClient::AsyncReadUntil(unsigned int request_id,
                            delim,
                            [this, session, on_finish_read_until](const boost::system::error_code &ec, std::size_t bytes_transferred) {
                                if (ec != boost::system::errc::success)
+                               {
                                    session->m_ec = ec;
+                                   if (on_finish_read_until)
+                                       on_finish_read_until(CloseRequest(session->m_id));
+                                   return;
+                               }
                                else
                                {
                                    std::istream strm(&session->m_response_buf);
                                    std::getline(strm, session->m_response);
                                }
 
-                               // OnRequestEnd(session, on_finish_read_until);
+                               if (on_finish_read_until)
+                                   on_finish_read_until(session);
                            });
 }
 
@@ -258,8 +268,27 @@ void TCPClient::AsyncRequestAndGetData(const std::string &request,
 
 */
 
-void TCPClient::CloseRequest(unsigned int request_id)
+std::shared_ptr<Session> TCPClient::CloseRequest(unsigned int request_id)
 {
+    std::shared_ptr<Session> session;
+    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
+
+    auto it = m_active_sessions.find(request_id);
+    if (it != m_active_sessions.end())
+        session = m_active_sessions.erase(it)->second;
+    else
+        return nullptr;
+
+    lock.unlock();
+
+    system::error_code ignored_ec;
+
+    session->m_sock.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
+
+    if (session->m_ec == system::errc::success && session->m_was_cancelled)
+        session->m_ec = asio::error::operation_aborted;
+
+    return session;
 }
 
 void TCPClient::CancelRequest(unsigned int request_id)
