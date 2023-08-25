@@ -1,4 +1,4 @@
-#include "WinQuickWindow.hpp"
+﻿#include "WinQuickWindow.hpp"
 
 #include <QMetaObject>
 #include <Windows.h>

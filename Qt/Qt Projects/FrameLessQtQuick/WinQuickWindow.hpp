@@ -1,4 +1,4 @@
-#ifndef HEADER__FILE__WINQUICKWINDOW
+﻿#ifndef HEADER__FILE__WINQUICKWINDOW
 #define HEADER__FILE__WINQUICKWINDOW
 
 #include <QAbstractNativeEventFilter>

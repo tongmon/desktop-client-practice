@@ -1,4 +1,5 @@
 ﻿#include "LoginPageContext.hpp"
+#include "NetworkDefinition.hpp"
 #include "WinQuickWindow.hpp"
 
 #include <QMetaObject>
@@ -16,26 +17,53 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
     auto &network_handle = m_window->GetNetworkHandle();
 
-    if (!network_handle.AsyncConnect("127.0.0.1", 3000, 0))
-        return;
+    network_handle.AsyncConnect("127.0.0.1", 3000, 0);
 
     std::string request = id.toStdString() + "|" + pw.toStdString() + "\n";
 
     network_handle.AsyncWrite(0, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
-        if (session->m_ec != boost::system::errc::success)
+        if (!session.get() || session->m_ec != boost::system::errc::success)
             return;
 
-        network_handle.AsyncReadUntil(0, [&network_handle, this](std::shared_ptr<Session> session) -> void {
-            if (session->m_ec != boost::system::errc::success)
+        network_handle.AsyncRead(0, TCP_HEADER_SIZE, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+            if (!session.get() || session->m_ec != boost::system::errc::success)
                 return;
 
-            // QObject *loader = m_window->GetQuickWindow().findChild<QObject *>("mainWindowLoader");
-            // loader->setProperty("source", "qrc:/qml/MainPage.qml");
+            TCPHeader header(session->m_response);
 
-            QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
+            auto connection_type = header.GetConnectionType();
+            auto data_size = header.GetDataSize();
 
-            network_handle.CloseRequest(session->m_id);
+            // auto t = session->m_response;
+            //
+            // network_handle.AsyncRead(0, 8, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+            //     if (!session.get() || session->m_ec != boost::system::errc::success)
+            //         return;
+            //
+            //     auto t = session->m_response;
+            //
+            //     network_handle.CloseRequest(session->m_id);
+            // });
+
+            // QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
+
+            // network_handle.CloseRequest(session->m_id);
         });
+
+        // network_handle.AsyncReadUntil(0, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+        //     if (!session.get() || session->m_ec != boost::system::errc::success)
+        //     {
+        //         // 통신 장애 있다고 메시지 창 띄우던지... 하는 로직 추가
+        //         return;
+        //     }
+        //
+        //     // QObject *loader = m_window->GetQuickWindow().findChild<QObject *>("mainWindowLoader");
+        //     // loader->setProperty("source", "qrc:/qml/MainPage.qml");
+        //
+        //     QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
+        //
+        //     network_handle.CloseRequest(session->m_id);
+        // });
     });
 
     // std::shared_ptr<TCPClient> tcp_client(new TCPClient(1));

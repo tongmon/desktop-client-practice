@@ -1,4 +1,4 @@
-#include "WinQuickWindow.hpp"
+﻿#include "WinQuickWindow.hpp"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>

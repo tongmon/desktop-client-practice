@@ -1,4 +1,4 @@
-#ifndef HEADER__FILE__MAINWINDOW
+﻿#ifndef HEADER__FILE__MAINWINDOW
 #define HEADER__FILE__MAINWINDOW
 
 #include <QApplication>

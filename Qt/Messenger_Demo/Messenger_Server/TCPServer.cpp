@@ -1,4 +1,5 @@
-#include "TCPServer.hpp"
+﻿#include "TCPServer.hpp"
+#include "NetworkDefinition.hpp"
 
 namespace TCPServerLocalNamespace
 {
@@ -46,11 +47,12 @@ void Service::OnFinish()
 std::string Service::ProcessRequest(asio::streambuf &request)
 {
     std::string req((std::istreambuf_iterator<char>(&request)), std::istreambuf_iterator<char>());
-
-    std::cout << req << "\n";
+    std::string response;
 
     // 실제 로직
-    std::string response = "success\n";
+    // std::cout << req << "\n";
+    // std::string response = "datadatahavehaveshowshowtaketake";
+
     return response;
 }
 

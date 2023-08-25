@@ -51,9 +51,6 @@ class TCPClient
     std::unique_ptr<boost::asio::io_service::work> m_work;
     std::list<std::unique_ptr<std::thread>> m_threads;
 
-    // void OnRequestComplete(std::shared_ptr<Session> session);
-    // void OnRequestEnd(std::shared_ptr<Session> session, std::function<void(std::shared_ptr<Session>)> end_callback = {});
-
   public:
     TCPClient(unsigned char num_of_threads);
     ~TCPClient();
@@ -66,17 +63,13 @@ class TCPClient
     void AsyncWrite(unsigned int request_id, const std::string &request,
                     std::function<void(std::shared_ptr<Session>)> on_finish_write = {});
 
+    void AsyncRead(unsigned int request_id, size_t buffer_size, std::function<void(std::shared_ptr<Session>)> on_finish_read);
+
     void AsyncReadUntil(unsigned int request_id,
                         std::function<void(std::shared_ptr<Session>)> on_finish_read_until,
                         const std::string &delim = "\n");
 
     std::shared_ptr<Session> CloseRequest(unsigned int request_id);
-
-    // void AsyncRequestAndGetData(const std::string &request,
-    //                             const std::string &raw_ip_address,
-    //                             unsigned short port_num,
-    //                             unsigned int request_id,
-    //                             Callback callback);
 
     void CancelRequest(unsigned int request_id);
 

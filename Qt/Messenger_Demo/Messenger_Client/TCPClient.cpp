@@ -19,56 +19,6 @@ TCPClient::~TCPClient()
 {
 }
 
-/*
-void TCPClient::OnRequestComplete(std::shared_ptr<Session> session)
-{
-    system::error_code ignored_ec;
-
-    session->m_sock.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
-
-    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
-
-    auto it = m_active_sessions.find(session->m_id);
-    if (it != m_active_sessions.end())
-        m_active_sessions.erase(it);
-
-    lock.unlock();
-
-    system::error_code ec;
-
-    if (session->m_ec == system::errc::success && session->m_was_cancelled)
-        ec = asio::error::operation_aborted;
-    else
-        ec = session->m_ec;
-
-    if (session->m_callback)
-        session->m_callback(session->m_id, session->m_response, ec);
-};
-*/
-
-/*
-void TCPClient::OnRequestEnd(std::shared_ptr<Session> session, std::function<void(std::shared_ptr<Session>)> end_callback)
-{
-    system::error_code ignored_ec;
-
-    session->m_sock.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
-
-    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
-
-    auto it = m_active_sessions.find(session->m_id);
-    if (it != m_active_sessions.end())
-        m_active_sessions.erase(it);
-
-    lock.unlock();
-
-    if (session->m_ec == system::errc::success && session->m_was_cancelled)
-        session->m_ec = asio::error::operation_aborted;
-
-    if (end_callback)
-        end_callback(session);
-};
-*/
-
 bool TCPClient::AsyncConnect(const std::string &raw_ip_address,
                              unsigned short port_num,
                              unsigned int request_id,
@@ -152,6 +102,41 @@ void TCPClient::AsyncWrite(unsigned int request_id,
                                  if (on_finish_write)
                                      on_finish_write(session);
                              });
+}
+
+void TCPClient::AsyncRead(unsigned int request_id, size_t buffer_size, std::function<void(std::shared_ptr<Session>)> on_finish_read)
+{
+    std::shared_ptr<Session> session;
+
+    std::unique_lock<std::mutex> lock(m_active_sessions_guard);
+    if (m_active_sessions.find(request_id) == m_active_sessions.end())
+    {
+        on_finish_read(nullptr);
+        return;
+    }
+    session = m_active_sessions[request_id];
+    lock.unlock();
+
+    boost::asio::async_read(session->m_sock,
+                            session->m_response_buf.prepare(buffer_size),
+                            [this, session, on_finish_read](const boost::system::error_code &ec, std::size_t bytes_transferred) {
+                                if (ec != boost::system::errc::success)
+                                {
+                                    session->m_ec = ec;
+                                    if (on_finish_read)
+                                        on_finish_read(CloseRequest(session->m_id));
+                                    return;
+                                }
+                                else
+                                {
+                                    session->m_response_buf.commit(bytes_transferred);
+                                    std::istream strm(&session->m_response_buf);
+                                    std::getline(strm, session->m_response);
+                                }
+
+                                if (on_finish_read)
+                                    on_finish_read(session);
+                            });
 }
 
 void TCPClient::AsyncReadUntil(unsigned int request_id,
