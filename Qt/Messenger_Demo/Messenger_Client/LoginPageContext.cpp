@@ -19,7 +19,9 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 
     network_handle.AsyncConnect("127.0.0.1", 3000, 0);
 
-    std::string request = id.toStdString() + "|" + pw.toStdString() + "\n";
+    std::string request, data = id.toStdString() + "|" + pw.toStdString();
+    TCPHeader header(LOGIN_CONNECTION_TYPE, data.size());
+    request = header.GetHeaderBuffer() + data;
 
     network_handle.AsyncWrite(0, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
         if (!session.get() || session->m_ec != boost::system::errc::success)

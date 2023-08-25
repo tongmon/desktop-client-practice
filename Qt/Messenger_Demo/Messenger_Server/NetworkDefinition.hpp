@@ -9,34 +9,51 @@
 
 class TCPHeader
 {
-    template <size_t SIZE>
+    enum
+    {
+        CONNECTION_TYPE = 0,
+        DATA_SIZE,
+        BUFFER_CNT
+    };
+
     union Bytes {
-        std::array<std::byte, SIZE> bytes;
+        std::array<std::byte, 8> bytes;
         std::uint64_t number;
     };
 
-    Bytes<8> m_connection_type;
-    Bytes<8> m_data_size;
+    Bytes m_buffers[BUFFER_CNT];
 
   public:
     TCPHeader(const std::string &data)
     {
-        auto char_to_byte = [](char c) {
-            return std::byte(c);
-        };
+        for (int i = 0; i < 16; i += 8)
+            for (int j = 0; j < 8; j++)
+                m_buffers[i / 8].bytes[j] = static_cast<std::byte>(data[i + j]);
+    }
 
-        std::transform(data.begin(), data.begin() + 8, m_connection_type.bytes.begin(), char_to_byte);
-        std::transform(data.begin() + 8, data.end(), m_data_size.bytes.begin(), char_to_byte);
+    TCPHeader(std::uint64_t connection_type, std::uint64_t data_size)
+    {
+        m_buffers[CONNECTION_TYPE].number = connection_type;
+        m_buffers[DATA_SIZE].number = data_size;
     }
 
     std::uint64_t GetConnectionType()
     {
-        return m_connection_type.number;
+        return m_buffers[CONNECTION_TYPE].number;
     }
 
     std::uint64_t GetDataSize()
     {
-        return m_data_size.number;
+        return m_buffers[DATA_SIZE].number;
+    }
+
+    std::string GetHeaderBuffer()
+    {
+        std::string ret(16, 0);
+        for (int i = 0; i < 16; i += 8)
+            for (int j = 0; j < 8; j++)
+                ret[i + j] = static_cast<char>(m_buffers[i / 8].bytes[j]);
+        return ret;
     }
 };
 

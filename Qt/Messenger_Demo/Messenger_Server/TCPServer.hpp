@@ -12,45 +12,41 @@
 
 #include <boost/asio.hpp>
 
-namespace TCPServerLocalNamespace
-{
-using namespace boost;
-
 // 이 녀석은 무조건 동적할당으로 수행한다.
 class Service
 {
-    std::shared_ptr<asio::ip::tcp::socket> m_sock;
+    std::shared_ptr<boost::asio::ip::tcp::socket> m_sock;
     std::string m_response;
-    asio::streambuf m_request;
+    boost::asio::streambuf m_request;
 
-    void OnRequestReceived(const system::error_code &ec, std::size_t bytes_transferred);
+    void OnRequestReceived(const boost::system::error_code &ec, std::size_t bytes_transferred);
 
-    void OnResponseSent(const system::error_code &ec, std::size_t bytes_transferred);
+    void OnResponseSent(const boost::system::error_code &ec, std::size_t bytes_transferred);
 
-    // Here we perform the cleanup.
+    // 동적으로 할당되기에 자기 자신을 지우는 것을 가정한다.
     void OnFinish();
 
     // 클라이언트에서 전달된 request를 활용하는 실제 로직은 여기에 위치한다.
-    std::string ProcessRequest(asio::streambuf &request);
+    std::string ProcessRequest(boost::asio::streambuf &request);
 
   public:
-    Service(std::shared_ptr<asio::ip::tcp::socket> sock);
+    Service(std::shared_ptr<boost::asio::ip::tcp::socket> sock);
 
     void StartHandling();
 };
 
 class Acceptor
 {
-    asio::io_service &m_ios;
-    asio::ip::tcp::acceptor m_acceptor;
-    std::atomic<bool> m_isStopped;
+    boost::asio::io_service &m_ios;
+    boost::asio::ip::tcp::acceptor m_acceptor;
+    std::atomic<bool> m_is_stopped;
 
     void InitAccept();
 
-    void OnAccept(const system::error_code &ec, std::shared_ptr<asio::ip::tcp::socket> sock);
+    void OnAccept(const boost::system::error_code &ec, std::shared_ptr<boost::asio::ip::tcp::socket> sock);
 
   public:
-    Acceptor(asio::io_service &ios, unsigned short port_num);
+    Acceptor(boost::asio::io_service &ios, unsigned short port_num);
 
     // Start accepting incoming connection requests.
     void Start();
@@ -61,8 +57,8 @@ class Acceptor
 
 class TCPServer
 {
-    asio::io_service m_ios;
-    std::unique_ptr<asio::io_service::work> m_work;
+    boost::asio::io_service m_ios;
+    std::unique_ptr<boost::asio::io_service::work> m_work;
     std::unique_ptr<Acceptor> acc;
     std::vector<std::unique_ptr<std::thread>> m_thread_pool;
 
@@ -75,8 +71,5 @@ class TCPServer
     // Stop the server.
     void Stop();
 };
-} // namespace TCPServerLocalNamespace
-
-using TCPServerLocalNamespace::TCPServer;
 
 #endif /* HEADER__FILE__TCPSERVER */

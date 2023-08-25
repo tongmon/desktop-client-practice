@@ -1,11 +1,9 @@
 ﻿#include "TCPServer.hpp"
 #include "NetworkDefinition.hpp"
 
-namespace TCPServerLocalNamespace
+void Service::OnRequestReceived(const boost::system::error_code &ec, std::size_t bytes_transferred)
 {
-void Service::OnRequestReceived(const system::error_code &ec, std::size_t bytes_transferred)
-{
-    if (ec != system::errc::success)
+    if (ec != boost::system::errc::success)
     {
         // std::cout << "Error occured! Error code = "
         //           << ec.value()
@@ -19,20 +17,18 @@ void Service::OnRequestReceived(const system::error_code &ec, std::size_t bytes_
     m_response = ProcessRequest(m_request);
 
     // Initiate asynchronous write operation.
-    asio::async_write(*m_sock.get(),
-                      asio::buffer(m_response),
-                      [this](const system::error_code &ec, std::size_t bytes_transferred) {
-                          OnResponseSent(ec, bytes_transferred);
-                      });
+    boost::asio::async_write(*m_sock.get(),
+                             boost::asio::buffer(m_response),
+                             [this](const boost::system::error_code &ec, std::size_t bytes_transferred) {
+                                 OnResponseSent(ec, bytes_transferred);
+                             });
 }
 
-void Service::OnResponseSent(const system::error_code &ec, std::size_t bytes_transferred)
+void Service::OnResponseSent(const boost::system::error_code &ec, std::size_t bytes_transferred)
 {
-    if (ec != system::errc::success)
+    if (ec != boost::system::errc::success)
     {
-        // std::cout << "Error occured! Error code = "
-        //           << ec.value()
-        //           << ". Message: " << ec.message();
+        // 보냄 처리 안된 경우 로직
     }
 
     OnFinish();
@@ -44,7 +40,7 @@ void Service::OnFinish()
 }
 
 // 클라이언트에서 전달된 request를 활용하는 실제 로직은 여기에 위치한다.
-std::string Service::ProcessRequest(asio::streambuf &request)
+std::string Service::ProcessRequest(boost::asio::streambuf &request)
 {
     std::string req((std::istreambuf_iterator<char>(&request)), std::istreambuf_iterator<char>());
     std::string response;
@@ -56,56 +52,51 @@ std::string Service::ProcessRequest(asio::streambuf &request)
     return response;
 }
 
-Service::Service(std::shared_ptr<asio::ip::tcp::socket> sock)
+Service::Service(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
     : m_sock(sock)
 {
 }
 
+// 변경 필요
 void Service::StartHandling()
 {
-    asio::async_read_until(*m_sock.get(),
-                           m_request,
-                           '\n',
-                           [this](
-                               const system::error_code &ec, std::size_t bytes_transferred) {
-                               OnRequestReceived(ec, bytes_transferred);
-                           });
+    boost::asio::async_read_until(*m_sock.get(),
+                                  m_request,
+                                  '\n',
+                                  [this](
+                                      const boost::system::error_code &ec, std::size_t bytes_transferred) {
+                                      OnRequestReceived(ec, bytes_transferred);
+                                  });
 }
 
 void Acceptor::InitAccept()
 {
-    std::shared_ptr<asio::ip::tcp::socket> sock(new asio::ip::tcp::socket(m_ios));
+    std::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(m_ios));
 
     m_acceptor.async_accept(*sock.get(),
-                            [this, sock](const system::error_code &error) {
+                            [this, sock](const boost::system::error_code &error) {
                                 OnAccept(error, sock);
                             });
 }
 
-void Acceptor::OnAccept(const system::error_code &ec,
-                        std::shared_ptr<asio::ip::tcp::socket> sock)
+void Acceptor::OnAccept(const boost::system::error_code &ec,
+                        std::shared_ptr<boost::asio::ip::tcp::socket> sock)
 {
-    if (ec == system::errc::success)
+    if (ec == boost::system::errc::success)
         (new Service(sock))->StartHandling();
     else
     {
-        // std::cout << "Error occured! Error code = "
-        //           << ec.value()
-        //           << ". Message: " << ec.message();
+        // Accept 실패시 동작 정의
     }
 
-    // Init next async accept operation if
-    // acceptor has not been stopped yet.
-    if (!m_isStopped.load())
-        InitAccept();
-    else
-        m_acceptor.close();
+    // 서버가 멈추지 않았다면 InitAccept() 계속 수행
+    m_is_stopped.load() ? m_acceptor.close() : InitAccept();
 }
 
-Acceptor::Acceptor(asio::io_service &ios, unsigned short port_num)
+Acceptor::Acceptor(boost::asio::io_service &ios, unsigned short port_num)
     : m_ios(ios),
-      m_acceptor(m_ios, asio::ip::tcp::endpoint(asio::ip::address_v4::any(), port_num)),
-      m_isStopped(false)
+      m_acceptor(m_ios, boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::any(), port_num)),
+      m_is_stopped(false)
 {
 }
 
@@ -117,24 +108,23 @@ void Acceptor::Start()
 
 void Acceptor::Stop()
 {
-    m_isStopped.store(true);
+    m_is_stopped.store(true);
 }
 
 TCPServer::TCPServer()
 {
-    m_work.reset(new asio::io_service::work(m_ios));
+    m_work.reset(new boost::asio::io_service::work(m_ios));
 }
 
 void TCPServer::Start(unsigned short port_num, unsigned int thread_pool_size)
 {
     assert(thread_pool_size > 0);
 
-    // Create and start Acceptor.
+    // 수신기 작동 시작
     acc.reset(new Acceptor(m_ios, port_num));
     acc->Start();
 
-    // Create specified number of threads and
-    // add them to the pool.
+    // 쓰레드 풀 생성
     for (int i = 0; i < thread_pool_size; i++)
     {
         std::unique_ptr<std::thread> th(
@@ -154,4 +144,3 @@ void TCPServer::Stop()
     for (auto &th : m_thread_pool)
         th->join();
 }
-} // namespace TCPServerLocalNamespace
