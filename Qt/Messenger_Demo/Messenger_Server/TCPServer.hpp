@@ -82,7 +82,7 @@ class TCPServer
     std::unique_ptr<boost::asio::ip::tcp::acceptor> m_acceptor;
     std::atomic<bool> m_is_stopped;
 
-    void InitAcceptor(unsigned short port_num)
+    void InitAcceptor(const unsigned short &port_num)
     {
         // 소켓 연결 설정
         m_acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(m_ios,
@@ -93,21 +93,24 @@ class TCPServer
 
         std::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(m_ios));
         m_acceptor->async_accept(*sock.get(),
-                                 [this, sock, port_num](const boost::system::error_code &error) {
-                                     if (error == boost::system::errc::success)
-                                         (new Service(sock))->StartHandling();
-                                     else
+                                 [this, sock](const boost::system::error_code &error) {
+                                     while (!m_is_stopped.load())
                                      {
-                                         // Accept 실패시 동작 정의
+                                         if (error == boost::system::errc::success)
+                                             (new Service(sock))->StartHandling();
+                                         else
+                                         {
+                                             // Accept 실패시 동작 정의
+                                             // break;
+                                         }
                                      }
 
-                                     // 서버가 멈추지 않았다면 InitAccept() 계속 수행
-                                     m_is_stopped.load() ? m_acceptor->close() : InitAcceptor(port_num);
+                                     m_acceptor->close();
                                  });
     }
 
   public:
-    TCPServer(unsigned short port_num, unsigned int thread_pool_size)
+    TCPServer(const unsigned short &port_num, unsigned int thread_pool_size)
     {
         m_acceptor.reset(nullptr);
         m_work.reset(new boost::asio::io_service::work(m_ios));
