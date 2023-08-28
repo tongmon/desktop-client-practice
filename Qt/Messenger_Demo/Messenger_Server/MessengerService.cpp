@@ -1,5 +1,7 @@
 ﻿#include "MessengerService.hpp"
 #include "NetworkDefinition.hpp"
+
+#include <iostream>
 #include <regex>
 
 MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
@@ -7,36 +9,34 @@ MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket>
 {
 }
 
+// 서비스 종료 시 추가적으로 해제해야 할 것들 소멸자에 기입
 MessengerService::~MessengerService()
 {
-}
-
-void MessengerService::EndService()
-{
-    delete this;
 }
 
 void MessengerService::LoginHandling()
 {
     std::smatch match;
-    std::regex_search(m_client_request, match, std::regex("|"));
+    std::regex_search(m_client_request, match, std::regex(R"(\|)"));
     std::string id = match.prefix().str(), pw = match.suffix().str();
 
-    // DB 검사해서 id, pw 매칭 결과에 따라 data에 채워넣고 클라로 보내셈
-    std::string data = "success";
+    std::cout << "ID: " << id << "  Password: " << pw;
 
-    TCPHeader header(LOGIN_CONNECTION_TYPE, data.size());
-    data = header.GetHeaderBuffer() + data;
+    // DB 검사해서 id, pw 매칭 결과에 따라 data에 채워넣고 클라로 보내셈
+    std::string request = {1};
+
+    TCPHeader header(LOGIN_CONNECTION_TYPE, request.size());
+    request = header.GetHeaderBuffer() + request;
 
     boost::asio::async_write(*m_sock,
-                             boost::asio::buffer(data),
+                             boost::asio::buffer(request),
                              [this](const boost::system::error_code &ec, std::size_t bytes_transferred) {
                                  if (ec != boost::system::errc::success)
                                  {
                                      // write에 이상이 있는 경우
                                  }
 
-                                 EndService();
+                                 delete this;
                              });
 }
 
@@ -52,7 +52,7 @@ void MessengerService::StartHandling()
                                 if (ec != boost::system::errc::success)
                                 {
                                     // 서버 처리가 비정상인 경우
-                                    EndService();
+                                    delete this;
                                     return;
                                 }
 
@@ -70,7 +70,7 @@ void MessengerService::StartHandling()
                                                             if (ec != boost::system::errc::success)
                                                             {
                                                                 // 서버 처리가 비정상인 경우
-                                                                EndService();
+                                                                delete this;
                                                                 return;
                                                             }
 

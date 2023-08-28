@@ -19,9 +19,9 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 
     network_handle.AsyncConnect("127.0.0.1", 3000, 0);
 
-    std::string request, data = id.toStdString() + "|" + pw.toStdString();
-    TCPHeader header(LOGIN_CONNECTION_TYPE, data.size());
-    request = header.GetHeaderBuffer() + data;
+    std::string request = id.toStdString() + "|" + pw.toStdString();
+    TCPHeader header(LOGIN_CONNECTION_TYPE, request.size());
+    request = header.GetHeaderBuffer() + request;
 
     network_handle.AsyncWrite(0, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
         if (!session.get() || session->m_ec != boost::system::errc::success)
@@ -35,6 +35,23 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 
             auto connection_type = header.GetConnectionType();
             auto data_size = header.GetDataSize();
+
+            if (connection_type != LOGIN_CONNECTION_TYPE)
+                return;
+
+            network_handle.AsyncRead(0, data_size, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+                if (!session.get() || session->m_ec != boost::system::errc::success)
+                    return;
+
+                if (session->m_response[0]) // 로그인 성공
+                    QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
+                else
+                {
+                    // 로그인 실패시 로직
+                }
+
+                network_handle.CloseRequest(session->m_id);
+            });
 
             // auto t = session->m_response;
             //

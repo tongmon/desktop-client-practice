@@ -11,8 +11,6 @@ class MessengerService : public Service
     void LoginHandling();
     void MessageHandling();
 
-    void EndService();
-
   public:
     MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock);
     ~MessengerService();

@@ -5,7 +5,6 @@
 #include <array>
 #include <cstdint>
 #include <string>
-#include <type_traits>
 
 class TCPHeader
 {
@@ -26,7 +25,7 @@ class TCPHeader
   public:
     TCPHeader(const std::string &data)
     {
-        for (int i = 0; i < 16; i += 8)
+        for (int i = 0; i < BUFFER_CNT * 8; i += 8)
             for (int j = 0; j < 8; j++)
                 m_buffers[i / 8].bytes[j] = static_cast<std::byte>(data[i + j]);
     }
@@ -49,8 +48,8 @@ class TCPHeader
 
     std::string GetHeaderBuffer()
     {
-        std::string ret(16, 0);
-        for (int i = 0; i < 16; i += 8)
+        std::string ret(BUFFER_CNT * 8, 0);
+        for (int i = 0; i < BUFFER_CNT * 8; i += 8)
             for (int j = 0; j < 8; j++)
                 ret[i + j] = static_cast<char>(m_buffers[i / 8].bytes[j]);
         return ret;
