@@ -15,7 +15,7 @@ WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
     if (engine)
         InitWindow(*engine);
 
-    m_tcp_client = std::make_shared<TCPClient>(4);
+    m_tcp_client = std::make_shared<TCPClient>(2);
 }
 
 WinQuickWindow::~WinQuickWindow()

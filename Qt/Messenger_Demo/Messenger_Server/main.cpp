@@ -32,11 +32,25 @@
 
 #include <boost/system.hpp>
 
+#include "MessengerService.hpp"
 #include "TCPServer.hpp"
 
 int main(int argc, char *argv[])
 {
-    unsigned short port_num = 3000;
+    try
+    {
+        unsigned short port_num = 3000;
+        TCPServer<MessengerService> server(port_num, 2);
+
+        char a;
+        std::cin >> a;
+    }
+    catch (boost::system::system_error &e)
+    {
+        std::cout << "Error occured! Error code = "
+                  << e.code() << ". Message: "
+                  << e.what();
+    }
 
     // try
     // {

@@ -127,12 +127,10 @@ void TCPClient::AsyncRead(unsigned int request_id, size_t buffer_size, std::func
                                         on_finish_read(CloseRequest(session->m_id));
                                     return;
                                 }
-                                else
-                                {
-                                    session->m_response_buf.commit(bytes_transferred);
-                                    std::istream strm(&session->m_response_buf);
-                                    std::getline(strm, session->m_response);
-                                }
+
+                                session->m_response_buf.commit(bytes_transferred);
+                                std::istream strm(&session->m_response_buf);
+                                std::getline(strm, session->m_response);
 
                                 if (on_finish_read)
                                     on_finish_read(session);
@@ -164,11 +162,9 @@ void TCPClient::AsyncReadUntil(unsigned int request_id,
                                               on_finish_read_until(CloseRequest(session->m_id));
                                           return;
                                       }
-                                      else
-                                      {
-                                          std::istream strm(&session->m_response_buf);
-                                          std::getline(strm, session->m_response);
-                                      }
+
+                                      std::istream strm(&session->m_response_buf);
+                                      std::getline(strm, session->m_response);
 
                                       if (on_finish_read_until)
                                           on_finish_read_until(session);

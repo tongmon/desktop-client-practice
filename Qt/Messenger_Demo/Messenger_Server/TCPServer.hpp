@@ -84,7 +84,6 @@ class TCPServer
 
     void InitAcceptor(const unsigned short &port_num)
     {
-        // 소켓 연결 설정
         m_acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(m_ios,
                                                                       boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::any(),
                                                                                                      port_num));
