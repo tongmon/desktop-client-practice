@@ -7,12 +7,23 @@ Rectangle {
     color: "#280a3d"
     objectName: "mainPage"
 
-    Button {
-        text: "This is Button!"
-        anchors.centerIn: parent
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 0
 
-        onClicked: {
-            mainWindowLoader.source = "qrc:/qml/LoginPage.qml"
+        TitleBar {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 35
+            Layout.alignment: Qt.AlignTop
         }
+
+        // Button {
+        //     text: "This is Button!"
+        //     anchors.centerIn: parent
+        // 
+        //     onClicked: {
+        //         mainWindowLoader.source = "qrc:/qml/LoginPage.qml"
+        //     }
+        // }
     }
 }

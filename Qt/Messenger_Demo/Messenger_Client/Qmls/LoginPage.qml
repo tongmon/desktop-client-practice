@@ -26,6 +26,12 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
+        TitleBar {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 35
+            Layout.alignment: Qt.AlignTop
+        }
+
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -169,5 +175,13 @@ Rectangle {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
+    }
+
+    Component.onCompleted: {
+        console.log("Login Page Start!")
+    }
+
+    Component.onDestruction: {
+        console.log("Login Page End!")
     }
 }

@@ -19,5 +19,6 @@
         <file alias="MainPage.qml">Qmls/MainPage.qml</file>
         <file alias="LoginPage.qml">Qmls/LoginPage.qml</file>
         <file alias="MainWindow.qml">Qmls/MainWindow.qml</file>
+        <file alias="TitleBar.qml">Qmls/TitleBar.qml</file>
     </qresource>
 </RCC>
