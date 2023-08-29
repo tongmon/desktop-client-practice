@@ -72,7 +72,8 @@ void TCPClient::AsyncWrite(unsigned int request_id,
     std::unique_lock<std::mutex> lock(m_active_sessions_guard);
     if (m_active_sessions.find(request_id) == m_active_sessions.end())
     {
-        on_finish_write(nullptr);
+        if (on_finish_write)
+            on_finish_write(nullptr);
         return;
     }
     m_active_sessions[request_id]->m_request = request;

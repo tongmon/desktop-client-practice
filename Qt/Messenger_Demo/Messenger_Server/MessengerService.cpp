@@ -20,16 +20,16 @@ void MessengerService::LoginHandling()
     std::regex_search(m_client_request, match, std::regex(R"(\|)"));
     std::string id = match.prefix().str(), pw = match.suffix().str();
 
-    std::cout << "ID: " << id << "  Password: " << pw;
+    std::cout << "ID: " << id << "  Password: " << pw << "\n";
 
     // DB 검사해서 id, pw 매칭 결과에 따라 data에 채워넣고 클라로 보내셈
-    std::string request = {1};
+    m_request = {1};
 
-    TCPHeader header(LOGIN_CONNECTION_TYPE, request.size());
-    request = header.GetHeaderBuffer() + request;
+    TCPHeader header(LOGIN_CONNECTION_TYPE, m_request.size());
+    m_request = header.GetHeaderBuffer() + m_request;
 
     boost::asio::async_write(*m_sock,
-                             boost::asio::buffer(request),
+                             boost::asio::buffer(m_request),
                              [this](const boost::system::error_code &ec, std::size_t bytes_transferred) {
                                  if (ec != boost::system::errc::success)
                                  {

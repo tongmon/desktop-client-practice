@@ -13,20 +13,9 @@
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #include <boost/asio.hpp>
 
-struct Session
+class Session
 {
-    Session(boost::asio::io_service &ios,
-            const std::string &raw_ip_address,
-            unsigned short port_num,
-            const std::string &request,
-            unsigned int id)
-        : m_sock(ios),
-          m_ep(boost::asio::ip::address::from_string(raw_ip_address), port_num),
-          m_request(request),
-          m_id(id),
-          m_was_cancelled(false)
-    {
-    }
+    friend class TCPClient;
 
     boost::asio::ip::tcp::socket m_sock;
     boost::asio::ip::tcp::endpoint m_ep;
@@ -41,6 +30,35 @@ struct Session
 
     bool m_was_cancelled;
     std::mutex m_cancel_guard;
+
+  public:
+    Session(boost::asio::io_service &ios,
+            const std::string &raw_ip_address,
+            unsigned short port_num,
+            const std::string &request,
+            unsigned int id)
+        : m_sock(ios),
+          m_ep(boost::asio::ip::address::from_string(raw_ip_address), port_num),
+          m_request(request),
+          m_id(id),
+          m_was_cancelled(false)
+    {
+    }
+
+    bool IsValid()
+    {
+        return m_ec == boost::system::errc::success;
+    }
+
+    std::string GetResponse()
+    {
+        return m_response;
+    }
+
+    unsigned int GetID()
+    {
+        return m_id;
+    }
 };
 
 class TCPClient
@@ -60,10 +78,13 @@ class TCPClient
                       unsigned int request_id,
                       std::function<void(std::shared_ptr<Session>)> on_success_connection = {});
 
-    void AsyncWrite(unsigned int request_id, const std::string &request,
+    void AsyncWrite(unsigned int request_id,
+                    const std::string &request,
                     std::function<void(std::shared_ptr<Session>)> on_finish_write = {});
 
-    void AsyncRead(unsigned int request_id, size_t buffer_size, std::function<void(std::shared_ptr<Session>)> on_finish_read);
+    void AsyncRead(unsigned int request_id,
+                   size_t buffer_size,
+                   std::function<void(std::shared_ptr<Session>)> on_finish_read);
 
     void AsyncReadUntil(unsigned int request_id,
                         std::function<void(std::shared_ptr<Session>)> on_finish_read_until,

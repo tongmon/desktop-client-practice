@@ -5,6 +5,7 @@
 
 class MessengerService : public Service
 {
+    std::string m_request;
     std::string m_client_request;
     boost::asio::streambuf m_client_request_buf;
 
