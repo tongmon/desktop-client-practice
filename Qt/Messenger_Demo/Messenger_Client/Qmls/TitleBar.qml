@@ -8,28 +8,23 @@ Rectangle {
     id: titleBar
     color: "#1f0830"
     
+    function addItem(objSpec) {
+        var specString = String.raw`import QtQuick 2.15
+                                    import QtQuick.Window 2.15
+                                    import QtQuick.Controls 2.15
+                                    import QtQuick.Layouts 1.12
+                                    `
+        specString += objSpec
+        return Qt.createQmlObject(specString, titleBarRow)
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
 
-        component TitleBarMenuItem : MenuItem {
-            id: menuItem
-            implicitHeight: titleBar.height
-
-            contentItem: Text {
-                text: menuItem.text
-                font: menuItem.font
-                color: active ? (menuItem.highlighted ? "#ffffff" : Qt.rgba(0.8, 0.8, 0.8, 1.0)) : Qt.rgba(0.5, 0.5, 0.5, 1.0)
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
-            }
-
-            background: Rectangle {
-                anchors.fill: parent
-                opacity: menuItem.highlighted ? 0.7 : 1.0
-                color: "#170624"
-            }
+        Row {
+            id: titleBarRow
+            Layout.fillHeight: true
         }
 
         // 윈도우 드래그 가능 상태로 만들어주는 부분
@@ -70,7 +65,7 @@ Rectangle {
                 fillMode: Image.PreserveAspectFit
             }
 
-                // C++에 구현되어 있는 최소화 버튼에 대한 Invoke 함수 onMinimizeButtonClicked()를 수행
+            // C++에 구현되어 있는 최소화 버튼에 대한 Invoke 함수 onMinimizeButtonClicked()를 수행
             onClicked: {
                 mainWindowContext.onMinimizeButtonClicked()
             }

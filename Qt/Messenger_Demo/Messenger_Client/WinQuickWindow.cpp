@@ -4,6 +4,7 @@
 #include <QMetaObject>
 #include <QQmlContext>
 #include <QQmlProperty>
+#include <QSurfaceFormat>
 #include <Windows.h>
 #include <Windowsx.h>
 #include <dwmapi.h>
@@ -242,6 +243,19 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
         }
         break;
     }
+
+    case WM_ENTERSIZEMOVE: {
+        // 동적으로 VSync 바꿀 수 있는 방법 찾아야 함
+        // https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
+        // QSurfaceFormat::defaultFormat().setSwapInterval(0);
+        break;
+    }
+
+    case WM_EXITSIZEMOVE:
+        // 동적으로 VSync 바꿀 수 있는 방법 찾아야 함
+        // QSurfaceFormat::defaultFormat().setSwapInterval(1);
+        break;
+
     default:
         break;
     }

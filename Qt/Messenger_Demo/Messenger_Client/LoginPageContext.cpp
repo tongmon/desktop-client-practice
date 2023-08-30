@@ -13,6 +13,7 @@ LoginPageContext::~LoginPageContext()
 {
 }
 
+// 서버 연결 안된 경우에 연결 안되면 Connect 안끊기고 앱 프로세스가 남아있는 현상 해결해야됨
 void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
     auto &network_handle = m_window->GetNetworkHandle();
