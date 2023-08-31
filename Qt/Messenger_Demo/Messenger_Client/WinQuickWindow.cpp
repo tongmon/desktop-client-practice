@@ -1,15 +1,18 @@
 ﻿#include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
 
+#include <GL/wglext.h>
 #include <QMetaObject>
+#include <QOpenGLContext>
 #include <QQmlContext>
 #include <QQmlProperty>
-#include <QSurfaceFormat>
 #include <Windows.h>
 #include <Windowsx.h>
 #include <dwmapi.h>
 #include <memory>
 #include <stdexcept>
+
+typedef BOOL(WINAPI wglSwapInterval_t)(int interval);
 
 WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 {
@@ -21,7 +24,6 @@ WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 
 WinQuickWindow::~WinQuickWindow()
 {
-    m_tcp_client->Close();
 }
 
 HWND WinQuickWindow::GetHandle()
@@ -245,22 +247,63 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     }
 
     case WM_ENTERSIZEMOVE: {
-        // 동적으로 VSync 바꿀 수 있는 방법 찾아야 함
-        // https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
-        // QSurfaceFormat::defaultFormat().setSwapInterval(0);
+        // VSync를 꺼야 Window 이동시 버벅거림이 없어짐...
+        // 동적으로 VSync 키고 끌 수 있어야 함
+
+        // 방법 1.
+        // 안됨
+        // auto wglExtensionSupported = [](const char *extension_name) -> bool {
+        //    PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+        //    _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)QOpenGLContext::currentContext()->getProcAddress("wglGetExtensionsStringEXT");
+        //    // _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+        //    if (strstr(_wglGetExtensionsStringEXT(), extension_name) == NULL)
+        //        return false;
+        //    return true;
+        //};
+        //
+        // // QOpenGLContext::currentContext()->hasExtension("GLX_EXT_swap_control"); // 얘도 안먹힘
+        //
+        // if (wglExtensionSupported("WGL_EXT_swap_control")) {
+        //    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)QOpenGLContext::currentContext()->getProcAddress("wglSwapIntervalEXT");
+        //    wglSwapIntervalEXT(0);
+        //}
+
+        // 방법 2.
+        // 안됨
+        // QOpenGLContext::currentContext()->format().setSwapInterval(0);
+
+        // 방법 3.
+        // DwmEnableComposition()라는 DWM 비활성화 함수는 Windows 8에서 지원중단...
         break;
     }
 
-    case WM_EXITSIZEMOVE:
-        // 동적으로 VSync 바꿀 수 있는 방법 찾아야 함
-        // QSurfaceFormat::defaultFormat().setSwapInterval(1);
+    case WM_EXITSIZEMOVE: {
         break;
+    }
 
     default:
         break;
     }
     return false;
 }
+
+// bool WGLExtensionSupported(const char *extension_name)
+// {
+//     // this is pointer to function which returns pointer to string with list of all wgl extensions
+//     PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+//
+//     // determine pointer to wglGetExtensionsStringEXT function
+//     _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+//
+//     if (strstr(_wglGetExtensionsStringEXT(), extension_name) == NULL)
+//     {
+//         // string was not found
+//         return false;
+//     }
+//
+//     // extension is supported
+//     return true;
+// }
 
 // 최소화 버튼 클릭시 수행됨, qml에 cppConnector로 연동됨
 void WinQuickWindow::onMinimizeButtonClicked()

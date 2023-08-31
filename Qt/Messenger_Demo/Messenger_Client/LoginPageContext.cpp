@@ -13,7 +13,6 @@ LoginPageContext::~LoginPageContext()
 {
 }
 
-// 서버 연결 안된 경우에 연결 안되면 Connect 안끊기고 앱 프로세스가 남아있는 현상 해결해야됨
 void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
     auto &network_handle = m_window->GetNetworkHandle();
@@ -58,47 +57,5 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
                 network_handle.CloseRequest(session->GetID());
             });
         });
-
-        // network_handle.AsyncReadUntil(0, [&network_handle, this](std::shared_ptr<Session> session) -> void {
-        //     if (!session.get() || session->m_ec != boost::system::errc::success)
-        //     {
-        //         // 통신 장애 있다고 메시지 창 띄우던지... 하는 로직 추가
-        //         return;
-        //     }
-        //
-        //     // QObject *loader = m_window->GetQuickWindow().findChild<QObject *>("mainWindowLoader");
-        //     // loader->setProperty("source", "qrc:/qml/MainPage.qml");
-        //
-        //     QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
-        //
-        //     network_handle.CloseRequest(session->m_id);
-        // });
     });
-
-    // std::shared_ptr<TCPClient> tcp_client(new TCPClient(1));
-    //
-    // std::string request = id.toStdString() + "|^|" + pw.toStdString() + "\n";
-    //
-    // tcp_client->AsyncRequestAndGetData(request, "127.0.0.1", 3000, 0,
-    //                                    [this, tcp_client](unsigned int request_id, const std::string &response, const boost::system::error_code &ec) -> void {
-    //                                        switch (ec.value())
-    //                                        {
-    //                                        case boost::system::errc::success: {
-    //                                            if (response == "success")
-    //                                            {
-    //                                                QObject *loader = m_quick_window->findChild<QObject *>("mainWindowLoader");
-    //                                                loader->setProperty("source", "qrc:/qml/MainPage.qml");
-    //                                            }
-    //                                            break;
-    //                                        }
-    //                                        case boost::asio::error::operation_aborted:
-    //
-    //                                            break;
-    //                                        default:
-    //                                            // result = ec.message();
-    //                                            break;
-    //                                        }
-    //
-    //                                        tcp_client->Close();
-    //                                    });
 }

@@ -17,6 +17,7 @@ TCPClient::TCPClient(unsigned char num_of_threads)
 
 TCPClient::~TCPClient()
 {
+    Close();
 }
 
 bool TCPClient::AsyncConnect(const std::string &raw_ip_address,
@@ -42,8 +43,9 @@ bool TCPClient::AsyncConnect(const std::string &raw_ip_address,
                                       if (ec != boost::system::errc::success)
                                       {
                                           session->m_ec = ec;
+                                          CloseRequest(session->m_id);
                                           if (on_finish_connection)
-                                              on_finish_connection(CloseRequest(session->m_id));
+                                              on_finish_connection(session);
                                           return;
                                       }
 
@@ -51,8 +53,9 @@ bool TCPClient::AsyncConnect(const std::string &raw_ip_address,
 
                                       if (session->m_was_cancelled)
                                       {
+                                          CloseRequest(session->m_id);
                                           if (on_finish_connection)
-                                              on_finish_connection(CloseRequest(session->m_id));
+                                              on_finish_connection(session);
                                           return;
                                       }
 
@@ -86,8 +89,9 @@ void TCPClient::AsyncWrite(unsigned int request_id,
                                  if (ec != boost::system::errc::success)
                                  {
                                      session->m_ec = ec;
+                                     CloseRequest(session->m_id);
                                      if (on_finish_write)
-                                         on_finish_write(CloseRequest(session->m_id));
+                                         on_finish_write(session);
                                      return;
                                  }
 
@@ -95,8 +99,9 @@ void TCPClient::AsyncWrite(unsigned int request_id,
 
                                  if (session->m_was_cancelled)
                                  {
+                                     CloseRequest(session->m_id);
                                      if (on_finish_write)
-                                         on_finish_write(CloseRequest(session->m_id));
+                                         on_finish_write(session);
                                      return;
                                  }
 
@@ -124,8 +129,7 @@ void TCPClient::AsyncRead(unsigned int request_id, size_t buffer_size, std::func
                                 if (ec != boost::system::errc::success)
                                 {
                                     session->m_ec = ec;
-                                    if (on_finish_read)
-                                        on_finish_read(CloseRequest(session->m_id));
+                                    on_finish_read(CloseRequest(session->m_id));
                                     return;
                                 }
 
@@ -133,8 +137,7 @@ void TCPClient::AsyncRead(unsigned int request_id, size_t buffer_size, std::func
                                 std::istream strm(&session->m_response_buf);
                                 std::getline(strm, session->m_response);
 
-                                if (on_finish_read)
-                                    on_finish_read(session);
+                                on_finish_read(session);
                             });
 }
 
@@ -159,16 +162,14 @@ void TCPClient::AsyncReadUntil(unsigned int request_id,
                                       if (ec != boost::system::errc::success)
                                       {
                                           session->m_ec = ec;
-                                          if (on_finish_read_until)
-                                              on_finish_read_until(CloseRequest(session->m_id));
+                                          on_finish_read_until(CloseRequest(session->m_id));
                                           return;
                                       }
 
                                       std::istream strm(&session->m_response_buf);
                                       std::getline(strm, session->m_response);
 
-                                      if (on_finish_read_until)
-                                          on_finish_read_until(session);
+                                      on_finish_read_until(session);
                                   });
 }
 
@@ -214,10 +215,11 @@ void TCPClient::CancelRequest(unsigned int request_id)
 
 void TCPClient::Close()
 {
-    m_work.reset(NULL);
+    if (!m_work.get())
+        return;
 
+    m_work.reset(nullptr);
+    m_ios.stop();
     for (auto &thread : m_threads)
-    {
         thread->join();
-    }
 }

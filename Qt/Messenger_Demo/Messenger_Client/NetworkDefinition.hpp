@@ -25,9 +25,9 @@ class TCPHeader
   public:
     TCPHeader(const std::string &data)
     {
-        for (int i = 0; i < BUFFER_CNT * 8; i += 8)
+        for (int i = 0; i < BUFFER_CNT; i++)
             for (int j = 0; j < 8; j++)
-                m_buffers[i / 8].bytes[j] = static_cast<std::byte>(data[i + j]);
+                m_buffers[i].bytes[j] = static_cast<std::byte>(data[i * 8 + j]);
     }
 
     TCPHeader(std::uint64_t connection_type, std::uint64_t data_size)
@@ -49,9 +49,9 @@ class TCPHeader
     std::string GetHeaderBuffer()
     {
         std::string ret(BUFFER_CNT * 8, 0);
-        for (int i = 0; i < BUFFER_CNT * 8; i += 8)
+        for (int i = 0; i < BUFFER_CNT; i++)
             for (int j = 0; j < 8; j++)
-                ret[i + j] = static_cast<char>(m_buffers[i / 8].bytes[j]);
+                ret[i * 8 + j] = static_cast<char>(m_buffers[i].bytes[j]);
         return ret;
     }
 };
