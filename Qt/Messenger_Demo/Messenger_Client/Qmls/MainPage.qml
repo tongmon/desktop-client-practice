@@ -44,10 +44,11 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            spacing: 0
 
             ListView {
                 id: chatRoomListView
-                Layout.preferredWidth: mainPage.width / 4
+                Layout.preferredWidth: 250
                 Layout.fillHeight: true
                 clip: true
 
@@ -56,7 +57,7 @@ Rectangle {
                 }
                 
                 model: ListModel {
-                    id: charRoomListModel
+                    id: chatRoomListModel
                 }
                 
                 delegate: Rectangle {
@@ -79,29 +80,94 @@ Rectangle {
 
                 Component.onCompleted: {
                     for(var i=0;i < 15;i++) {
-                        charRoomListModel.append({'chatRoomRect': "rect" + i})
+                        chatRoomListModel.append({'chatRoomRect': "rect" + i})
                     }
-                    // charRoomListModel.append({'chatRoomRect':one})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
-                    // charRoomListModel.append({})
                 }
             }
 
-            ScrollView {
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                spacing: 0
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 60
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 0
+                            
+                        Text {
+                            text: "Some Name"
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Button {
+                            text: "Search"
+                        }
+                        Button {
+                            text: "Chat Room Menu"
+                        }
+                    }
+                }
+
+                ListView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
+
+                    model: ListModel {
+                        id: chatListModel
+                    }
+
+                    delegate: Rectangle {
+                        id: chatRoomRect
+                        width: parent.width
+                        height: 98
+                        color: "#B240F5"
+    
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onEntered: {
+                                chatRoomRect.color = "#BD5CF5"
+                            }
+                            onExited: {
+                                chatRoomRect.color = "#B240F5"
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 60
+
+                    TextInput {
+                        anchors.fill: parent
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 60
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 0
+
+                        Button {
+                            Layout.fillHeight: true
+                            text: "Imoji"
+                        }
+                    }
+                }
             }
         }
     }
