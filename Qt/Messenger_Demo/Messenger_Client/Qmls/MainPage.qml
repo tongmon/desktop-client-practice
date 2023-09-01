@@ -45,25 +45,57 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // 리스트뷰를 마우스 휠로 조작하려면 밑 링크 참조
-            // https://stackoverflow.com/questions/75505046/qml-how-to-scroll-scrollview-using-the-mouse-wheel
             ListView {
+                id: chatRoomListView
                 Layout.preferredWidth: mainPage.width / 4
                 Layout.fillHeight: true
                 clip: true
+
+                ScrollBar.vertical: ScrollBar {
+                    policy: ScrollBar.AsNeeded
+                }
                 
                 model: ListModel {
                     id: charRoomListModel
                 }
                 
                 delegate: Rectangle {
+                    id: chatRoomRect
                     width: parent.width
-                    height: 50
-                    color: "white"
+                    height: 98
+                    color: "#B240F5"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: {
+                            chatRoomRect.color = "#BD5CF5"
+                        }
+                        onExited: {
+                            chatRoomRect.color = "#B240F5"
+                        }
+                    }
                 }
 
                 Component.onCompleted: {
-                    charRoomListModel.append({})
+                    for(var i=0;i < 15;i++) {
+                        charRoomListModel.append({'chatRoomRect': "rect" + i})
+                    }
+                    // charRoomListModel.append({'chatRoomRect':one})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
+                    // charRoomListModel.append({})
                 }
             }
 

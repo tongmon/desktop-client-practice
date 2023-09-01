@@ -121,7 +121,7 @@ Rectangle {
                 selectByMouse: true
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                 echoMode: TextField.Password // echoMode: showText ? TextField.Normal : TextField.Password
-                passwordCharacter: "*"
+                passwordCharacter: "●"
                 
                 anchors {
                     left: passwordImage.right                
