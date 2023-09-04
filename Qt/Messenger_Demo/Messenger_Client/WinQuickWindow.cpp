@@ -1,7 +1,6 @@
 ﻿#include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
 
-#include <GL/wglext.h>
 #include <QMetaObject>
 #include <QOpenGLContext>
 #include <QQmlContext>
@@ -249,6 +248,7 @@ bool WinQuickWindow::nativeEventFilter(const QByteArray &event_type, void *messa
     case WM_ENTERSIZEMOVE: {
         // VSync를 꺼야 Window 이동시 버벅거림이 없어짐...
         // 동적으로 VSync 키고 끌 수 있어야 함
+        // 추가적으로 GLEW 연동해야 밑의 함수들이 동작함
 
         // 방법 1.
         // 안됨

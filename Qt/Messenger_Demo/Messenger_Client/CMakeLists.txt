@@ -27,9 +27,6 @@ set(QT_DIR "C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cm
 # Boost Asio 포함
 find_package(Boost REQUIRED COMPONENTS system)
 
-# GLEW 포함
-find_package(GLEW REQUIRED)
-
 # Qt 모듈 포함
 # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
 find_package(QT NAMES Qt6 Qt5 REQUIRED Core)
@@ -59,7 +56,6 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Boost::system
-    GLEW::GLEW
     dwmapi.lib
     gdi32.lib
 )

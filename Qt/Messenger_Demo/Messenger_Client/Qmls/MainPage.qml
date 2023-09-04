@@ -8,6 +8,11 @@ Rectangle {
     color: "#280a3d"
     objectName: "mainPage"
 
+    function addChatBox()
+    {
+        
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
@@ -66,9 +71,64 @@ Rectangle {
                     height: 98
                     color: "#B240F5"
 
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 0
+                            
+                        Rectangle {
+                            id: chatRoomImageRect
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: chatRoomImageRect.height
+                            color: chatRoomRect.color
+
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                height: parent.height * 0.8
+                                width: parent.width * 0.8
+                                radius: width * 2
+
+                                Image {
+                                    anchors.fill: parent
+                                    source: "qrc:/icon/UserID.png" 
+                                    fillMode: Image.PreserveAspectFit
+                                }    
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            spacing: 0
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter 
+                                    anchors.left: parent.left
+                                    text: chatRoomName
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+
+                                Text {                               
+                                    anchors.verticalCenter: parent.verticalCenter 
+                                    anchors.left: parent.left                            
+                                    text: chatRoomPreview
+                                }                            
+                            }
+                        }
+                    }
+
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
+
                         onEntered: {
                             chatRoomRect.color = "#BD5CF5"
                         }
@@ -80,7 +140,11 @@ Rectangle {
 
                 Component.onCompleted: {
                     for(var i=0;i < 15;i++) {
-                        chatRoomListModel.append({'chatRoomRect': "rect" + i})
+                        chatRoomListModel.append({
+                            "chatRoomRect": "rect" + i,
+                            "chatRoomName": "Chat Room Num:" + i,
+                            "chatRoomPreview": "Chat Room Preview"
+                            })
                     }
                 }
             }
@@ -126,22 +190,9 @@ Rectangle {
                         id: chatListModel
                     }
 
-                    delegate: Rectangle {
-                        id: chatRoomRect
-                        width: parent.width
-                        height: 98
-                        color: "#B240F5"
-    
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onEntered: {
-                                chatRoomRect.color = "#BD5CF5"
-                            }
-                            onExited: {
-                                chatRoomRect.color = "#B240F5"
-                            }
-                        }
+                    // https://stackoverflow.com/questions/31985972/different-delegates-for-qml-listview
+                    delegate: Row {
+                        id: chatBox
                     }
                 }
 
