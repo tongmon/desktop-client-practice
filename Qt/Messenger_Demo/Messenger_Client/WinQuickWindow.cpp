@@ -11,8 +11,6 @@
 #include <memory>
 #include <stdexcept>
 
-typedef BOOL(WINAPI wglSwapInterval_t)(int interval);
-
 WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 {
     if (engine)

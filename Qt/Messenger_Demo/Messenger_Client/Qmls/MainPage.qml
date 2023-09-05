@@ -2,13 +2,14 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
+import ChatBubbleEnum 1.0
 
 Rectangle {
     id: mainPage
     color: "#280a3d"
     objectName: "mainPage"
 
-    function addChatBox()
+    function addChatBox(isOpposite, contentType, content)
     {
         
     }
@@ -191,8 +192,74 @@ Rectangle {
                     }
 
                     // https://stackoverflow.com/questions/31985972/different-delegates-for-qml-listview
-                    delegate: Row {
-                        id: chatBox
+                    delegate: Rectangle {
+                        color: "black"
+                        width: parent.width
+                        height: chatBubbleLoader.implicitHeight
+
+                        RowLayout {       
+                            anchors.fill: parent
+                            spacing: 0
+                            
+                            Canvas {
+                                Layout.preferredWidth: isOpposite ? 0 : 20
+                                Layout.preferredHeight: isOpposite ? 0 : 20
+                                Layout.alignment: (isOpposite ? Qt.AlignRight : Qt.AlignLeft) | Qt.AlignTop
+
+                                onPaint: {
+                                    var context = getContext("2d")
+
+                                    context.beginPath()
+                                    context.moveTo(0,0)
+                                    context.lineTo(20,0)
+                                    context.lineTo(20,20)
+                                    context.lineTo(0,0)
+                                    context.closePath()
+
+                                    context.fillStyle = "blue"
+                                    context.fill()
+                                }
+                            }
+                            
+                            Loader {
+                                id: chatBubbleLoader
+                                // Layout.fillWidth: true       
+                                Layout.preferredWidth: 200  
+                                Layout.preferredHeight: 200                       
+                                source: chatBubbleSource
+
+                                onLoaded: {
+                                    item.objectName = chatBubbleID
+                                    item.contentData = contentData
+                                    item.isOpposite = isOpposite
+                                }
+                            }
+
+                            Canvas {
+                                Layout.preferredWidth: isOpposite ? 20 : 0
+                                Layout.preferredHeight: isOpposite ? 20 : 0
+                                Layout.alignment: (isOpposite ? Qt.AlignRight : Qt.AlignLeft) | Qt.AlignTop
+
+                                onPaint: {
+                                    var context = getContext("2d")
+                                    context.beginPath()
+                                    context.moveTo(0,0)
+                                    context.lineTo(0,20)
+                                    context.lineTo(20,0)
+                                    context.lineTo(0,0)
+                                    context.closePath()
+                                    context.fillStyle = "blue"
+                                    context.fill()
+                                }
+                            }
+                        }
+                    }
+
+                    Component.onCompleted: {
+                        chatListModel.append({ "isOpposite": false, 
+                                                "chatBubbleID": "test", 
+                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
+                                                "contentData": String.raw`Test Text` })
                     }
                 }
 
@@ -212,7 +279,7 @@ Rectangle {
                     RowLayout {
                         anchors.fill: parent
                         spacing: 0
-
+                        
                         Button {
                             Layout.fillHeight: true
                             text: "Imoji"

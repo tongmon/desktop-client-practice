@@ -1,4 +1,5 @@
-﻿#include "WinQuickWindow.hpp"
+﻿#include "ChatBubbleEnum.hpp"
+#include "WinQuickWindow.hpp"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -25,6 +26,9 @@ int main(int argc, char *argv[])
 
     // 아이콘 설정
     app.setWindowIcon(QIcon(":/icon/ApplicationIcon.png"));
+
+    // qml에서 사용할 ENUM 등록
+    qmlRegisterType<ChatBubbleEnum>("ChatBubbleEnum", 1, 0, "ChatBubbleEnum");
 
     QQmlApplicationEngine engine;
 
