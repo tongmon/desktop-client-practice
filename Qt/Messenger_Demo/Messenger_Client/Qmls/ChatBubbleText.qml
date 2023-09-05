@@ -8,6 +8,8 @@ Rectangle {
     property bool isOpposite
 
     color: "blue"
+    width: chatBubbleText.paintedWidth
+    height: chatBubbleText.paintedHeight
 
     Text {
         id: chatBubbleText

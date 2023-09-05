@@ -193,9 +193,9 @@ Rectangle {
 
                     // https://stackoverflow.com/questions/31985972/different-delegates-for-qml-listview
                     delegate: Rectangle {
-                        color: "black"
+                        color: "transparent"
                         width: parent.width
-                        height: chatBubbleLoader.implicitHeight
+                        height: chatBubbleLoader.height
 
                         RowLayout {       
                             anchors.fill: parent
@@ -221,11 +221,10 @@ Rectangle {
                                 }
                             }
                             
-                            Loader {
+                            Loader {          
                                 id: chatBubbleLoader
-                                // Layout.fillWidth: true       
-                                Layout.preferredWidth: 200  
-                                Layout.preferredHeight: 200                       
+                                Layout.preferredWidth: (item !== null && typeof(item) !== 'undefined') ? item.width : 0
+                                Layout.preferredHeight: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
                                 source: chatBubbleSource
 
                                 onLoaded: {
