@@ -6,6 +6,15 @@ import QtQuick.Layouts 1.12
 Rectangle {
     id: chatBubbleTextRect
     color: "blue"
+    width: {
+        if(dummyText.paintedWidth < chatBubbleEdgeSize.width)
+            return chatBubbleEdgeSize.width
+        else if(dummyText.paintedWidth > chatBubbleMaximumWidth)
+            return chatBubbleMaximumWidth
+        else
+            return dummyText.paintedWidth
+    }
+    height: Math.max(chatBubbleText.paintedHeight, chatBubbleEdgeSize.height)
 
     Text {
         id: chatBubbleText
@@ -17,33 +26,10 @@ Rectangle {
         wrapMode: Text.WordWrap
     }
 
-    states: [
-        State {
-            name: "setMinimumWidth"
-            when: chatBubbleText.paintedWidth < chatBubbleEdgeSize.width
-            PropertyChanges {
-                target: chatBubbleTextRect
-                width: chatBubbleEdgeSize.width
-                height: chatBubbleEdgeSize.height > chatBubbleText.paintedHeight ? chatBubbleEdgeSize.height : chatBubbleText.paintedHeight
-            }
-        },
-        State {
-            name: "setNormalWidth"
-            when: chatBubbleEdgeSize.width <= chatBubbleText.paintedWidth && chatBubbleText.paintedWidth <= chatBubbleMaximumWidth
-            PropertyChanges {
-                target: chatBubbleTextRect
-                width: chatBubbleText.paintedWidth
-                height: chatBubbleEdgeSize.height > chatBubbleText.paintedHeight ? chatBubbleEdgeSize.height : chatBubbleText.paintedHeight
-            }
-        },
-        State {
-            name: "setMaximumWidth"
-            when: chatBubbleText.paintedWidth > chatBubbleMaximumWidth
-            PropertyChanges {
-                target: chatBubbleTextRect
-                width: chatBubbleMaximumWidth
-                height: chatBubbleEdgeSize.height > chatBubbleText.paintedHeight ? chatBubbleEdgeSize.height : chatBubbleText.paintedHeight
-            }
-        }
-    ]
+    Text {
+        id: dummyText
+        text: chatBubbleText.text
+        wrapMode: chatBubbleText.wrapMode
+        visible: false
+    }
 }
