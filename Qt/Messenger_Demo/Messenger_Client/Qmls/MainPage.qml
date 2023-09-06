@@ -182,6 +182,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
+                    spacing: 20
 
                     ScrollBar.vertical: ScrollBar {
                         policy: ScrollBar.AsNeeded
@@ -197,13 +198,19 @@ Rectangle {
                         width: parent.width
                         height: chatBubbleLoader.height
 
+                        property size chatBubbleEdgeSize: Qt.size(20, 20)
+
                         RowLayout {       
                             anchors.fill: parent
                             spacing: 0
                             
+                            Item {
+                                Layout.fillWidth: isOpposite
+                            }
+
                             Canvas {
-                                Layout.preferredWidth: isOpposite ? 0 : 20
-                                Layout.preferredHeight: isOpposite ? 0 : 20
+                                Layout.preferredWidth: isOpposite ? 0 : chatBubbleEdgeSize.width
+                                Layout.preferredHeight: isOpposite ? 0 : chatBubbleEdgeSize.height
                                 Layout.alignment: (isOpposite ? Qt.AlignRight : Qt.AlignLeft) | Qt.AlignTop
 
                                 onPaint: {
@@ -211,8 +218,8 @@ Rectangle {
 
                                     context.beginPath()
                                     context.moveTo(0,0)
-                                    context.lineTo(20,0)
-                                    context.lineTo(20,20)
+                                    context.lineTo(width,0)
+                                    context.lineTo(width,height)
                                     context.lineTo(0,0)
                                     context.closePath()
 
@@ -225,31 +232,34 @@ Rectangle {
                                 id: chatBubbleLoader
                                 Layout.preferredWidth: (item !== null && typeof(item) !== 'undefined') ? item.width : 0
                                 Layout.preferredHeight: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
+                                Layout.alignment: Qt.AlignTop
                                 source: chatBubbleSource
 
                                 onLoaded: {
                                     item.objectName = chatBubbleID
-                                    item.contentData = contentData
-                                    item.isOpposite = isOpposite
                                 }
                             }
 
-                            Canvas {
-                                Layout.preferredWidth: isOpposite ? 20 : 0
-                                Layout.preferredHeight: isOpposite ? 20 : 0
+                            Canvas {             
+                                Layout.preferredWidth: isOpposite ? chatBubbleEdgeSize.width : 0
+                                Layout.preferredHeight: isOpposite ? chatBubbleEdgeSize.height : 0
                                 Layout.alignment: (isOpposite ? Qt.AlignRight : Qt.AlignLeft) | Qt.AlignTop
 
                                 onPaint: {
                                     var context = getContext("2d")
                                     context.beginPath()
                                     context.moveTo(0,0)
-                                    context.lineTo(0,20)
-                                    context.lineTo(20,0)
+                                    context.lineTo(0,height)
+                                    context.lineTo(width,0)
                                     context.lineTo(0,0)
                                     context.closePath()
                                     context.fillStyle = "blue"
                                     context.fill()
                                 }
+                            }
+
+                            Item {
+                                Layout.fillWidth: !isOpposite
                             }
                         }
                     }
@@ -258,7 +268,12 @@ Rectangle {
                         chatListModel.append({ "isOpposite": false, 
                                                 "chatBubbleID": "test", 
                                                 "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                "contentData": String.raw`Test Text` })
+                                                "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
+
+                        chatListModel.append({ "isOpposite": true, 
+                                                "chatBubbleID": "test", 
+                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
+                                                "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
                     }
                 }
 
