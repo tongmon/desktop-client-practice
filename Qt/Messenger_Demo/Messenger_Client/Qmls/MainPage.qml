@@ -179,10 +179,11 @@ Rectangle {
                 }
 
                 ListView {
+                    id: chatBubbleListView
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
-                    spacing: 20
+                    spacing: 15
 
                     ScrollBar.vertical: ScrollBar {
                         policy: ScrollBar.AsNeeded
@@ -192,13 +193,13 @@ Rectangle {
                         id: chatListModel
                     }
 
-                    // https://stackoverflow.com/questions/31985972/different-delegates-for-qml-listview
                     delegate: Rectangle {
                         color: "transparent"
                         width: parent.width
                         height: chatBubbleLoader.height
 
                         property size chatBubbleEdgeSize: Qt.size(20, 20)
+                        property var chatBubbleMaximumWidth: chatBubbleListView.width * 0.6
 
                         RowLayout {       
                             anchors.fill: parent
@@ -265,15 +266,20 @@ Rectangle {
                     }
 
                     Component.onCompleted: {
-                        chatListModel.append({ "isOpposite": false, 
+                        chatListModel.append({  "isOpposite": false, 
                                                 "chatBubbleID": "test", 
                                                 "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
                                                 "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
 
-                        chatListModel.append({ "isOpposite": true, 
+                        chatListModel.append({  "isOpposite": true, 
                                                 "chatBubbleID": "test", 
                                                 "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
                                                 "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
+
+                        chatListModel.append({  "isOpposite": false, 
+                                                "chatBubbleID": "test", 
+                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
+                                                "contentData": String.raw`Text Test` })
                     }
                 }
 
