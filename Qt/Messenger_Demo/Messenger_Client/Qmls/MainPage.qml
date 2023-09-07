@@ -247,7 +247,7 @@ Rectangle {
                         chatListModel.append({  "isRightAlign": false, 
                                                 "chatBubbleID": "test", 
                                                 "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                "contentData": String.raw`T` })
+                                                "contentData": String.raw`` })
                     }
                 }
 
@@ -255,9 +255,37 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
 
-                    TextInput {
+                    Flickable {
                         anchors.fill: parent
+                        contentWidth: width
+                        contentHeight: parent.height
+
+                        TextArea.flickable: TextArea {
+                            id: textArea
+                            anchors.fill: parent
+                            font.pointSize: 10
+                            selectByMouse: true
+                            wrapMode: TextEdit.Wrap
+
+                            Keys.onReturnPressed: {
+                                if(event.modifiers & Qt.ShiftModifier) {
+                                    insert(cursorPosition, "\n")
+                                    return
+                                }
+                                editingFinished()
+                            }
+
+                            onEditingFinished: {
+                                text = ""
+                            }                
+                        }
+
+                        ScrollBar.vertical: ScrollBar {
+                            policy: ScrollBar.AsNeeded
+                        }
                     }
+
+
                 }
 
                 Rectangle {

@@ -71,9 +71,10 @@ Rectangle {
                 selectByMouse: true
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                 
-                validator: RegularExpressionValidator { 
-                    regularExpression: /[0-9a-zA-Z]+/
-                }
+                // 정규식도 checkLoginValidation() 함수에서 처리하는 것이 바람직해보임
+                // validator: RegularExpressionValidator { 
+                //     regularExpression: /[0-9a-zA-Z]+/
+                // }
 
                 anchors {
                     left: userIDImage.right                
