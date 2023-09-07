@@ -9,7 +9,7 @@ Rectangle {
     color: "#280a3d"
     objectName: "mainPage"
 
-    function addChatBox(isOpposite, contentType, content)
+    function addChatBox(isRightAlign, contentType, content)
     {
         
     }
@@ -183,7 +183,8 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
-                    spacing: 15
+                    spacing: 6
+                    // boundsBehavior: Flickable.StopAtBounds
 
                     ScrollBar.vertical: ScrollBar {
                         policy: ScrollBar.AsNeeded
@@ -196,9 +197,9 @@ Rectangle {
                     delegate: Rectangle {
                         color: "transparent"
                         width: parent.width
-                        height: chatBubbleLoader.item.height
+                        height: chatBubbleLoader.item.height + chatBubbleNameText.paintedHeight + chatBubbleContentLayout.spacing
 
-                        property var chatBubbleStemSize: Qt.size(12, 10)
+                        property var chatBubbleStemSize: Qt.size(11, 8)
                         property var chatBubbleMaximumWidth: chatBubbleListView.width * 0.6
                         property var chatBubbleMinimumSize: Qt.size(5, 5)
 
@@ -209,16 +210,35 @@ Rectangle {
                             Item {
                                 Layout.fillWidth: isRightAlign
                             }
-                            
-                            Loader {          
-                                id: chatBubbleLoader
-                                Layout.preferredWidth: (item !== null && typeof(item) !== 'undefined') ? item.width : 0
-                                Layout.preferredHeight: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
-                                Layout.alignment: Qt.AlignTop
-                                source: chatBubbleSource
 
-                                onLoaded: {
-                                    item.objectName = chatBubbleID
+                            Image {
+                                source: "qrc:/icon/UserID.png"
+                                visible: !isRightAlign
+                                Layout.alignment: Qt.AlignTop
+                                Layout.preferredWidth: 50
+                                Layout.preferredHeight: 50
+                            }
+                            
+                            ColumnLayout {
+                                id: chatBubbleContentLayout
+                                spacing: 3
+
+                                Text {
+                                    id: chatBubbleNameText
+                                    text: "name"
+                                    x: x + chatBubbleStemSize.width 
+                                    visible: !isRightAlign
+                                }
+
+                                Loader {          
+                                    id: chatBubbleLoader
+                                    Layout.preferredWidth: (item !== null && typeof(item) !== 'undefined') ? item.width : 0
+                                    Layout.preferredHeight: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
+                                    source: chatBubbleSource
+
+                                    onLoaded: {
+                                        item.objectName = chatBubbleID
+                                    }
                                 }
                             }
                             
@@ -242,7 +262,7 @@ Rectangle {
 
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 60
+                    Layout.preferredHeight: 100
 
                     Flickable {
                         id: chatInputAreaFlickable
