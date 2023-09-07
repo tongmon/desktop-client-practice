@@ -228,26 +228,15 @@ Rectangle {
                         }
                     }
 
+                    onCountChanged: {
+                    	Qt.callLater(positionViewAtEnd)
+                    }
+
                     Component.onCompleted: {
                         chatListModel.append({  "isRightAlign": false, 
                                                 "chatBubbleID": "test", 
                                                 "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
                                                 "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
-
-                        chatListModel.append({  "isRightAlign": true, 
-                                                "chatBubbleID": "test", 
-                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
-
-                        chatListModel.append({  "isRightAlign": false, 
-                                                "chatBubbleID": "test", 
-                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                "contentData": String.raw`Text Test` })
-
-                        chatListModel.append({  "isRightAlign": false, 
-                                                "chatBubbleID": "test", 
-                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                "contentData": String.raw`` })
                     }
                 }
 
@@ -256,13 +245,16 @@ Rectangle {
                     Layout.preferredHeight: 60
 
                     Flickable {
+                        id: chatInputAreaFlickable
                         anchors.fill: parent
+                        width: parent.width
+                        height: parent.height
                         contentWidth: width
                         contentHeight: parent.height
 
                         TextArea.flickable: TextArea {
-                            id: textArea
-                            anchors.fill: parent
+                            id: chatInputArea
+                            anchors.fill: chatInputAreaFlickable
                             font.pointSize: 10
                             selectByMouse: true
                             wrapMode: TextEdit.Wrap
@@ -272,11 +264,15 @@ Rectangle {
                                     insert(cursorPosition, "\n")
                                     return
                                 }
-                                editingFinished()
-                            }
 
-                            onEditingFinished: {
-                                text = ""
+                                if(!text.length)
+                                    return
+
+                                chatListModel.append({  "isRightAlign": true, 
+                                                        "chatBubbleID": "test", 
+                                                        "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
+                                                        "contentData": text })
+                                text = ""  
                             }                
                         }
 
@@ -284,8 +280,6 @@ Rectangle {
                             policy: ScrollBar.AsNeeded
                         }
                     }
-
-
                 }
 
                 Rectangle {
