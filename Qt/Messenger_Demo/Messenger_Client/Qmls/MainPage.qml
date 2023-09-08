@@ -194,56 +194,27 @@ Rectangle {
                         id: chatListModel
                     }
 
-                    delegate: Rectangle {
-                        color: "transparent"
+                    delegate: Item {
                         width: parent.width
-                        height: chatBubbleLoader.item.height + chatBubbleNameText.paintedHeight + chatBubbleContentLayout.spacing
+                        height: chatBubbleLoader.height
 
+                        // 말풍선 꼭다리 부분 크기
                         property var chatBubbleStemSize: Qt.size(11, 8)
+
+                        // 말풍선 최대 너비
                         property var chatBubbleMaximumWidth: chatBubbleListView.width * 0.6
-                        property var chatBubbleMinimumSize: Qt.size(5, 5)
 
-                        RowLayout {       
-                            anchors.fill: parent
-                            spacing: 0
-                            
-                            Item {
-                                Layout.fillWidth: isRightAlign
-                            }
+                        // 말풍선 최소 크기
+                        property var chatBubbleMinimumSize: Qt.size(10, 10)
 
-                            Image {
-                                source: "qrc:/icon/UserID.png"
-                                visible: !isRightAlign
-                                Layout.alignment: Qt.AlignTop
-                                Layout.preferredWidth: 50
-                                Layout.preferredHeight: 50
-                            }
-                            
-                            ColumnLayout {
-                                id: chatBubbleContentLayout
-                                spacing: 3
+                        Loader {
+                            id: chatBubbleLoader
+                            width: parent.width
+                            height: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
+                            source: chatBubbleSource
 
-                                Text {
-                                    id: chatBubbleNameText
-                                    text: "name"
-                                    x: x + chatBubbleStemSize.width 
-                                    visible: !isRightAlign
-                                }
-
-                                Loader {          
-                                    id: chatBubbleLoader
-                                    Layout.preferredWidth: (item !== null && typeof(item) !== 'undefined') ? item.width : 0
-                                    Layout.preferredHeight: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
-                                    source: chatBubbleSource
-
-                                    onLoaded: {
-                                        item.objectName = chatBubbleID
-                                    }
-                                }
-                            }
-                            
-                            Item {
-                                Layout.fillWidth: !isRightAlign
+                            onLoaded: {
+                                item.objectName = chatBubbleID
                             }
                         }
                     }
@@ -274,7 +245,8 @@ Rectangle {
 
                         TextArea.flickable: TextArea {
                             id: chatInputArea
-                            anchors.fill: chatInputAreaFlickable
+                            width: chatInputAreaFlickable.width
+                            height: chatInputAreaFlickable.height
                             font.pointSize: 10
                             selectByMouse: true
                             wrapMode: TextEdit.Wrap
