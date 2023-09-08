@@ -9,9 +9,17 @@ Rectangle {
     color: "#280a3d"
     objectName: "mainPage"
 
-    function addChatBox(isRightAlign, contentType, content)
+    function addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
     {
-        
+        chatListModel.append({
+            "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+            "isRightAlign": isRightAlign,
+            "userID": userID,
+            "userName": userName,
+            "userImage": userImage,
+            "chatData": chatData,
+            "chatTime": chatTime
+        })
     }
 
     ColumnLayout {
@@ -183,7 +191,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
-                    spacing: 6
+                    // spacing: 6
                     // boundsBehavior: Flickable.StopAtBounds
 
                     ScrollBar.vertical: ScrollBar {
@@ -197,6 +205,7 @@ Rectangle {
                     delegate: Item {
                         width: parent.width
                         height: chatBubbleLoader.height
+                        objectName: userID
 
                         // 말풍선 꼭다리 부분 크기
                         property var chatBubbleStemSize: Qt.size(11, 8)
@@ -214,7 +223,7 @@ Rectangle {
                             source: chatBubbleSource
 
                             onLoaded: {
-                                item.objectName = chatBubbleID
+                                // item.objectName = chatBubbleID
                             }
                         }
                     }
@@ -224,10 +233,7 @@ Rectangle {
                     }
 
                     Component.onCompleted: {
-                        chatListModel.append({  "isRightAlign": false, 
-                                                "chatBubbleID": "test", 
-                                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                "contentData": String.raw`Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test TextTest Text Test Text Test Text` })
+                        
                     }
                 }
 
@@ -238,8 +244,6 @@ Rectangle {
                     Flickable {
                         id: chatInputAreaFlickable
                         anchors.fill: parent
-                        width: parent.width
-                        height: parent.height
                         contentWidth: width
                         contentHeight: parent.height
 
@@ -260,10 +264,12 @@ Rectangle {
                                 if(!text.length)
                                     return
 
-                                chatListModel.append({  "isRightAlign": true, 
-                                                        "chatBubbleID": "test", 
-                                                        "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml", 
-                                                        "contentData": text })
+                                addChatBubbleText(true, 
+                                                  "tongstar", 
+                                                  "이경준",
+                                                  "",
+                                                  text,
+                                                  "current time")
                                 text = ""  
                             }                
                         }

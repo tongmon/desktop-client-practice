@@ -18,7 +18,7 @@ Item {
         }
 
         Image {
-            source: "qrc:/icon/UserID.png"
+            source: "data:image/png;base64," + userImage
             visible: !isRightAlign
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: 50
@@ -31,7 +31,7 @@ Item {
 
             Text {
                 id: chatBubbleNameText
-                text: "name"
+                text: userName
                 font.pixelSize: 15
                 visible: !isRightAlign
                 Layout.leftMargin: chatBubbleStemSize.width
@@ -39,8 +39,8 @@ Item {
 
             Canvas {
                 id: chatBubbleBackground
-                Layout.preferredWidth: chatBubbleTextItem.width + chatBubbleStemSize.width + chatBubbleMargin
-                Layout.preferredHeight: chatBubbleTextItem.height + chatBubbleMargin
+                Layout.preferredWidth: Math.max(chatBubbleTextItem.width, dateText.paintedWidth) + chatBubbleStemSize.width + chatBubbleMargin
+                Layout.preferredHeight: chatBubbleTextItem.height + dateText.paintedHeight + chatBubbleMargin
 
                 Item {
                     id: chatBubbleTextItem
@@ -55,8 +55,8 @@ Item {
                         anchors.left: parent.left
                         width: parent.width
                         height: parent.height
-                        text: contentData
-                        wrapMode: Text.WordWrap
+                        text: chatData
+                        wrapMode: Text.Wrap
                         font.pixelSize: 15
                     }
 
@@ -67,6 +67,14 @@ Item {
                         font: chatBubbleText.font
                         visible: false
                     }
+                }
+
+                Text {
+                    id: dateText
+                    anchors.top: chatBubbleTextItem.bottom
+                    anchors.left: isRightAlign ? chatBubbleTextItem.left : undefined
+                    anchors.right: isRightAlign ? undefined : chatBubbleTextItem.right
+                    text: chatTime
                 }
 
                 onPaint: {
