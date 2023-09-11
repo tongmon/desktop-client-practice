@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QQmlComponent>
-#include <memory>
 
 class WinQuickWindow;
 

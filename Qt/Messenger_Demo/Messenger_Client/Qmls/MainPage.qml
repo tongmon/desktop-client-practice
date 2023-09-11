@@ -2,12 +2,13 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-import ChatBubbleEnum 1.0
 
 Rectangle {
     id: mainPage
     color: "#280a3d"
     objectName: "mainPage"
+
+    property string currentRoomID
 
     function addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
     {
@@ -233,7 +234,19 @@ Rectangle {
                     }
 
                     Component.onCompleted: {
-                        
+                        addChatBubbleText(false, 
+                                          "tongstar", 
+                                          "이경준",
+                                          "",
+                                          "This is Test",
+                                          "current time")
+
+                        addChatBubbleText(false, 
+                                          "tongstar", 
+                                          "이경준",
+                                          "",
+                                          "And Test is keep goin",
+                                          "current time")
                     }
                 }
 
@@ -263,6 +276,9 @@ Rectangle {
 
                                 if(!text.length)
                                     return
+
+                                // 서버로 채팅 내용 전송
+                                mainPageContext.trySendTextChat(currentRoomID, text)
 
                                 addChatBubbleText(true, 
                                                   "tongstar", 

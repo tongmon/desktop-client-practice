@@ -4,10 +4,10 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 
 Item {
-    property int chatBubbleMargin: 6
+    property int chatBubbleMargin: 3
 
     width: parent.width
-    height: chatBubbleContentLayout.spacing + chatBubbleNameText.paintedHeight + chatBubbleBackground.height
+    height: chatBubbleContentLayout.spacing + (isRightAlign ? 0 : chatBubbleNameText.paintedHeight) + chatBubbleBackground.height
 
     RowLayout {       
         anchors.fill: parent
@@ -18,7 +18,7 @@ Item {
         }
 
         Image {
-            source: "data:image/png;base64," + userImage
+            source: "qrc:/icon/UserID.png" // "data:image/png;base64," + userImage
             visible: !isRightAlign
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: 50
@@ -39,25 +39,27 @@ Item {
 
             Canvas {
                 id: chatBubbleBackground
-                Layout.preferredWidth: Math.max(chatBubbleTextItem.width, dateText.paintedWidth) + chatBubbleStemSize.width + chatBubbleMargin
-                Layout.preferredHeight: chatBubbleTextItem.height + dateText.paintedHeight + chatBubbleMargin
+                Layout.preferredWidth: Math.max(chatBubbleTextItem.width, dateText.paintedWidth) + chatBubbleStemSize.width + chatBubbleMargin * 2
+                Layout.preferredHeight: chatBubbleTextItem.height + dateText.paintedHeight + chatBubbleMargin * 2
 
                 Item {
                     id: chatBubbleTextItem
-                    x: isRightAlign ? (chatBubbleMargin / 2) : (chatBubbleStemSize.width + chatBubbleMargin / 2)
-                    y: chatBubbleMargin / 2
+                    x: isRightAlign ? chatBubbleMargin : (chatBubbleStemSize.width + chatBubbleMargin)
+                    y: chatBubbleMargin
                     width: Math.min(chatBubbleMaximumWidth, Math.max(chatBubbleMinimumSize.width, dummyText.paintedWidth))
                     height: Math.max(chatBubbleText.paintedHeight, chatBubbleMinimumSize.height)
 
-                    Text {
+                    TextEdit {
                         id: chatBubbleText
                         anchors.verticalCenter: parent.verticalCenter 
                         anchors.left: parent.left
                         width: parent.width
                         height: parent.height
                         text: chatData
-                        wrapMode: Text.Wrap
                         font.pixelSize: 15
+                        selectByMouse: true
+                        wrapMode: TextEdit.Wrap
+                        readOnly: true
                     }
 
                     Text {

@@ -18,7 +18,7 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
     auto &network_handle = m_window->GetNetworkHandle();
 
     int request_id = 0;
-    network_handle.AsyncConnect("127.0.0.1", 3000, request_id);
+    network_handle.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
 
     std::string request = id.toStdString() + "|" + pw.toStdString();
     TCPHeader header(LOGIN_CONNECTION_TYPE, request.size());

@@ -56,6 +56,9 @@ class TCPHeader
     }
 };
 
+constexpr char SERVER_IP[] = "127.0.0.1";
+constexpr std::uint64_t SERVER_PORT = 3000;
+
 constexpr size_t TCP_HEADER_SIZE = sizeof(TCPHeader);
 
 constexpr std::uint64_t LOGIN_CONNECTION_TYPE = 0;
