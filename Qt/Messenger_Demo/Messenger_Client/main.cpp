@@ -3,9 +3,16 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QSurfaceFormat>
+#include <soci/postgresql/soci-postgresql.h>
+#include <soci/soci.h>
 
 int main(int argc, char *argv[])
 {
+    soci::session sql(soci::postgresql, "host=127.0.0.1 dbname=MESSENGER_DB user=tongstar password=@Lsy12131213 port=3000");
+
+    int count;
+    sql << "select count(*) from user_tb", soci::into(count);
+
     // Qt::AA_UseSoftwareOpenGL, Qt::AA_UseDesktopOpenGL, Qt::AA_UseOpenGLES 등 많다.
     QGuiApplication::setAttribute(Qt::AA_UseOpenGLES);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

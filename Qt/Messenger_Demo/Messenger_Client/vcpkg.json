@@ -8,6 +8,12 @@
       "features": [
         "ssl"
       ]
+    },
+    {
+      "name": "soci",
+      "features": [
+        "postgresql"
+      ]
     }
   ],
   "builtin-baseline": "3f6e8e9c09e28a0eae4b37cceb2982ca2518278c"
