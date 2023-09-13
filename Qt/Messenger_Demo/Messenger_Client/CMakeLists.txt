@@ -27,9 +27,6 @@ set(QT_DIR "C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cm
 # Boost Asio 포함
 find_package(Boost REQUIRED COMPONENTS system)
 
-# DB 연동을 위해 SOCI 포함
-find_package(SOCI CONFIG REQUIRED)
-
 # Qt 모듈 포함
 # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
 find_package(QT NAMES Qt6 Qt5 REQUIRED Core)
@@ -59,14 +56,11 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Boost::system
-    SOCI::soci_core
-    SOCI::soci_empty
-    SOCI::soci_postgresql
     dwmapi.lib
     gdi32.lib
 )
 
-#add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-#     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir "${CMAKE_SOURCE_DIR}/Qmls"  "${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
-#     WORKING_DIRECTORY "${QT_DIR}/../../../bin"
-#)
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+     COMMAND windeployqt.exe $<IF:$<CONFIG:Debug>,--debug,--release> --qmldir "${CMAKE_SOURCE_DIR}/Qmls"  "${CMAKE_BINARY_DIR}/$<IF:$<CONFIG:Debug>,Debug,Release>/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
+     WORKING_DIRECTORY "${QT_DIR}/../../../bin"
+)

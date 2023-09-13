@@ -58,9 +58,9 @@
                 "strategy": "set"
             },
             "cacheVariables": {
-                "VCPKG_TARGET_TRIPLET": "x64-windows-static",
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
                 "CMAKE_CXX_FLAGS": "/MP /DWIN32_LEAN_AND_MEAN /D_UNICODE /DUNICODE /D_CRT_SECURE_NO_WARNINGS /JMC /permissive- /EHsc",
-                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
             }
         },
         {
@@ -73,9 +73,9 @@
                 "strategy": "set"
             },
             "cacheVariables": {
-                "VCPKG_TARGET_TRIPLET": "x86-windows-static",
+                "VCPKG_TARGET_TRIPLET": "x86-windows",
                 "CMAKE_CXX_FLAGS": "/DWIN32 /MP /DWIN32_LEAN_AND_MEAN /D_UNICODE /DUNICODE /D_CRT_SECURE_NO_WARNINGS /JMC /permissive- /EHsc",
-                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
             }
         },
         {

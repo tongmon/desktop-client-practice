@@ -3,18 +3,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QSurfaceFormat>
-#include <soci/postgresql/soci-postgresql.h>
-#include <soci/soci.h>
 
 int main(int argc, char *argv[])
 {
-    // MSVC에서 soci::postgresql 사용시 버그로 인해 컴파일이 안됨.
-    // soci::postgresql -> *soci::factory_postgresql()로 사용해야 함
-    soci::session sql(*soci::factory_postgresql(), "host=127.0.0.1 port=3000 dbname=MESSENGER_DB user=tongstar password=@Lsy12131213");
-
-    int count;
-    sql << "select count(*) from user_tb", soci::into(count);
-
     // Qt::AA_UseSoftwareOpenGL, Qt::AA_UseDesktopOpenGL, Qt::AA_UseOpenGLES 등 많다.
     QGuiApplication::setAttribute(Qt::AA_UseOpenGLES);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

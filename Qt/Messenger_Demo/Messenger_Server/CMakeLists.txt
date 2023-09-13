@@ -4,15 +4,23 @@ execute_process(
   COMMAND vcpkg x-update-baseline --add-initial-baseline
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
-project(BoostAsioPractice VERSION 1.0.0 LANGUAGES C CXX)
+project("Messenger_Server" VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(BUILD_SHARED_LIBS OFF)
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
 
+# DB 연동을 위해 SOCI 포함
+find_package(SOCI CONFIG REQUIRED)
+
+# Boost Asio 포함
 find_package(Boost REQUIRED COMPONENTS system)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::system)
+target_link_libraries(${PROJECT_NAME} 
+    PUBLIC Boost::system
+    SOCI::soci_core
+    SOCI::soci_postgresql
+)
