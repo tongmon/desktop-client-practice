@@ -1,4 +1,5 @@
 ﻿#include "MessengerService.hpp"
+#include "DBConnectionPool.hpp"
 #include "NetworkDefinition.hpp"
 
 #include <iostream>
@@ -7,6 +8,7 @@
 MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
     : Service(sock)
 {
+    m_sql = std::make_unique<soci::session>(DBConnectionPool::get());
 }
 
 // 서비스 종료 시 추가적으로 해제해야 할 것들 소멸자에 기입
@@ -22,8 +24,11 @@ void MessengerService::LoginHandling()
 
     std::cout << "ID: " << id << "  Password: " << pw << "\n";
 
-    // DB 검사해서 id, pw 매칭 결과에 따라 data에 채워넣고 클라로 보내셈
-    m_request = {1};
+    soci::indicator ind;
+    std::string pw_from_db;
+    *m_sql << "select password from user_tb where user_id = :id", soci::into(pw_from_db, ind), soci::use(id);
+
+    m_request = {char(pw_from_db == pw ? 1 : 0)};
 
     TCPHeader header(LOGIN_CONNECTION_TYPE, m_request.size());
     m_request = header.GetHeaderBuffer() + m_request;

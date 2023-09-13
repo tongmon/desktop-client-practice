@@ -1,4 +1,4 @@
-#pragma region standard header
+﻿#pragma region standard header
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -32,15 +32,20 @@
 
 #include <boost/system.hpp>
 
+#include "DBConnectionPool.hpp"
 #include "MessengerService.hpp"
+#include "NetworkDefinition.hpp"
 #include "TCPServer.hpp"
 
 int main(int argc, char *argv[])
 {
     try
     {
-        unsigned short port_num = 3000;
-        TCPServer<MessengerService> server(port_num, 2);
+        // DB 연결 정보 초기화
+        DBConnectionPool::get(4, {"localhost", "3000", "messenger_db", "tongstar", "@Lsy12131213"});
+
+        // TCP 서버 생성
+        TCPServer<MessengerService> server(SERVER_PORT, 2);
 
         char a;
         std::cin >> a;
@@ -51,26 +56,6 @@ int main(int argc, char *argv[])
                   << e.code() << ". Message: "
                   << e.what();
     }
-
-    // try
-    // {
-    //     TCPServer server;
-    //
-    //     unsigned int thread_pool_size = 1;
-    //
-    //     server.Start(port_num, thread_pool_size);
-    //
-    //     char a;
-    //     std::cin >> a;
-    //
-    //     server.Stop();
-    // }
-    // catch (boost::system::system_error &e)
-    // {
-    //     std::cout << "Error occured! Error code = "
-    //               << e.code() << ". Message: "
-    //               << e.what();
-    // }
 
     return 0;
 }
