@@ -2,6 +2,7 @@
 #include "DBConnectionPool.hpp"
 #include "NetworkDefinition.hpp"
 
+#include <boost/dll.hpp>
 #include <iostream>
 #include <regex>
 
@@ -28,7 +29,10 @@ void MessengerService::LoginHandling()
     std::string pw_from_db;
     *m_sql << "select password from user_tb where user_id = :id", soci::into(pw_from_db, ind), soci::use(id);
 
-    m_request = {char(pw_from_db == pw ? 1 : 0)};
+    if (ind == soci::i_ok)
+        m_request = {char(pw_from_db == pw ? 1 : 0)};
+    else
+        m_request = {0};
 
     TCPHeader header(LOGIN_CONNECTION_TYPE, m_request.size());
     m_request = header.GetHeaderBuffer() + m_request;
@@ -47,6 +51,18 @@ void MessengerService::LoginHandling()
 
 void MessengerService::MessageHandling()
 {
+}
+
+void MessengerService::ChatRoomListInitHandling()
+{
+    soci::rowset<soci::row> rs = (m_sql->prepare << "select creator_id, session_id from session_user_relation_tb where user_id=:id",
+                                  soci::use(m_client_request, "id"));
+
+    for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
+    {
+        const soci::row &r = *it;
+        std::string chat_room_path = boost::dll::program_location().parent_path().string() + "/" + r.get<std::string>(0) + "_" + r.get<std::string>(1);
+    }
 }
 
 void MessengerService::StartHandling()
@@ -90,6 +106,9 @@ void MessengerService::StartHandling()
                                                                 break;
                                                             case TEXTCHAT_CONNECTION_TYPE:
                                                                 MessageHandling();
+                                                                break;
+                                                            case CHATROOMLIST_INITIAL_TYPE:
+                                                                ChatRoomListInitHandling();
                                                                 break;
                                                             default:
                                                                 break;

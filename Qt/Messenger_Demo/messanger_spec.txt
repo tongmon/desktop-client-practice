@@ -19,23 +19,52 @@ chat_msg_path는 "talk_id_날짜"로 구성됨.
 
 
 table name: USER_TB / key: USER_ID
-USER_ID
-USER_NM
-PASSWORD
-IMAGE_PATH
+USER_ID => varchar 50
+USER_NM => varchar 50
+PASSWORD => varchar 50
+IMAGE_PATH => varchar 255
 
 
 
-table name: ROOM_TB / key: ROOM_ID + CREATOR_ID
-ROOM_ID
+table name: SESSION_TB / key: SESSION_ID + CREATOR_ID
+SESSION_ID => 세션 생성일 + '_' + 6자리 -> 16자리 varchar
 CREATOR_ID
-PARTICIPANTS
-CHAT_HISTORY
+SESSION_NM => varchar 255
+
+CREATE TABLE SESSION_TB
+(
+    SESSION_ID	VARCHAR(16) NOT NULL,
+    CREATOR_ID	VARCHAR(50) NOT NULL,
+	SESSION_NM	VARCHAR(255) NOT NULL,
+    PRIMARY KEY (SESSION_ID, CREATOR_ID)
+)
+
+- 채팅 기록 저장 방식
+일단 SESSION_ID + '_' + CREATOR_ID 폴더명에 각 날짜별 채팅 기록이 위치함
+각 날짜별 채팅 기록의 파일명은 '채팅 시점의 날짜.txt' 와 같음
 
 
 
-table name: ROOM_USER_RELATION
-ROOM_ID
+// 세션에 묶인 사용자들을 알기 위함
+table name: SESSION_USER_RELATION_TB / key: SESSION_ID + CREATOR_ID + USER_ID
+SESSION_ID => 세션 생성일 + '_' + 6자리 -> 16자리 varchar
 CREATOR_ID
 USER_ID
+
+CREATE TABLE SESSION_USER_RELATION_TB
+(
+    SESSION_ID	VARCHAR(16) NOT NULL,
+    CREATOR_ID	VARCHAR(50) NOT NULL,
+	USER_ID		VARCHAR(50) NOT NULL,
+    PRIMARY KEY (SESSION_ID, CREATOR_ID, USER_ID)
+)
+
+
+
+// 밑에 꺼 해야 특정 ID로 DB 쿼리문 수행 가능함
+RANT SELECT ON ALL TABLES IN SCHEMA public TO 유저이름;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO 유저이름;
+
+
+
 

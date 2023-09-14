@@ -19,6 +19,8 @@ Rectangle {
     // 로그인 성공시 화면 전환
     function successLogin()
     {
+        userID = userIDTextField.text
+        userPW = passwordTextField.text
         mainWindowLoader.source = "qrc:/qml/MainPage.qml"
     }
 

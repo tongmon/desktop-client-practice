@@ -47,7 +47,8 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
                 if (!session.get() || !session->IsValid())
                     return;
 
-                if (session->GetResponse()[0]) // 로그인 성공
+                // 로그인 성공
+                if (session->GetResponse()[0])
                     QMetaObject::invokeMethod(m_window->GetQuickWindow().findChild<QObject *>("loginPage"), "successLogin");
                 else
                 {

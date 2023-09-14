@@ -18,11 +18,14 @@ ApplicationWindow {
     // 창 크기 재조절 외각 부분, C++에서 받아서 처리
     property int resizeBorderWidth: 6
 
+    property string userID
+    property string userPW
+
     // 메인 뷰
     Loader { 
         id: mainWindowLoader 
         anchors.fill: parent
         objectName: "mainWindowLoader"
-        source: "qrc:/qml/LoginPage.qml"
+        source: "qrc:/qml/MainPage.qml"
     }
 }

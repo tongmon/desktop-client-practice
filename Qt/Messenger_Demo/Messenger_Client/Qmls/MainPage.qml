@@ -193,7 +193,7 @@ Rectangle {
                     Layout.fillHeight: true
                     clip: true
                     // spacing: 6
-                    // boundsBehavior: Flickable.StopAtBounds
+                    boundsBehavior: Flickable.StopAtBounds
 
                     ScrollBar.vertical: ScrollBar {
                         policy: ScrollBar.AsNeeded
@@ -247,6 +247,15 @@ Rectangle {
                                           "",
                                           "And Test is keep goin",
                                           "current time")
+                    }
+
+                    // 밑 로직으로 날짜에 따라 채팅 읽어오기 가능
+                    onContentYChanged: {
+                        var currentIndexAtTop = indexAt(1, contentY)
+                        console.log(currentIndexAtTop)
+                        
+                        var currentItem = itemAt(1, contentY)
+                        console.log(currentItem.objectName)
                     }
                 }
 

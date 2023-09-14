@@ -64,5 +64,6 @@ constexpr size_t TCP_HEADER_SIZE = sizeof(TCPHeader);
 constexpr std::uint64_t LOGIN_CONNECTION_TYPE = 0;
 constexpr std::uint64_t TEXTCHAT_CONNECTION_TYPE = 1;
 constexpr std::uint64_t IMAGECHAT_CONNECTION_TYPE = 2;
+constexpr std::uint64_t CHATROOMLIST_INITIAL_TYPE = 3;
 
 #endif /* HEADER__FILE__NETWORKDEFINITION */
