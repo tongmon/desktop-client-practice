@@ -3,8 +3,12 @@
 #include "NetworkDefinition.hpp"
 
 #include <boost/dll.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/json.hpp>
+#include <fstream>
 #include <iostream>
 #include <regex>
+#include <sstream>
 
 MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
     : Service(sock)
@@ -59,12 +63,30 @@ void MessengerService::ChatRoomListInitHandling()
                                   soci::use(m_client_request, "id"));
 
     soci::indicator ind;
+
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
         const soci::row &r = *it;
-        std::string session_name, chat_room_path = boost::dll::program_location().parent_path().string() + "/" + r.get<std::string>(0) + "_" + r.get<std::string>(1);
+        std::string id = r.get<std::string>(0) + "_" + r.get<std::string>(1),
+                    chat_room_path = boost::dll::program_location().parent_path().string() + "/" + id + "/";
 
-        *m_sql << "select session_nm from session_tb where session_id=:session", soci::into(session_name, ind), soci::use(r.get<std::string>(1), "session");
+        // session 정보 json 파일 읽기
+        std::stringstream str_buf;
+        std::ifstream session_info(chat_room_path + "session_info.json");
+        if (session_info.is_open())
+            str_buf << session_info.rdbuf();
+        session_info.close();
+
+        boost::json::error_code ec;
+        boost::json::value jval = boost::json::parse(str_buf.str(), ec);
+        const boost::json::object &obj = jval.as_object();
+
+        // session 정보 json에서 session_img_path, session_name 파싱
+        std::string session_img_path = boost::json::value_to<std::string>(obj.at("session_img_path")),
+                    session_name = boost::json::value_to<std::string>(obj.at("session_name"));
+
+        // 폴더 내부에 있는 파일 이름역순으로 3개 탐색하는 코드 짜야됨
+        // boost::filesystem
     }
 }
 

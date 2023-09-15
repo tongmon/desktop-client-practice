@@ -109,10 +109,9 @@ VALUES
 
 - 채팅방 초기화시 전송 포맷
 {
-	"session_id": {
+	"creator_id + '_' + session_id": {
 		"session_name": "세션 이름",
 		"session_img": "세션 이미지 이진 파일",
-		"creator_id": "채팅방 생성자 id",
 		
 		// content는 일단 최근 3일치만 보냄
 		// 물론 클라 쪽에서 content 캐시가 있다면 해당 session_id 채팅방에 대한 content는 요청하지 말아야 함
@@ -128,10 +127,9 @@ VALUES
 			...
 		]
 	},
-	"session_id": {
+	"creator_id + '_' + session_id": {
 		"session_name": "세션 이름",
 		"session_img": "세션 이미지 이진 파일",
-		"creator_id": "채팅방 생성자 id",
 		"content": [
 			{
 				"chat_date": "채팅 날짜",

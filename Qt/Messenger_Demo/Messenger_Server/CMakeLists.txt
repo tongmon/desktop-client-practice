@@ -15,7 +15,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS ./*.cpp)
 find_package(SOCI CONFIG REQUIRED)
 
 # Boost Asio 포함
-find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(Boost REQUIRED COMPONENTS system filesystem json)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
@@ -23,6 +23,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Boost::boost    
     Boost::system
     Boost::filesystem
+    Boost::json
     SOCI::soci_core
     SOCI::soci_postgresql
 )
