@@ -58,10 +58,13 @@ void MessengerService::ChatRoomListInitHandling()
     soci::rowset<soci::row> rs = (m_sql->prepare << "select creator_id, session_id from session_user_relation_tb where user_id=:id",
                                   soci::use(m_client_request, "id"));
 
+    soci::indicator ind;
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
         const soci::row &r = *it;
-        std::string chat_room_path = boost::dll::program_location().parent_path().string() + "/" + r.get<std::string>(0) + "_" + r.get<std::string>(1);
+        std::string session_name, chat_room_path = boost::dll::program_location().parent_path().string() + "/" + r.get<std::string>(0) + "_" + r.get<std::string>(1);
+
+        *m_sql << "select session_nm from session_tb where session_id=:session", soci::into(session_name, ind), soci::use(r.get<std::string>(1), "session");
     }
 }
 

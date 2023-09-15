@@ -30,19 +30,48 @@ table name: SESSION_TB / key: SESSION_ID + CREATOR_ID
 SESSION_ID => 세션 생성일 + '_' + 6자리 -> 16자리 varchar
 CREATOR_ID
 SESSION_NM => varchar 255
+SESSION_IMG_PATH => varchar 255
 
 CREATE TABLE SESSION_TB
 (
     SESSION_ID	VARCHAR(16) NOT NULL,
     CREATOR_ID	VARCHAR(50) NOT NULL,
 	SESSION_NM	VARCHAR(255) NOT NULL,
+	SESSION_IMG_PATH VARCHAR(255),
     PRIMARY KEY (SESSION_ID, CREATOR_ID)
 )
 
 - 채팅 기록 저장 방식
 일단 SESSION_ID + '_' + CREATOR_ID 폴더명에 각 날짜별 채팅 기록이 위치함
-각 날짜별 채팅 기록의 파일명은 '채팅 시점의 날짜.txt' 와 같음
+각 날짜별 채팅 기록의 파일명은 '채팅 시점의 날짜.json' 와 같음
+SESSION_ID + '_' + CREATOR_ID 폴더명에는 세션에 대한 정보를 담고 있는 'session_info.json' 파일도 존재함
 
+- 'session_info.json' 포맷
+{
+	"session_id": "해당하는 session id",
+	"session_img_path": "채팅방 이미지 경로",
+	"session_name": "채팅방 이름",
+	"creator_id": "채팅방 생성자"
+}
+
+- '채팅 시점의 날짜.json' 포맷
+{
+	"chat": [
+		{
+			"user_id": "채팅 유저 id",
+			"chat_time": "채팅 시각",
+			"chat_type": "이미지, 글자, 이모티콘 등등..."
+			"content": "채팅 내용"
+		},
+		{
+			"user_id": "채팅 유저 id",
+			"chat_time": "채팅 시각",
+			"chat_type": "이미지, 글자, 이모티콘 등등..."
+			"content": "채팅 내용"
+		},
+		...
+	]
+}
 
 
 // 세션에 묶인 사용자들을 알기 위함
@@ -68,3 +97,67 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO 유저이름;
 
 
 
+INSERT INTO
+	session_tb
+VALUES
+(
+	'20230914_000001',
+	'tongstar',
+	'test session'
+);
+
+
+- 채팅방 초기화시 전송 포맷
+{
+	"session_id": {
+		"session_name": "세션 이름",
+		"session_img": "세션 이미지 이진 파일",
+		"creator_id": "채팅방 생성자 id",
+		
+		// content는 일단 최근 3일치만 보냄
+		// 물론 클라 쪽에서 content 캐시가 있다면 해당 session_id 채팅방에 대한 content는 요청하지 말아야 함
+		"content": [
+			{
+				"chat_date": "채팅 날짜",
+				"content": "'채팅 시점의 날짜.json' 파일 내용"
+			},
+			{
+				"chat_date": "채팅 날짜",
+				"content": "'채팅 시점의 날짜.json' 파일 내용"
+			},
+			...
+		]
+	},
+	"session_id": {
+		"session_name": "세션 이름",
+		"session_img": "세션 이미지 이진 파일",
+		"creator_id": "채팅방 생성자 id",
+		"content": [
+			{
+				"chat_date": "채팅 날짜",
+				"content": "'채팅 시점의 날짜.json' 파일 내용"
+			},
+			{
+				"chat_date": "채팅 날짜",
+				"content": "'채팅 시점의 날짜.json' 파일 내용"
+			},
+			...
+		]
+	},
+	...
+}
+
+- 특정 채팅방에서 캐시에 없는 과거 채팅 기록을 요구할 때 전송 포맷
+{
+	"content": [
+		{
+			"chat_date": "채팅 날짜",
+			"content": "'채팅 시점의 날짜.json' 파일 내용"
+		},
+		{
+			"chat_date": "채팅 날짜",
+			"content": "'채팅 시점의 날짜.json' 파일 내용"
+		},
+		...
+	]
+}
