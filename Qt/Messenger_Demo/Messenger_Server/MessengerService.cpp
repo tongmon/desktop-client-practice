@@ -4,6 +4,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/dll.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -85,8 +86,19 @@ void MessengerService::ChatRoomListInitHandling()
 
         // session 정보 json에서 필요한 정보 파싱
         std::string session_name = boost::json::value_to<std::string>(obj.at("session_name"));
-        std::vector<std::string> recent_chat_dates = boost::json::value_to<std::vector<std::string>>(obj.at("recent_chat_date"));
+        std::vector<std::string> recent_chat_dates;
         boost::json::array content_array;
+
+        boost::filesystem::path root(chat_room_path);
+        boost::filesystem::directory_iterator path_it{root};
+
+        // 가장 최근 날짜로부터 가까운 내용 json 찾음, 일단 3일치만
+        while (path_it != boost::filesystem::directory_iterator{})
+        {
+            auto child_path = *path_it;
+            if (!boost::filesystem::is_directory(child_path))
+                continue;
+        }
 
         for (const auto &date : recent_chat_dates)
         {
@@ -108,7 +120,7 @@ void MessengerService::ChatRoomListInitHandling()
 
         boost::json::object chat_obj;
         chat_obj["session_name"] = session_name;
-        chat_obj["session_img"] = "Image Binary form을 적어서 여기다 넣으셈";
+        chat_obj["session_img"] = "Base64 인코딩된 Image Binary form을 적어서 여기다 넣으셈";
         chat_obj["content"] = content_array;
 
         chat_room_obj[creator_id + "_" + session_id] = chat_obj;
