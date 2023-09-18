@@ -2,8 +2,8 @@
 #include "DBConnectionPool.hpp"
 #include "NetworkDefinition.hpp"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/dll.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -23,9 +23,9 @@ MessengerService::~MessengerService()
 
 void MessengerService::LoginHandling()
 {
-    std::smatch match;
-    std::regex_search(m_client_request, match, std::regex(R"(\|)"));
-    std::string id = match.prefix().str(), pw = match.suffix().str();
+    std::vector<std::string> parsed;
+    boost::split(parsed, m_client_request, boost::is_any_of("|"));
+    std::string id = parsed[0], pw = parsed[1];
 
     std::cout << "ID: " << id << "  Password: " << pw << "\n";
 
@@ -62,17 +62,19 @@ void MessengerService::ChatRoomListInitHandling()
     soci::rowset<soci::row> rs = (m_sql->prepare << "select creator_id, session_id from session_user_relation_tb where user_id=:id",
                                   soci::use(m_client_request, "id"));
 
-    soci::indicator ind;
+    boost::json::object chat_room_obj;
 
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
         const soci::row &r = *it;
-        std::string id = r.get<std::string>(0) + "_" + r.get<std::string>(1),
-                    chat_room_path = boost::dll::program_location().parent_path().string() + "/" + id + "/";
+        std::string creator_id = r.get<std::string>(0),
+                    session_id = r.get<std::string>(1),
+                    id = creator_id + "_" + session_id,
+                    chat_room_path = boost::dll::program_location().parent_path().string() + "/" + id;
 
         // session 정보 json 파일 읽기
         std::stringstream str_buf;
-        std::ifstream session_info(chat_room_path + "session_info.json");
+        std::ifstream session_info(chat_room_path + "/session_info.json");
         if (session_info.is_open())
             str_buf << session_info.rdbuf();
         session_info.close();
@@ -81,12 +83,35 @@ void MessengerService::ChatRoomListInitHandling()
         boost::json::value jval = boost::json::parse(str_buf.str(), ec);
         const boost::json::object &obj = jval.as_object();
 
-        // session 정보 json에서 session_img_path, session_name 파싱
-        std::string session_img_path = boost::json::value_to<std::string>(obj.at("session_img_path")),
-                    session_name = boost::json::value_to<std::string>(obj.at("session_name"));
+        // session 정보 json에서 필요한 정보 파싱
+        std::string session_name = boost::json::value_to<std::string>(obj.at("session_name"));
+        std::vector<std::string> recent_chat_dates = boost::json::value_to<std::vector<std::string>>(obj.at("recent_chat_date"));
+        boost::json::array content_array;
 
-        // 폴더 내부에 있는 파일 이름역순으로 3개 탐색하는 코드 짜야됨
-        // boost::filesystem
+        for (const auto &date : recent_chat_dates)
+        {
+            std::vector<std::string> parsed;
+            boost::split(parsed, date, boost::is_any_of("-"));
+            std::string year = parsed[0], month = parsed[1], day = parsed[2];
+
+            str_buf.clear();
+            session_info.open(chat_room_path + "/" + year + "/" + day + ".json");
+            if (session_info.is_open())
+                str_buf << session_info.rdbuf();
+            session_info.close();
+
+            boost::json::object chat_content;
+            chat_content["chat_date"] = date;
+            chat_content["content"] = str_buf.str();
+            content_array.push_back(chat_content);
+        }
+
+        boost::json::object chat_obj;
+        chat_obj["session_name"] = session_name;
+        chat_obj["session_img"] = "Image Binary form을 적어서 여기다 넣으셈";
+        chat_obj["content"] = content_array;
+
+        chat_room_obj[creator_id + "_" + session_id] = chat_obj;
     }
 }
 
