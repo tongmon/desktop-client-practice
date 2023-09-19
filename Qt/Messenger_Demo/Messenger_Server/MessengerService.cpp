@@ -1,11 +1,15 @@
 ﻿#include "MessengerService.hpp"
 #include "DBConnectionPool.hpp"
 #include "NetworkDefinition.hpp"
+#include "Utility.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/json.hpp>
+#include <chrono>
+#include <ctime>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -81,43 +85,61 @@ void MessengerService::ChatRoomListInitHandling()
         session_info.close();
 
         boost::json::error_code ec;
-        boost::json::value jval = boost::json::parse(str_buf.str(), ec);
-        const boost::json::object &obj = jval.as_object();
+        boost::json::value session_json = boost::json::parse(str_buf.str(), ec);
+        const boost::json::object &obj = session_json.as_object();
 
         // session 정보 json에서 필요한 정보 파싱
         std::string session_name = boost::json::value_to<std::string>(obj.at("session_name"));
-        std::vector<std::string> recent_chat_dates;
         boost::json::array content_array;
 
         boost::filesystem::path root(chat_room_path);
         boost::filesystem::directory_iterator path_it{root};
 
+        // 현재 날짜
+        auto cur_time_t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        struct tm cur_time;
+        gmtime_s(&cur_time, &cur_time_t); // 윈도우에서만 사용함, thread-safe
+
         // 가장 최근 날짜로부터 가까운 내용 json 찾음, 일단 3일치만
-        while (path_it != boost::filesystem::directory_iterator{})
+        for (int year = cur_time.tm_year; year >= 1900; year--)
         {
-            auto child_path = *path_it;
-            if (!boost::filesystem::is_directory(child_path))
+            std::string path_year = chat_room_path + "/" + std::to_string(year);
+            if (!boost::filesystem::exists(path_year))
                 continue;
+
+            // 해당 년도 폴더가 있으면 하위 달 폴더를 탐색함
+            int month = cur_time.tm_mon + 1;
+            while (month)
+            {
+                std::string path_month = path_year + "/" + std::to_string(month--);
+                if (!boost::filesystem::exists(path_month))
+                    continue;
+
+                int day = cur_time.tm_mday;
+                while (day)
+                {
+                    std::string path_day = path_month + "/" + std::to_string(day--) + ".json";
+                    if (!boost::filesystem::exists(path_day))
+                        continue;
+
+                    str_buf.clear();
+                    session_info.open(path_day);
+                    if (session_info.is_open())
+                        str_buf << session_info.rdbuf();
+                    session_info.close();
+
+                    boost::json::object chat_content;
+                    chat_content["chat_date"] = std::format("{}-{}-{}", year, month + 1, day + 1);
+                    chat_content["content"] = str_buf.str();
+                    content_array.push_back(chat_content);
+
+                    if (content_array.size() == 3)
+                        goto CONTENT_ARRAY_IS_FULL;
+                }
+            }
         }
 
-        for (const auto &date : recent_chat_dates)
-        {
-            std::vector<std::string> parsed;
-            boost::split(parsed, date, boost::is_any_of("-"));
-            std::string year = parsed[0], month = parsed[1], day = parsed[2];
-
-            str_buf.clear();
-            session_info.open(chat_room_path + "/" + year + "/" + day + ".json");
-            if (session_info.is_open())
-                str_buf << session_info.rdbuf();
-            session_info.close();
-
-            boost::json::object chat_content;
-            chat_content["chat_date"] = date;
-            chat_content["content"] = str_buf.str();
-            content_array.push_back(chat_content);
-        }
-
+    CONTENT_ARRAY_IS_FULL:
         boost::json::object chat_obj;
         chat_obj["session_name"] = session_name;
         chat_obj["session_img"] = "Base64 인코딩된 Image Binary form을 적어서 여기다 넣으셈";
@@ -125,6 +147,9 @@ void MessengerService::ChatRoomListInitHandling()
 
         chat_room_obj[creator_id + "_" + session_id] = chat_obj;
     }
+
+    // chat_room_obj에 담긴 json을 client에 전송함
+    std::string final_json_str = StrToUtf8(boost::json::serialize(chat_room_obj));
 }
 
 void MessengerService::StartHandling()
