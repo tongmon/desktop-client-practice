@@ -14,6 +14,8 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <stb_image.h>
+#include <stb_image_write.h>
 
 MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
     : Service(sock)
@@ -142,14 +144,33 @@ void MessengerService::ChatRoomListInitHandling()
     CONTENT_ARRAY_IS_FULL:
         boost::json::object chat_obj;
         chat_obj["session_name"] = session_name;
-        chat_obj["session_img"] = "Base64 인코딩된 Image Binary form을 적어서 여기다 넣으셈";
         chat_obj["content"] = content_array;
+
+        int width, height, channels;
+        std::string image_path = chat_room_path + "/session_img.png";
+        unsigned char *img = stbi_load(image_path.c_str(), &width, &height, &channels, 0);
+        std::string img_buffer(reinterpret_cast<char const *>(img), width * height);
+        chat_obj["session_img"] = EncodeBase64(img_buffer);
 
         chat_room_obj[creator_id + "_" + session_id] = chat_obj;
     }
 
     // chat_room_obj에 담긴 json을 client에 전송함
-    std::string final_json_str = StrToUtf8(boost::json::serialize(chat_room_obj));
+    m_request = StrToUtf8(boost::json::serialize(chat_room_obj));
+
+    TCPHeader header(CHATROOMLIST_INITIAL_TYPE, m_request.size());
+    m_request = header.GetHeaderBuffer() + m_request;
+
+    boost::asio::async_write(*m_sock,
+                             boost::asio::buffer(m_request),
+                             [this](const boost::system::error_code &ec, std::size_t bytes_transferred) {
+                                 if (ec != boost::system::errc::success)
+                                 {
+                                     // write에 이상이 있는 경우
+                                 }
+
+                                 delete this;
+                             });
 }
 
 void MessengerService::StartHandling()

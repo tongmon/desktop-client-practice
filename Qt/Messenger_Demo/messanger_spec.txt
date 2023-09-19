@@ -45,7 +45,7 @@ CREATE TABLE SESSION_TB
 SESSION_ID + '_' + CREATOR_ID 폴더명에는 세션에 대한 정보를 담고 있는 'session_info.json' 파일도 존재함
 
 폴더 계층을 보면 밑과 같음
-~ SESSION_ID + '_' + CREATOR_ID
+~ SESSION_ID + '_' + CREATOR_ID 폴더
 	session_info.json
 	session_img.png
 	L 년

@@ -27,3 +27,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     SOCI::soci_core
     SOCI::soci_postgresql
 )
+
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    ${CMAKE_SOURCE_DIR}/Library/stb
+)

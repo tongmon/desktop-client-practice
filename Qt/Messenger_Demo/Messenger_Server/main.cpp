@@ -32,6 +32,14 @@
 
 #include <boost/system.hpp>
 
+// stb는 header-only library이기에 매크로를 한번 정의하고 포함해줘야 한다.
+// 매크로는 프로젝트에 단 한번만 쓰여야 됨
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
+
 #include "DBConnectionPool.hpp"
 #include "MessengerService.hpp"
 #include "NetworkDefinition.hpp"
