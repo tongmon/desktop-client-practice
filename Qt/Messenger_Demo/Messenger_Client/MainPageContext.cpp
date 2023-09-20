@@ -82,7 +82,7 @@ void MainPageContext::initialChatRoomList(const QString &user_id)
                             std::string sender_id = chat_obj["user_id"].as_string().c_str(),
                                         chat_time = chat_obj["chat_time"].as_string().c_str(),
                                         chat_type = chat_obj["chat_type"].as_string().c_str(),
-                                        chat_type = chat_obj["content"].as_string().c_str();
+                                        chat_content = chat_obj["content"].as_string().c_str();
 
                             // 밑에서 qml ListView에 채팅 추가하는 로직 넣으면 됨
                         }

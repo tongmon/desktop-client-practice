@@ -63,7 +63,7 @@ inline std::wstring Utf8ToWStr(const std::string &utf_8)
     return wstr;
 }
 
-inline std::string Uft8ToStr(const std::string &utf_8)
+inline std::string Utf8ToStr(const std::string &utf_8)
 {
     return WStrToStr(Utf8ToWStr(utf_8));
 }

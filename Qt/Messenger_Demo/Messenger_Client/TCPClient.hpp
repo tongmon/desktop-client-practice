@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 // Boost.Asio Windows 7 이상을 타겟으로 설정
-#define _WIN32_WINNT _WIN32_WINNT_WIN7
+// #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #include <boost/asio.hpp>
 
 class Session
