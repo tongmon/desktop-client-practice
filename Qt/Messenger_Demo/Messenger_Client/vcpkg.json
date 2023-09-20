@@ -8,6 +8,18 @@
       "features": [
         "ssl"
       ]
+    },
+    {
+      "name": "boost-dll"
+    },
+    {
+      "name": "boost-filesystem"
+    },
+    {
+      "name": "boost-json"
+    },
+    {
+      "name": "boost-algorithm"
     }
   ],
   "builtin-baseline": "3f6e8e9c09e28a0eae4b37cceb2982ca2518278c"

@@ -114,40 +114,46 @@ VALUES
 
 - 채팅방 초기화시 전송 포맷
 {
-	"creator_id + '_' + session_id": {
-		"session_name": "세션 이름",
-		"session_img": "세션 이미지 이진 파일",
-		
-		// content는 일단 최근 3일치만 보냄
-		// 물론 클라 쪽에서 content 캐시가 있다면 해당 session_id 채팅방에 대한 content는 요청하지 말아야 함
-		"content": [
-			{
-				"chat_date": "채팅 날짜",
-				"content": "'채팅 시점의 날짜.json' 파일 내용"
-			},
-			{
-				"chat_date": "채팅 날짜",
-				"content": "'채팅 시점의 날짜.json' 파일 내용"
-			},
-			...
-		]
-	},
-	"creator_id + '_' + session_id": {
-		"session_name": "세션 이름",
-		"session_img": "세션 이미지 이진 파일",
-		"content": [
-			{
-				"chat_date": "채팅 날짜",
-				"content": "'채팅 시점의 날짜.json' 파일 내용"
-			},
-			{
-				"chat_date": "채팅 날짜",
-				"content": "'채팅 시점의 날짜.json' 파일 내용"
-			},
-			...
-		]
-	},
-	...
+	"chatroom_init_data": [
+		{
+			"creator_id": "채팅방 생성",
+			"session_id": "세션 id",
+			"session_name": "세션 이름",
+			"session_img": "세션 이미지 이진 파일",
+			
+			// content는 일단 최근 3일치만 보냄
+			// 물론 클라 쪽에서 content 캐시가 있다면 해당 session_id 채팅방에 대한 content는 요청하지 말아야 함
+			"content": [
+				{
+					"chat_date": "채팅 날짜",
+					"content": "'채팅 시점의 날짜.json' 파일 내용"
+				},
+				{
+					"chat_date": "채팅 날짜",
+					"content": "'채팅 시점의 날짜.json' 파일 내용"
+				},
+				...
+			]					
+		},
+		{
+			"creator_id": "채팅방 생성",
+			"session_id": "세션 id",
+			"session_name": "세션 이름",
+			"session_img": "세션 이미지 이진 파일",
+			"content": [
+				{
+					"chat_date": "채팅 날짜",
+					"content": "'채팅 시점의 날짜.json' 파일 내용"
+				},
+				{
+					"chat_date": "채팅 날짜",
+					"content": "'채팅 시점의 날짜.json' 파일 내용"
+				},
+				...
+			]					
+		},
+		...
+	]
 }
 
 - 특정 채팅방에서 캐시에 없는 과거 채팅 기록을 요구할 때 전송 포맷, 마찬가지로 3일치가 적당할 듯

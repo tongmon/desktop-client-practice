@@ -25,7 +25,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(QT_DIR "C:/Users/DP91-HSK/Documents/Libraries/5.15.10-MSVC-x64-shared/lib/cmake/Qt5")
 
 # Boost Asio 포함
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system filesystem json)
 
 # Qt 모듈 포함
 # 해당 라인이 수행되어야 QT_VERSION_MAJOR가 정의된다.
@@ -55,7 +55,10 @@ target_link_libraries(
     Qt${QT_VERSION_MAJOR}::Qml
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
+    Boost::boost
     Boost::system
+    Boost::filesystem
+    Boost::json
     dwmapi.lib
     gdi32.lib
 )

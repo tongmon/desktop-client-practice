@@ -69,7 +69,7 @@ void MessengerService::ChatRoomListInitHandling()
     soci::rowset<soci::row> rs = (m_sql->prepare << "select creator_id, session_id from session_user_relation_tb where user_id=:id",
                                   soci::use(m_client_request, "id"));
 
-    boost::json::object chat_room_obj;
+    boost::json::array chat_room_array;
 
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
@@ -143,6 +143,8 @@ void MessengerService::ChatRoomListInitHandling()
 
     CONTENT_ARRAY_IS_FULL:
         boost::json::object chat_obj;
+        chat_obj["creator_id"] = creator_id;
+        chat_obj["session_id"] = session_id;
         chat_obj["session_name"] = session_name;
         chat_obj["content"] = content_array;
 
@@ -152,11 +154,14 @@ void MessengerService::ChatRoomListInitHandling()
         std::string img_buffer(reinterpret_cast<char const *>(img), width * height);
         chat_obj["session_img"] = EncodeBase64(img_buffer);
 
-        chat_room_obj[creator_id + "_" + session_id] = chat_obj;
+        chat_room_array.push_back(chat_obj);
     }
 
-    // chat_room_obj에 담긴 json을 client에 전송함
-    m_request = StrToUtf8(boost::json::serialize(chat_room_obj));
+    boost::json::object chatroom_init_json;
+    chatroom_init_json["chatroom_init_data"] = chat_room_array;
+
+    // chatroom_init_json에 담긴 json을 client에 전송함
+    m_request = StrToUtf8(boost::json::serialize(chatroom_init_json));
 
     TCPHeader header(CHATROOMLIST_INITIAL_TYPE, m_request.size());
     m_request = header.GetHeaderBuffer() + m_request;
