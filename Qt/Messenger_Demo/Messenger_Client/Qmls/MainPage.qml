@@ -10,6 +10,21 @@ Rectangle {
 
     property string currentRoomID
 
+    var chatViewHash = {}
+
+    function addChatRoom(chatRoomID, chatRoomName, chatRoomImage, recentUsedDate, recentChatContent)
+    {
+        chatRoomListModel.append({
+            "chatRoomID": chatRoomID,
+            "chatRoomName": chatRoomName,
+            "chatRoomImage": "image://mybase64/data:image/png;base64," + chatRoomImage,
+            "recentUsedDate": recentUsedDate,
+            "recentChatContent": recentChatContent
+        })
+
+
+    }
+
     function addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
     {
         chatListModel.append({
@@ -76,7 +91,7 @@ Rectangle {
                 }
                 
                 delegate: Rectangle {
-                    id: chatRoomRect
+                    id: chatRoomID
                     width: parent.width
                     height: 98
                     color: "#B240F5"
@@ -89,7 +104,7 @@ Rectangle {
                             id: chatRoomImageRect
                             Layout.fillHeight: true
                             Layout.preferredWidth: chatRoomImageRect.height
-                            color: chatRoomRect.color
+                            color: "transparent"
 
                             Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
@@ -114,22 +129,35 @@ Rectangle {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
+                                color: "transparent"
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter 
                                     anchors.left: parent.left
+                                    anchors.right: recentUsedDateText.left
+                                    anchors.rightMargin: 10
+                                    clip: true
                                     text: chatRoomName
                                 }
+
+                                Text {
+                                    id: recentUsedDateText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 5
+                                    text: recentUsedDate
+                                }                                
                             }
 
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
+                                color: "transparent"
 
                                 Text {                               
                                     anchors.verticalCenter: parent.verticalCenter 
                                     anchors.left: parent.left                            
-                                    text: chatRoomPreview
+                                    text: recentChatContent
                                 }                            
                             }
                         }
@@ -140,10 +168,13 @@ Rectangle {
                         hoverEnabled: true
 
                         onEntered: {
-                            chatRoomRect.color = "#BD5CF5"
+                            chatRoomID.color = "#BD5CF5"
                         }
                         onExited: {
-                            chatRoomRect.color = "#B240F5"
+                            chatRoomID.color = "#B240F5"
+                        }
+                        onClicked: {
+                            
                         }
                     }
                 }
@@ -151,9 +182,10 @@ Rectangle {
                 Component.onCompleted: {
                     for(var i=0;i < 15;i++) {
                         chatRoomListModel.append({
-                            "chatRoomRect": "rect" + i,
+                            "chatRoomID": "rect" + i,
                             "chatRoomName": "Chat Room Num:" + i,
-                            "chatRoomPreview": "Chat Room Preview"
+                            "recentChatContent": "Chat Room Preview",
+                            "recentUsedDate": "0000-00-00"
                             })
                     }
                 }
@@ -206,7 +238,7 @@ Rectangle {
                     delegate: Item {
                         width: parent.width
                         height: chatBubbleLoader.height
-                        objectName: userID
+                        objectName: userID // 어떤 사람이 연속으로 메시지를 보내고 있는지 알기 위함
 
                         // 말풍선 꼭다리 부분 크기
                         property var chatBubbleStemSize: Qt.size(11, 8)
