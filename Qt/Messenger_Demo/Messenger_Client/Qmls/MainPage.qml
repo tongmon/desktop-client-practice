@@ -10,32 +10,39 @@ Rectangle {
 
     property string currentRoomID
 
-    var chatViewHash = {}
+    property var chatViewHash: ({})
 
     function addChatRoom(chatRoomID, chatRoomName, chatRoomImage, recentUsedDate, recentChatContent)
     {
         chatRoomListModel.append({
-            "chatRoomID": chatRoomID,
+            "chatRoomObjectID": chatRoomID,
             "chatRoomName": chatRoomName,
             "chatRoomImage": "image://mybase64/data:image/png;base64," + chatRoomImage,
             "recentUsedDate": recentUsedDate,
             "recentChatContent": recentChatContent
         })
 
-
+        // 컴포넌트 밀어 넣는 방식이 이게 맞는가?
+        chatViewHash[chatRoomID] = Qt.createComponent("qrc:/qml/ChatBubbleListView.qml")
     }
 
-    function addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
+    function addChatBubbleText(chatRoomID, isRightAlign, userID, userName, userImage, chatData, chatTime)
     {
-        chatListModel.append({
-            "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
-            "isRightAlign": isRightAlign,
-            "userID": userID,
-            "userName": userName,
-            "userImage": userImage,
-            "chatData": chatData,
-            "chatTime": chatTime
-        })
+        // 생성된 ListView 컴포넌트에 chat bubble을 넣어야되는데 내부 모델에 접근을 못하고 있음...
+
+        //chatViewHash[chatRoomID].chatBubbleListModel.append({
+        //    "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+        //    "isRightAlign": isRightAlign,
+        //    "userID": userID,
+        //    "userName": userName,
+        //    "userImage": userImage,
+        //    "chatData": chatData,
+        //    "chatTime": chatTime
+        //})
+
+        chatBubbleListViewLoader.addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
+
+        // chatViewHash[chatRoomID].addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
     }
 
     ColumnLayout {
@@ -92,6 +99,7 @@ Rectangle {
                 
                 delegate: Rectangle {
                     id: chatRoomID
+                    objectName: chatRoomObjectID
                     width: parent.width
                     height: 98
                     color: "#B240F5"
@@ -115,7 +123,7 @@ Rectangle {
 
                                 Image {
                                     anchors.fill: parent
-                                    source: "qrc:/icon/UserID.png" 
+                                    source: chatRoomImage // "qrc:/icon/UserID.png" 
                                     fillMode: Image.PreserveAspectFit
                                 }    
                             }
@@ -174,20 +182,26 @@ Rectangle {
                             chatRoomID.color = "#B240F5"
                         }
                         onClicked: {
-                            
+                            console.log(chatRoomObjectID)
+                            currentRoomID = chatRoomObjectID
+                            // chatBubbleListViewLoader.sourceComponent = chatViewHash[currentRoomID]
                         }
                     }
                 }
 
-                Component.onCompleted: {
-                    for(var i=0;i < 15;i++) {
-                        chatRoomListModel.append({
-                            "chatRoomID": "rect" + i,
-                            "chatRoomName": "Chat Room Num:" + i,
-                            "recentChatContent": "Chat Room Preview",
-                            "recentUsedDate": "0000-00-00"
-                            })
-                    }
+                Component.onCompleted: {           
+                    addChatRoom("test_01", "chat room 1", "", "1997-03-09", "chat preview in chat room 1")
+
+                    addChatRoom("test_02", "chat room 2", "", "2023-09-21", "chat preview in chat room 2")
+
+                    // for(var i=0;i < 15;i++) {
+                    //     chatRoomListModel.append({
+                    //         "chatRoomID": "rect" + i,
+                    //         "chatRoomName": "Chat Room Num:" + i,
+                    //         "recentChatContent": "Chat Room Preview",
+                    //         "recentUsedDate": "0000-00-00"
+                    //         })
+                    // }
                 }
             }
 
@@ -219,76 +233,10 @@ Rectangle {
                     }
                 }
 
-                ListView {
-                    id: chatBubbleListView
+                Loader {
+                    id: chatBubbleListViewLoader
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    clip: true
-                    // spacing: 6
-                    boundsBehavior: Flickable.StopAtBounds
-
-                    ScrollBar.vertical: ScrollBar {
-                        policy: ScrollBar.AsNeeded
-                    }
-
-                    model: ListModel {
-                        id: chatListModel
-                    }
-
-                    delegate: Item {
-                        width: parent.width
-                        height: chatBubbleLoader.height
-                        objectName: userID // 어떤 사람이 연속으로 메시지를 보내고 있는지 알기 위함
-
-                        // 말풍선 꼭다리 부분 크기
-                        property var chatBubbleStemSize: Qt.size(11, 8)
-
-                        // 말풍선 최대 너비
-                        property var chatBubbleMaximumWidth: chatBubbleListView.width * 0.6
-
-                        // 말풍선 최소 크기
-                        property var chatBubbleMinimumSize: Qt.size(10, 10)
-
-                        Loader {
-                            id: chatBubbleLoader
-                            width: parent.width
-                            height: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
-                            source: chatBubbleSource
-
-                            onLoaded: {
-                                // item.objectName = chatBubbleID
-                            }
-                        }
-                    }
-
-                    onCountChanged: {
-                    	Qt.callLater(positionViewAtEnd)
-                    }
-
-                    Component.onCompleted: {
-                        addChatBubbleText(false, 
-                                          "tongstar", 
-                                          "이경준",
-                                          "",
-                                          "This is Test",
-                                          "current time")
-
-                        addChatBubbleText(false, 
-                                          "tongstar", 
-                                          "이경준",
-                                          "",
-                                          "And Test is keep goin",
-                                          "current time")
-                    }
-
-                    // 밑 로직으로 날짜에 따라 채팅 읽어오기 가능
-                    onContentYChanged: {
-                        var currentIndexAtTop = indexAt(1, contentY)
-                        console.log(currentIndexAtTop)
-                        
-                        var currentItem = itemAt(1, contentY)
-                        console.log(currentItem.objectName)
-                    }
                 }
 
                 Rectangle {
@@ -321,7 +269,8 @@ Rectangle {
                                 // 서버로 채팅 내용 전송
                                 mainPageContext.trySendTextChat(currentRoomID, text)
 
-                                addChatBubbleText(true, 
+                                addChatBubbleText(currentRoomID,
+                                                  true, 
                                                   "tongstar", 
                                                   "이경준",
                                                   "",

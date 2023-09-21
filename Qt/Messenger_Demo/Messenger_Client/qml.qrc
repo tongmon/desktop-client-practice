@@ -21,5 +21,6 @@
         <file alias="MainWindow.qml">Qmls/MainWindow.qml</file>
         <file alias="TitleBar.qml">Qmls/TitleBar.qml</file>
         <file alias="ChatBubbleText.qml">Qmls/ChatBubbleText.qml</file>
+        <file alias="ChatBubbleListView.qml">Qmls/ChatBubbleListView.qml</file>
     </qresource>
 </RCC>
