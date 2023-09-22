@@ -15,35 +15,37 @@ Rectangle {
     function addChatRoom(chatRoomID, chatRoomName, chatRoomImage, recentUsedDate, recentChatContent)
     {
         chatRoomListModel.append({
-            "chatRoomObjectID": chatRoomID,
+            "chatRoomObjectName": chatRoomID,
             "chatRoomName": chatRoomName,
             "chatRoomImage": "image://mybase64/data:image/png;base64," + chatRoomImage,
             "recentUsedDate": recentUsedDate,
             "recentChatContent": recentChatContent
         })
 
+        chatListModel.append({"chatBubbleListObjectName": chatRoomID})
+
         // 컴포넌트 밀어 넣는 방식이 이게 맞는가?
-        chatViewHash[chatRoomID] = Qt.createComponent("qrc:/qml/ChatBubbleListView.qml")
+        //chatViewHash[chatRoomID] = Qt.createComponent("qrc:/qml/ChatBubbleListView.qml")
     }
-
-    function addChatBubbleText(chatRoomID, isRightAlign, userID, userName, userImage, chatData, chatTime)
-    {
-        // 생성된 ListView 컴포넌트에 chat bubble을 넣어야되는데 내부 모델에 접근을 못하고 있음...
-
-        //chatViewHash[chatRoomID].chatBubbleListModel.append({
-        //    "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
-        //    "isRightAlign": isRightAlign,
-        //    "userID": userID,
-        //    "userName": userName,
-        //    "userImage": userImage,
-        //    "chatData": chatData,
-        //    "chatTime": chatTime
-        //})
-
-        chatBubbleListViewLoader.addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
-
-        // chatViewHash[chatRoomID].addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
-    }
+//
+    //function addChatBubbleText(chatRoomID, isRightAlign, userID, userName, userImage, chatData, chatTime)
+    //{
+    //    // 생성된 ListView 컴포넌트에 chat bubble을 넣어야되는데 내부 모델에 접근을 못하고 있음...
+//
+    //    //chatViewHash[chatRoomID].chatBubbleListModel.append({
+    //    //    "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+    //    //    "isRightAlign": isRightAlign,
+    //    //    "userID": userID,
+    //    //    "userName": userName,
+    //    //    "userImage": userImage,
+    //    //    "chatData": chatData,
+    //    //    "chatTime": chatTime
+    //    //})
+//
+    //    chatBubbleListViewLoader.addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
+//
+    //    // chatViewHash[chatRoomID].addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
+    //}
 
     ColumnLayout {
         anchors.fill: parent
@@ -98,8 +100,10 @@ Rectangle {
                 }
                 
                 delegate: Rectangle {
+                    property int chatRoomIndex: index
+
                     id: chatRoomID
-                    objectName: chatRoomObjectID
+                    objectName: chatRoomObjectName
                     width: parent.width
                     height: 98
                     color: "#B240F5"
@@ -182,8 +186,11 @@ Rectangle {
                             chatRoomID.color = "#B240F5"
                         }
                         onClicked: {
-                            console.log(chatRoomObjectID)
-                            currentRoomID = chatRoomObjectID
+                            console.log(chatRoomID.chatRoomIndex)
+
+                            chatListView.positionViewAtIndex(chatRoomID.chatRoomIndex, ListView.Beginning)
+
+                            // currentRoomID = chatRoomObjectName
                             // chatBubbleListViewLoader.sourceComponent = chatViewHash[currentRoomID]
                         }
                     }
@@ -233,10 +240,99 @@ Rectangle {
                     }
                 }
 
-                Loader {
-                    id: chatBubbleListViewLoader
+                // Loader {
+                //     id: chatBubbleListViewLoader
+                //     Layout.fillWidth: true
+                //     Layout.fillHeight: true
+                // }
+
+                ListView {
+                    id: chatListView
+                    clip: true
+                    interactive: false
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+
+                    model: ListModel {
+                        id: chatListModel
+                    }
+
+                    delegate: Rectangle {
+                        width: parent.width
+                        height: chatListView.height
+                        color: "transparent"
+
+                        function addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
+                        {
+                            chatBubbleListView.append({
+                                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+                                "isRightAlign": isRightAlign,
+                                "userID": userID,
+                                "userName": userName,
+                                "userImage": userImage,
+                                "chatData": chatData,
+                                "chatTime": chatTime
+                            })
+                        }
+
+                        ListView {
+                            id: chatBubbleListView
+                            objectName: chatBubbleListObjectName
+                            anchors.fill: parent
+                            clip: true
+                            boundsBehavior: Flickable.StopAtBounds                    
+                            // spacing: 6
+
+                            ScrollBar.vertical: ScrollBar {
+                                policy: ScrollBar.AsNeeded
+                            }
+
+                            model: ListModel {
+                                id: chatBubbleListModel
+                            }
+
+                            delegate: Item {
+                                width: parent.width
+                                height: chatBubbleLoader.height
+                                objectName: userID // 어떤 사람이 연속으로 메시지를 보내고 있는지 알기 위함
+
+                                // 말풍선 꼭다리 부분 크기
+                                property var chatBubbleStemSize: Qt.size(11, 8)
+                                // 말풍선 최대 너비
+                                property var chatBubbleMaximumWidth: chatBubbleListView.width * 0.6
+                                // 말풍선 최소 크기
+                                property var chatBubbleMinimumSize: Qt.size(10, 10)
+
+                                Loader {
+                                    id: chatBubbleLoader
+                                    width: parent.width
+                                    height: (item !== null && typeof(item) !== 'undefined') ? item.height : 0
+                                    source: chatBubbleSource
+                                    onLoaded: {
+                                        // item.objectName = chatBubbleID
+                                    }
+                                }
+                            }
+
+                            onCountChanged: {
+                            	Qt.callLater(positionViewAtEnd)
+                            }
+
+                            Component.onCompleted: {           
+                                console.log("init")
+                                console.log("width: " + width + ", height: " + height)
+                            }
+
+                            // 밑 로직으로 날짜에 따라 채팅 읽어오기 가능
+                            // onContentYChanged: {
+                            //     var currentIndexAtTop = indexAt(1, contentY)
+                            //     console.log(currentIndexAtTop)
+                            //
+                            //     var currentItem = itemAt(1, contentY)
+                            //     console.log(currentItem.objectName)
+                            // }                        
+                        }
+                    }
                 }
 
                 Rectangle {
@@ -269,13 +365,27 @@ Rectangle {
                                 // 서버로 채팅 내용 전송
                                 mainPageContext.trySendTextChat(currentRoomID, text)
 
-                                addChatBubbleText(currentRoomID,
-                                                  true, 
-                                                  "tongstar", 
-                                                  "이경준",
-                                                  "",
-                                                  text,
-                                                  "current time")
+                                // addChatBubbleText(currentRoomID,
+                                //                   true, 
+                                //                   "tongstar", 
+                                //                   "이경준",
+                                //                   "",
+                                //                   text,
+                                //                   "current time")
+
+                                // chatListView.contentItem.children[0].children[0].append({
+                                //     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+                                //     "isRightAlign": true,
+                                //     "userID": "tongstar",
+                                //     "userName": "이경준",
+                                //     "userImage": "",
+                                //     "chatData": text,
+                                //     "chatTime": "current time"
+                                // })
+
+                                chatListView.itemAtIndex(0).addChatBubbleText(true, "tongstar", "이경준", "", text, "current time");
+
+                                // console.log(chatListView.contentItem.children[0].children[0])
                                 text = ""  
                             }                
                         }

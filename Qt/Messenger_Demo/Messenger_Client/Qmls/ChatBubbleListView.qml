@@ -63,15 +63,15 @@ ListView {
     }
 
     Component.onCompleted: {
-        addChatBubbleText(true, objectName, "tongstar", "", "Hello " + objectName, "0000-00-00")
+        // addChatBubbleText(true, objectName, "tongstar", "", "Hello " + objectName, "0000-00-00")
     }
 
     // 밑 로직으로 날짜에 따라 채팅 읽어오기 가능
-    onContentYChanged: {
-        var currentIndexAtTop = indexAt(1, contentY)
-        console.log(currentIndexAtTop)
-                        
-        var currentItem = itemAt(1, contentY)
-        console.log(currentItem.objectName)
-    }
+    // onContentYChanged: {
+    //     var currentIndexAtTop = indexAt(1, contentY)
+    //     console.log(currentIndexAtTop)
+    //                     
+    //     var currentItem = itemAt(1, contentY)
+    //     console.log(currentItem.objectName)
+    // }
 }
