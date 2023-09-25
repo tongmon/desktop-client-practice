@@ -4,9 +4,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 
 ListView {
-    // id: chatBubbleListView
+    id: chatBubbleListView
     clip: true
-    // spacing: 6
     boundsBehavior: Flickable.StopAtBounds
 
     property alias chatBubbleListModel: chatListModel
@@ -41,7 +40,7 @@ ListView {
         property var chatBubbleStemSize: Qt.size(11, 8)
 
         // 말풍선 최대 너비
-        property var chatBubbleMaximumWidth: width * 0.6 // chatBubbleListView.width * 0.6
+        property var chatBubbleMaximumWidth: chatBubbleListView.width * 0.6
 
         // 말풍선 최소 크기
         property var chatBubbleMinimumSize: Qt.size(10, 10)
