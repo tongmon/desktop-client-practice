@@ -14,7 +14,9 @@ Rectangle {
     // chat room 삭제 시에 일괄 for문 돌면서 지우는 로직 추가해야 됨
     property var chatViewHash: ({})
 
-    property var chatViewComponents: ({})
+    property var chatViewObjects: ({})
+
+    property var chatListViewComponent: Qt.createComponent("qrc:/qml/ChatListView.qml")
 
     function addChatRoom(chatRoomID, chatRoomName, chatRoomImage, recentUsedDate, recentChatContent)
     {
@@ -26,12 +28,14 @@ Rectangle {
             "recentChatContent": recentChatContent
         })
 
-        chatViewComponents[chatRoomID] = Qt.createComponent("qrc:/qml/ChatListView.qml")
+        chatViewObjects[chatRoomID] = chatListViewComponent.createObject(null)
+
+        // chatViewObjects[chatRoomID] = Qt.createComponent("qrc:/qml/ChatListView.qml") // chatListViewComponent.createObject(null)
     }
 
     function addChatBubbleText(chatRoomID, isRightAlign, userID, userName, userImage, chatData, chatTime)
     {
-        // chatViewComponents[chatRoomID]
+        // chatViewObjects[chatRoomID]
     }
 
     ColumnLayout {
@@ -183,7 +187,7 @@ Rectangle {
                         onClicked: {
                             currentRoomID = chatRoomID.objectName
 
-                            chatListViewLoader.sourceComponent = chatViewComponents[currentRoomID]
+                            chatListViewLoader.sourceComponent = chatViewObjects[currentRoomID]
 
                             // chatListView.itemAtIndex(chatViewHash[currentRoomID]).visible = true
                             // chatListView.positionViewAtIndex(chatViewHash[currentRoomID], ListView.Beginning)
@@ -279,13 +283,11 @@ Rectangle {
                                 //                  text,
                                 //                  "current time")       
 
-                                //console.log(chatListViewLoader.sourceComponent.objectName)
+                                // console.log(chatListViewLoader.sourceComponent.objectName)
 
-                                console.log(chatViewComponents[currentRoomID].nameOfObject)
+                                // console.log(chatViewObjects[currentRoomID].children[0].objectName)
 
-                                //console.log(chatViewComponents[currentRoomID].children[0].objectName)
-
-                                // chatViewComponents[currentRoomID].children[0].model.append({
+                                // chatViewObjects[currentRoomID].children[0].model.append({
                                 //     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
                                 //     "isRightAlign": isRightAlign,
                                 //     "userID": userID,
@@ -295,7 +297,7 @@ Rectangle {
                                 //     "chatTime": chatTime
                                 // })
 
-                                //chatViewComponents[chatRoomID].addChatBubbleText(true, "tongstar", "KyungJoonLee", "", text, "current time")       
+                                // chatViewObjects[chatRoomID].addChatBubbleText(true, "tongstar", "KyungJoonLee", "", text, "current time")       
 
                                 // 컴포넌트 내부에서 함수 적용되게 해야됨...
 

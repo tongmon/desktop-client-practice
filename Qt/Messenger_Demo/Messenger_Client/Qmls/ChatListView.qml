@@ -7,8 +7,6 @@ Rectangle {
     anchors.fill: parent
     color: "transparent"
 
-    property alias nameOfObject: chatBubbleListView.a
-
     // addChatBubbleText(isRightAlign, userID, userName, userImage, chatData, chatTime)
     // {
     //     chatListModel.append({
@@ -66,6 +64,17 @@ Rectangle {
         }
 
         Component.onCompleted: {
+            console.log("ListView created!")
+
+            chatListModel.append({
+                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+                "isRightAlign": true,
+                "userID": "tongstar",
+                "userName": "KyungJoonLee",
+                "chatData": "test chat",
+                "chatTime": "0000-00-00"
+            })
+
             // addChatBubbleText(true, objectName, "tongstar", "", "Hello " + objectName, "0000-00-00")
         }
 
