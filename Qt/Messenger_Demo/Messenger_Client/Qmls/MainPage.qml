@@ -28,7 +28,7 @@ Rectangle {
             "recentChatContent": recentChatContent
         })
 
-        chatViewObjects[chatRoomID] = chatListViewComponent.createObject(null)
+        chatViewObjects[chatRoomID] = chatListViewComponent.createObject(chatView)
         // chatViewObjects[chatRoomID].width = Qt.binding(function() { return chatView.width })
         // chatViewObjects[chatRoomID].height = Qt.binding(function() { return chatView.height })
 
@@ -195,7 +195,8 @@ Rectangle {
                             else
                                 chatView.replace(null, chatViewObjects[currentRoomID], StackView.Immediate)
 
-                            console.log("chat view width: " + chatViewObjects[currentRoomID].width + " height: " + chatViewObjects[currentRoomID].height)
+                            // console.log("width: " + chatView.get(0).width + " height: " + chatView.get(0).height)
+                            // console.log("listview width: " + chatView.get(0).children[0].width + " listview height: " + chatView.get(0).children[0].height)
 
                             // chatListViewLoader.sourceComponent = chatViewObjects[currentRoomID]
 
@@ -253,6 +254,11 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     id: chatView
+
+                    // initialItem: Rectangle {
+                    //     anchors.fill: parent
+                    //     color: "red"
+                    // }
                 }
 
                 Rectangle {
@@ -285,7 +291,7 @@ Rectangle {
                                 // 서버로 채팅 내용 전송
                                 mainPageContext.trySendTextChat(currentRoomID, text)
 
-                                chatViewObjects[currentRoomID].children[0].model.append({
+                                chatView.get(0).children[0].model.append({
                                     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
                                     "isRightAlign": true,
                                     "userID": "tongstar",
@@ -293,6 +299,15 @@ Rectangle {
                                     "chatData": text,
                                     "chatTime": "0000-00-00"
                                 })
+
+                                // chatViewObjects[currentRoomID].children[0].model.append({
+                                //     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+                                //     "isRightAlign": true,
+                                //     "userID": "tongstar",
+                                //     "userName": "KyungJoonLee",
+                                //     "chatData": text,
+                                //     "chatTime": "0000-00-00"
+                                // })
 
                                 //addChatBubbleText(currentRoomID,
                                 //                  true,
