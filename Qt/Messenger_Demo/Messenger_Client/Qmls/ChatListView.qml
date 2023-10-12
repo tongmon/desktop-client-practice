@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 
 Rectangle {
+    id: chatBubbleListViewRect
     anchors.fill: parent
     color: "transparent"
 
@@ -34,7 +35,7 @@ Rectangle {
         }
 
         delegate: Item {
-            width: parent.width
+            width: chatBubbleListViewRect.width
             height: chatBubbleLoader.height
             objectName: userID // 어떤 사람이 연속으로 메시지를 보내고 있는지 알기 위함
 
@@ -57,6 +58,10 @@ Rectangle {
                     // item.objectName = chatBubbleID
                 }
             }
+
+            Component.onCompleted: {
+                // console.log("chatbubble created! width: " + width + " height: " + height)
+            }
         }
 
         onCountChanged: {
@@ -64,16 +69,16 @@ Rectangle {
         }
 
         Component.onCompleted: {
-            console.log("ListView created!")
+            console.log("ListView created! width: " + width + " height: " + height)
 
-            chatListModel.append({
-                "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
-                "isRightAlign": true,
-                "userID": "tongstar",
-                "userName": "KyungJoonLee",
-                "chatData": "test chat",
-                "chatTime": "0000-00-00"
-            })
+            // chatListModel.append({
+            //     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+            //     "isRightAlign": true,
+            //     "userID": "tongstar",
+            //     "userName": "KyungJoonLee",
+            //     "chatData": "test chat",
+            //     "chatTime": "0000-00-00"
+            // })
 
             // addChatBubbleText(true, objectName, "tongstar", "", "Hello " + objectName, "0000-00-00")
         }

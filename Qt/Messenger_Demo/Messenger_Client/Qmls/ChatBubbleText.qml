@@ -114,4 +114,8 @@ Item {
             Layout.fillWidth: !isRightAlign
         }
     }
+
+    Component.onCompleted: { 
+        console.log("Chatbubble created! width: " + width + " height: " + height)
+    }
 }
