@@ -10,12 +10,10 @@ Rectangle {
 
     property string currentRoomID: ""
 
-    // chatRoomID와 ListView 인덱스 연관 관계 정의
-    // chat room 삭제 시에 일괄 for문 돌면서 지우는 로직 추가해야 됨
-    property var chatViewHash: ({})
-
+    // chat list view 템플릿이 찍어낸 객체
     property var chatViewObjects: ({})
 
+    // chat list view 템플릿
     property var chatListViewComponent: Qt.createComponent("qrc:/qml/ChatListView.qml")
 
     function addChatRoom(chatRoomID, chatRoomName, chatRoomImage, recentUsedDate, recentChatContent)
@@ -29,16 +27,19 @@ Rectangle {
         })
 
         chatViewObjects[chatRoomID] = chatListViewComponent.createObject(chatView)
-        // chatViewObjects[chatRoomID].width = Qt.binding(function() { return chatView.width })
-        // chatViewObjects[chatRoomID].height = Qt.binding(function() { return chatView.height })
-
-        // if(chatRoomID === "test_01")
-        //     chatViewObjects[chatRoomID].color = "blue"
     }
 
     function addChatBubbleText(chatRoomID, isRightAlign, userID, userName, userImage, chatData, chatTime)
     {
-        // chatViewObjects[chatRoomID]
+        chatViewObjects[chatRoomID].children[0].model.append({
+            "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
+            "isRightAlign": isRightAlign,
+            "userID": userID,
+            "userName": userName,
+            "userImage": userImage,
+            "chatData": chatData,
+            "chatTime": chatTime
+        })
     }
 
     ColumnLayout {
@@ -169,7 +170,7 @@ Rectangle {
                         }
 
                         Component.onCompleted: { 
-                            // chatViewHash[chatRoomObjectName] = index
+                            
                         }
 
                         Component.onDestruction: {
@@ -194,14 +195,6 @@ Rectangle {
                                 chatView.push(chatViewObjects[currentRoomID], StackView.Immediate)
                             else
                                 chatView.replace(null, chatViewObjects[currentRoomID], StackView.Immediate)
-
-                            // console.log("width: " + chatView.get(0).width + " height: " + chatView.get(0).height)
-                            // console.log("listview width: " + chatView.get(0).children[0].width + " listview height: " + chatView.get(0).children[0].height)
-
-                            // chatListViewLoader.sourceComponent = chatViewObjects[currentRoomID]
-
-                            // chatListView.itemAtIndex(chatViewHash[currentRoomID]).visible = true
-                            // chatListView.positionViewAtIndex(chatViewHash[currentRoomID], ListView.Beginning)
                         }
                     }
                 }
@@ -210,15 +203,6 @@ Rectangle {
                     addChatRoom("test_01", "chat room 1", "", "1997-03-09", "chat preview in chat room 1")
 
                     addChatRoom("test_02", "chat room 2", "", "2023-09-21", "chat preview in chat room 2")
-
-                    // for(var i=0;i < 15;i++) {
-                    //     chatRoomListModel.append({
-                    //         "chatRoomID": "rect" + i,
-                    //         "chatRoomName": "Chat Room Num:" + i,
-                    //         "recentChatContent": "Chat Room Preview",
-                    //         "recentUsedDate": "0000-00-00"
-                    //         })
-                    // }
                 }
             }
 
@@ -230,6 +214,7 @@ Rectangle {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
+                    visible: currentRoomID.length === 0 ? false : true
 
                     RowLayout {
                         anchors.fill: parent
@@ -257,13 +242,14 @@ Rectangle {
 
                     // initialItem: Rectangle {
                     //     anchors.fill: parent
-                    //     color: "red"
+                    //     color: "black"
                     // }
                 }
 
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 100
+                    visible: currentRoomID.length === 0 ? false : true
 
                     Flickable {
                         id: chatInputAreaFlickable
@@ -291,16 +277,7 @@ Rectangle {
                                 // 서버로 채팅 내용 전송
                                 mainPageContext.trySendTextChat(currentRoomID, text)
 
-                                chatView.get(0).children[0].model.append({
-                                    "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
-                                    "isRightAlign": true,
-                                    "userID": "tongstar",
-                                    "userName": "KyungJoonLee",
-                                    "chatData": text,
-                                    "chatTime": "0000-00-00"
-                                })
-
-                                // chatViewObjects[currentRoomID].children[0].model.append({
+                                // chatView.get(0).children[0].model.append({
                                 //     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
                                 //     "isRightAlign": true,
                                 //     "userID": "tongstar",
@@ -309,31 +286,13 @@ Rectangle {
                                 //     "chatTime": "0000-00-00"
                                 // })
 
-                                //addChatBubbleText(currentRoomID,
-                                //                  true,
-                                //                  "tongstar",
-                                //                  "KyungJoonLee",
-                                //                  "",
-                                //                  text,
-                                //                  "current time")       
-
-                                // console.log(chatListViewLoader.sourceComponent.objectName)
-
-                                // console.log(chatViewObjects[currentRoomID].children[0].objectName)
-
-                                // chatViewObjects[currentRoomID].children[0].model.append({
-                                //     "chatBubbleSource": "qrc:/qml/ChatBubbleText.qml",
-                                //     "isRightAlign": isRightAlign,
-                                //     "userID": userID,
-                                //     "userName": userName,
-                                //     "userImage": userImage,
-                                //     "chatData": chatData,
-                                //     "chatTime": chatTime
-                                // })
-
-                                // chatViewObjects[chatRoomID].addChatBubbleText(true, "tongstar", "KyungJoonLee", "", text, "current time")       
-
-                                // 컴포넌트 내부에서 함수 적용되게 해야됨...
+                                addChatBubbleText(currentRoomID, 
+                                                  true, 
+                                                  "tongstar",
+                                                  "KyungJoonLee",
+                                                  "",
+                                                  text,
+                                                  "0000-00-00")
 
                                 text = ""  
                             }                
@@ -348,6 +307,7 @@ Rectangle {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
+                    visible: currentRoomID.length === 0 ? false : true
 
                     RowLayout {
                         anchors.fill: parent

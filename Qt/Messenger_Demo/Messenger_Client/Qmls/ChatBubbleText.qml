@@ -18,7 +18,7 @@ Item {
         }
 
         Image {
-            source: "qrc:/icon/UserID.png" // "data:image/png;base64," + userImage
+            source: "data:image/png;base64," + userImage
             visible: !isRightAlign
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: 50
