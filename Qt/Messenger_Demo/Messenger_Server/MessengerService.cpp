@@ -76,6 +76,8 @@ void MessengerService::MessageHandling()
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
         std::string user_id = it->get<std::string>(0);
+
+        // 해당 유저의 로그인 상태를 체크하고 로그인 되어있다면 로그인 된 기기의 ip를 획득하고 거기로 write 해야됨
     }
 }
 
