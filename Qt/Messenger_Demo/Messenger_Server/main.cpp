@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     try
     {
         // DB 연결 정보 초기화
-        DBConnectionPool::get(4, {"localhost", "3000", "messenger_db", "tongstar", "@Lsy12131213"});
+        DBConnectionPool::Get(4, {"localhost", "3000", "messenger_db", "tongstar", "@Lsy12131213"});
 
         // TCP 서버 생성
         TCPServer<MessengerService> server(SERVER_PORT, 2);

@@ -51,7 +51,7 @@ Rectangle {
         }
 
         onCountChanged: {
-                Qt.callLater(positionViewAtEnd)
+            Qt.callLater(positionViewAtEnd)
         }
 
         Component.onCompleted: {

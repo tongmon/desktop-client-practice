@@ -20,7 +20,7 @@
 MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
     : Service(sock)
 {
-    m_sql = std::make_unique<soci::session>(DBConnectionPool::get());
+    m_sql = std::make_unique<soci::session>(DBConnectionPool::Get());
 }
 
 // 서비스 종료 시 추가적으로 해제해야 할 것들 소멸자에 기입
@@ -62,6 +62,21 @@ void MessengerService::LoginHandling()
 
 void MessengerService::MessageHandling()
 {
+    std::vector<std::string> parsed;
+    boost::split(parsed, m_client_request, boost::is_any_of("|"));
+    std::string room_id = parsed[0], content = EncodeBase64(parsed[1]), session_id, creator_id;
+
+    parsed.clear();
+    boost::split(parsed, room_id, boost::is_any_of("_"));
+    session_id = parsed[0], creator_id = parsed[1];
+
+    soci::rowset<soci::row> rs = (m_sql->prepare << "select user_id from session_user_relation_tb where sessoin_id=:sid and creator_id=:cid",
+                                  soci::use(session_id, "sid"), soci::use(creator_id, "cid"));
+
+    for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
+    {
+        std::string user_id = it->get<std::string>(0);
+    }
 }
 
 void MessengerService::ChatRoomListInitHandling()

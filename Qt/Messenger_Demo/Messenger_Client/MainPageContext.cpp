@@ -5,6 +5,12 @@
 
 #include <boost/json.hpp>
 
+int MainPageContext::GetRequestID()
+{
+    static int request_id = 0;
+    return request_id++ % 3000;
+}
+
 MainPageContext::MainPageContext(WinQuickWindow *window)
     : m_window{window}
 {
@@ -16,6 +22,22 @@ MainPageContext::~MainPageContext()
 
 void MainPageContext::trySendTextChat(const QString &room_id, const QString &content)
 {
+    auto &network_handle = m_window->GetNetworkHandle();
+
+    int request_id = GetRequestID();
+    network_handle.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
+
+    std::string request = room_id.toStdString() + "|" + EncodeBase64(content.toStdString());
+    TCPHeader header(TEXTCHAT_CONNECTION_TYPE, request.size());
+    request = header.GetHeaderBuffer() + request;
+
+    network_handle.AsyncWrite(request_id, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+        if (!session.get() || !session->IsValid())
+            return;
+
+        network_handle.CloseRequest(session->GetID());
+    });
+
     return;
 }
 
@@ -23,7 +45,7 @@ void MainPageContext::initialChatRoomList(const QString &user_id)
 {
     auto &network_handle = m_window->GetNetworkHandle();
 
-    int request_id = 0;
+    int request_id = GetRequestID();
     network_handle.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
 
     std::string request = user_id.toStdString();

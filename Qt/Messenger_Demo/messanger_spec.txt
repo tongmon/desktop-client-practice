@@ -116,7 +116,7 @@ VALUES
 {
 	"chatroom_init_data": [
 		{
-			"creator_id": "채팅방 생성",
+			"creator_id": "채팅방 생성자 id",
 			"session_id": "세션 id",
 			"session_name": "세션 이름",
 			"session_img": "세션 이미지 이진 파일",

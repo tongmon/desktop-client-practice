@@ -39,7 +39,7 @@ class DBConnectionPool
     ~DBConnectionPool();
 
   public:
-    static soci::connection_pool &get(int pool_size = 8, const DBConnectionInfo &connection_info = {})
+    static soci::connection_pool &Get(int pool_size = 8, const DBConnectionInfo &connection_info = {})
     {
         if (!instance.load(std::memory_order_acquire))
         {
