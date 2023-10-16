@@ -19,7 +19,9 @@ class MessengerService : public Service
     void ChatRoomListInitHandling();
 
   public:
-    MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock);
+    MessengerService(std::unordered_map<std::string, std::shared_ptr<boost::asio::ip::tcp::socket>> &sock_map,
+                     std::mutex &sock_map_mut,
+                     std::shared_ptr<boost::asio::ip::tcp::socket> sock);
     ~MessengerService();
     void StartHandling();
 };

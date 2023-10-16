@@ -1,6 +1,7 @@
 ﻿#include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
 #include "MainPageContext.hpp"
+#include "NetworkDefinition.hpp"
 
 #include <QMetaObject>
 #include <QOpenGLContext>
@@ -22,6 +23,7 @@ WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 
 WinQuickWindow::~WinQuickWindow()
 {
+    is_tcp_stopped.store(true);
 }
 
 HWND WinQuickWindow::GetHandle()
@@ -48,6 +50,10 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
 
     m_hwnd = (HWND)m_quick_window->winId();
     m_resize_border_width = m_quick_window->property("resizeBorderWidth").toInt() * m_quick_window->devicePixelRatio();
+
+    // tcp 소켓 시작
+    is_tcp_stopped.store(false);
+    m_tcp_client->AsyncConnect(SERVER_IP, SERVER_PORT, 0);
 
     QObject::connect(m_quick_window, &QQuickWindow::screenChanged, this, &WinQuickWindow::OnScreenChanged);
 
@@ -79,6 +85,46 @@ void WinQuickWindow::OnScreenChanged(QScreen *screen)
     SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
+}
+
+void WinQuickWindow::StartHandling()
+{
+    m_tcp_client->AsyncRead(0,
+                            TCP_HEADER_SIZE,
+                            [this](std::shared_ptr<Session> session) -> void {
+                                if (!session.get() || !session->IsValid() || is_tcp_stopped.load())
+                                    return;
+
+                                TCPHeader header(session->GetResponse());
+
+                                auto connection_type = header.GetConnectionType();
+                                auto data_size = header.GetDataSize();
+
+                                m_tcp_client->AsyncRead(session->GetID(),
+                                                        data_size,
+                                                        [&connection_type, this](std::shared_ptr<Session> session) -> void {
+                                                            if (!session.get() || !session->IsValid() || is_tcp_stopped.load())
+                                                                return;
+
+                                                            // session->GetRespond() 이용
+
+                                                            switch (connection_type)
+                                                            {
+                                                            case LOGIN_CONNECTION_TYPE:
+                                                                break;
+                                                            case TEXTCHAT_CONNECTION_TYPE:
+                                                                break;
+                                                            case IMAGECHAT_CONNECTION_TYPE:
+                                                                break;
+                                                            case CHATROOMLIST_INITIAL_TYPE:
+                                                                break;
+                                                            default:
+                                                                break;
+                                                            }
+
+                                                            StartHandling();
+                                                        });
+                            });
 }
 
 bool WinQuickWindow::eventFilter(QObject *obj, QEvent *evt)

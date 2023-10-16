@@ -107,6 +107,7 @@
         "hash_set": "cpp",
         "qqmlapplicationengine": "cpp",
         "qobject": "cpp",
-        "qmetaobject": "cpp"
+        "qmetaobject": "cpp",
+        "qqmlcomponent": "cpp"
     }
 }

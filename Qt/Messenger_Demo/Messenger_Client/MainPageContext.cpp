@@ -8,12 +8,13 @@
 int MainPageContext::GetRequestID()
 {
     static int request_id = 0;
-    return request_id++ % 3000;
+    return request_id++ % m_recieve_id;
 }
 
 MainPageContext::MainPageContext(WinQuickWindow *window)
     : m_window{window}
 {
+    m_recieve_id = 3000;
 }
 
 MainPageContext::~MainPageContext()
@@ -27,7 +28,7 @@ void MainPageContext::trySendTextChat(const QString &room_id, const QString &con
     int request_id = GetRequestID();
     network_handle.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
 
-    std::string request = room_id.toStdString() + "|" + EncodeBase64(content.toStdString());
+    std::string request = std::string("보낸 사람 User ID") + "|" + room_id.toStdString() + "|" + EncodeBase64(content.toStdString());
     TCPHeader header(TEXTCHAT_CONNECTION_TYPE, request.size());
     request = header.GetHeaderBuffer() + request;
 

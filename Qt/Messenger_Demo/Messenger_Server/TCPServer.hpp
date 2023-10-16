@@ -2,8 +2,10 @@
 #define HEADER__FILE__TCPSERVER
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
 // Boost.Asio Windows 7 이상을 타겟으로 설정
 // #define _WIN32_WINNT _WIN32_WINNT_WIN7
@@ -20,6 +22,10 @@ class TCPServer
     std::unique_ptr<boost::asio::ip::tcp::acceptor> m_acceptor;
     std::atomic<bool> m_is_stopped;
 
+    // ip-sock 맵은 멀티스레드에서 사용되므로 꼭 사용할 때 임계구역을 만들어줘야 함
+    std::unordered_map<std::string, std::shared_ptr<boost::asio::ip::tcp::socket>> m_sock_map;
+    std::mutex m_sock_map_mut;
+
     void StartAcceptor()
     {
         std::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(m_ios));
@@ -32,7 +38,13 @@ class TCPServer
     void OnAccept(std::shared_ptr<boost::asio::ip::tcp::socket> sock, const boost::system::error_code &ec)
     {
         if (ec == boost::system::errc::success)
-            (new Service(sock))->StartHandling();
+        {
+            m_sock_map_mut.lock();
+            m_sock_map[sock->remote_endpoint().address().to_string()] = sock;
+            m_sock_map_mut.unlock();
+
+            (new Service(m_sock_map, m_sock_map_mut, sock))->StartHandling();
+        }
         else
         {
             // Accept 실패시 동작 정의

@@ -17,8 +17,10 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
-    : Service(sock)
+MessengerService::MessengerService(std::unordered_map<std::string, std::shared_ptr<boost::asio::ip::tcp::socket>> &sock_map,
+                                   std::mutex &sock_map_mut,
+                                   std::shared_ptr<boost::asio::ip::tcp::socket> sock)
+    : Service(sock_map, sock_map_mut, sock)
 {
     m_sql = std::make_unique<soci::session>(DBConnectionPool::Get());
 }
@@ -26,6 +28,8 @@ MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket>
 // 서비스 종료 시 추가적으로 해제해야 할 것들 소멸자에 기입
 MessengerService::~MessengerService()
 {
+    std::unique_lock<std::mutex> lock(m_sock_map_mut);
+    m_sock_map.erase(m_sock->remote_endpoint().address().to_string());
 }
 
 void MessengerService::LoginHandling()
@@ -64,7 +68,7 @@ void MessengerService::MessageHandling()
 {
     std::vector<std::string> parsed;
     boost::split(parsed, m_client_request, boost::is_any_of("|"));
-    std::string room_id = parsed[0], content = EncodeBase64(parsed[1]), session_id, creator_id;
+    std::string user_id = parsed[0], room_id = parsed[1], content = DecodeBase64(parsed[2]), session_id, creator_id;
 
     parsed.clear();
     boost::split(parsed, room_id, boost::is_any_of("_"));
@@ -75,9 +79,15 @@ void MessengerService::MessageHandling()
 
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
-        std::string user_id = it->get<std::string>(0);
+        std::string participant_id = it->get<std::string>(0);
 
-        // 해당 유저의 로그인 상태를 체크하고 로그인 되어있다면 로그인 된 기기의 ip를 획득하고 거기로 write 해야됨
+        // 보낸 사람은 제외
+        if (participant_id == user_id)
+            continue;
+
+        // 채팅방의 사용자가 로그인된 상태면 해당 ip로 메시지를 write함
+        // 채팅방의 사용자가 로그인이 안되면 상태면 굳이 보낼 필요 없고 이 경우 ChatRoomListInitHandling() 함수에서 처리해야 함
+        std::unique_lock lock(m_sock_map_mut);
     }
 }
 
