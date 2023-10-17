@@ -51,10 +51,6 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
     m_hwnd = (HWND)m_quick_window->winId();
     m_resize_border_width = m_quick_window->property("resizeBorderWidth").toInt() * m_quick_window->devicePixelRatio();
 
-    // tcp 소켓 시작
-    is_tcp_stopped.store(false);
-    m_tcp_client->AsyncConnect(SERVER_IP, SERVER_PORT, 0);
-
     QObject::connect(m_quick_window, &QQuickWindow::screenChanged, this, &WinQuickWindow::OnScreenChanged);
 
     // 윈도우 그림자 설정
@@ -75,6 +71,11 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
 
     for (const auto &prop : m_context_properties)
         engine.rootContext()->setContextProperty(prop.first.c_str(), prop.second.get());
+
+    // tcp 소켓 시작
+    is_tcp_stopped.store(false);
+    m_tcp_client->AsyncConnect(SERVER_IP, SERVER_PORT, 0);
+    StartHandling();
 
     return true;
 }

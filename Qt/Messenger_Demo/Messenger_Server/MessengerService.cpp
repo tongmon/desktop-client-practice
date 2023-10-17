@@ -1,6 +1,7 @@
 ﻿#include "MessengerService.hpp"
 #include "DBConnectionPool.hpp"
 #include "NetworkDefinition.hpp"
+#include "TCPClient.hpp"
 #include "Utility.hpp"
 
 #include <boost/algorithm/string.hpp>
@@ -17,10 +18,8 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-MessengerService::MessengerService(std::unordered_map<std::string, std::shared_ptr<boost::asio::ip::tcp::socket>> &sock_map,
-                                   std::mutex &sock_map_mut,
-                                   std::shared_ptr<boost::asio::ip::tcp::socket> sock)
-    : Service(sock_map, sock_map_mut, sock)
+MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
+    : Service(sock)
 {
     m_sql = std::make_unique<soci::session>(DBConnectionPool::Get());
 }
@@ -28,15 +27,14 @@ MessengerService::MessengerService(std::unordered_map<std::string, std::shared_p
 // 서비스 종료 시 추가적으로 해제해야 할 것들 소멸자에 기입
 MessengerService::~MessengerService()
 {
-    std::unique_lock<std::mutex> lock(m_sock_map_mut);
-    m_sock_map.erase(m_sock->remote_endpoint().address().to_string());
 }
 
+// 클라이언트에서 여는 서버의 ip, 포트도 가져와야 됨
 void MessengerService::LoginHandling()
 {
     std::vector<std::string> parsed;
     boost::split(parsed, m_client_request, boost::is_any_of("|"));
-    std::string id = parsed[0], pw = parsed[1];
+    std::string login_ip = parsed[0], login_port = parsed[1], id = parsed[2], pw = parsed[3];
 
     std::cout << "ID: " << id << "  Password: " << pw << "\n";
 
@@ -87,7 +85,6 @@ void MessengerService::MessageHandling()
 
         // 채팅방의 사용자가 로그인된 상태면 해당 ip로 메시지를 write함
         // 채팅방의 사용자가 로그인이 안되면 상태면 굳이 보낼 필요 없고 이 경우 ChatRoomListInitHandling() 함수에서 처리해야 함
-        std::unique_lock lock(m_sock_map_mut);
     }
 }
 

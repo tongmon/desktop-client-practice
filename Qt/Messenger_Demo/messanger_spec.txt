@@ -2,6 +2,9 @@ messanger app spec
 
 os <-> i/o content <-> socket(i/o object) <-> program
 
+클라이언트 - 서버 통신 방식은 중앙서버가 존재하는 p2p를 기반으로 함
+클라이언트(서버) - 중앙서버 방식
+
 프론트엔드 : qml
 클라이언트 : qt, c++, boost.asio / 비동기 병렬
 백엔드 : c++, boost.asio / 비동기 병렬
