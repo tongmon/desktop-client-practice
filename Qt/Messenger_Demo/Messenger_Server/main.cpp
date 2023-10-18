@@ -43,6 +43,7 @@
 #include "DBConnectionPool.hpp"
 #include "MessengerService.hpp"
 #include "NetworkDefinition.hpp"
+#include "TCPClient.hpp"
 #include "TCPServer.hpp"
 
 int main(int argc, char *argv[])
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
         DBConnectionPool::Get(4, {"localhost", "3000", "messenger_db", "tongstar", "@Lsy12131213"});
 
         // TCP 서버 생성
-        TCPServer<MessengerService> server(SERVER_PORT, 2);
+        TCPServer<MessengerService> server(std::make_shared<TCPClient>(2), SERVER_PORT, 2);
 
         char a;
         std::cin >> a;

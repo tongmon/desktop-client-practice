@@ -1,6 +1,7 @@
 ﻿#include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
 #include "MainPageContext.hpp"
+#include "MessengerService.hpp"
 #include "NetworkDefinition.hpp"
 
 #include <QMetaObject>
@@ -17,13 +18,10 @@ WinQuickWindow::WinQuickWindow(QQmlApplicationEngine *engine)
 {
     if (engine)
         InitWindow(*engine);
-
-    m_tcp_client = std::make_shared<TCPClient>(2);
 }
 
 WinQuickWindow::~WinQuickWindow()
 {
-    is_tcp_stopped.store(true);
 }
 
 HWND WinQuickWindow::GetHandle()
@@ -31,9 +29,9 @@ HWND WinQuickWindow::GetHandle()
     return m_hwnd;
 }
 
-TCPClient &WinQuickWindow::GetNetworkHandle()
+TCPClient &WinQuickWindow::GetServerHandle()
 {
-    return *m_tcp_client;
+    return *m_central_server;
 }
 
 QQuickWindow &WinQuickWindow::GetQuickWindow()
@@ -72,10 +70,8 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
     for (const auto &prop : m_context_properties)
         engine.rootContext()->setContextProperty(prop.first.c_str(), prop.second.get());
 
-    // tcp 소켓 시작
-    is_tcp_stopped.store(false);
-    m_tcp_client->AsyncConnect(SERVER_IP, SERVER_PORT, 0);
-    StartHandling();
+    m_central_server = std::make_shared<TCPClient>(2);
+    m_local_server = std::make_unique<TCPServer<MessengerService>>(m_central_server, 0, 2);
 
     return true;
 }
@@ -86,46 +82,6 @@ void WinQuickWindow::OnScreenChanged(QScreen *screen)
     SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
-}
-
-void WinQuickWindow::StartHandling()
-{
-    m_tcp_client->AsyncRead(0,
-                            TCP_HEADER_SIZE,
-                            [this](std::shared_ptr<Session> session) -> void {
-                                if (!session.get() || !session->IsValid() || is_tcp_stopped.load())
-                                    return;
-
-                                TCPHeader header(session->GetResponse());
-
-                                auto connection_type = header.GetConnectionType();
-                                auto data_size = header.GetDataSize();
-
-                                m_tcp_client->AsyncRead(session->GetID(),
-                                                        data_size,
-                                                        [&connection_type, this](std::shared_ptr<Session> session) -> void {
-                                                            if (!session.get() || !session->IsValid() || is_tcp_stopped.load())
-                                                                return;
-
-                                                            // session->GetRespond() 이용
-
-                                                            switch (connection_type)
-                                                            {
-                                                            case LOGIN_CONNECTION_TYPE:
-                                                                break;
-                                                            case TEXTCHAT_CONNECTION_TYPE:
-                                                                break;
-                                                            case IMAGECHAT_CONNECTION_TYPE:
-                                                                break;
-                                                            case CHATROOMLIST_INITIAL_TYPE:
-                                                                break;
-                                                            default:
-                                                                break;
-                                                            }
-
-                                                            StartHandling();
-                                                        });
-                            });
 }
 
 bool WinQuickWindow::eventFilter(QObject *obj, QEvent *evt)

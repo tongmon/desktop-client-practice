@@ -2,6 +2,10 @@ messanger app spec
 
 os <-> i/o content <-> socket(i/o object) <-> program
 
+boost 비동기에는 strand라는 원리가 작동함
+각 비동기 콜백은 동시에 실행될 수 없음. 즉 별도의 mutex 없이 상호배제가 동작함.
+각 비동기 콜백의 실행 순서는 보장되지 않음. 코드만 봤을 때 A라는 콜백이 먼저 수행될거 같아도 B라는 콜백이 먼저 수행될 수도 있음
+
 클라이언트 - 서버 통신 방식은 중앙서버가 존재하는 p2p를 기반으로 함
 클라이언트(서버) - 중앙서버 방식
 
@@ -26,7 +30,10 @@ USER_ID => varchar 50
 USER_NM => varchar 50
 PASSWORD => varchar 50
 IMAGE_PATH => varchar 255
+LOGIN_IP => varchar 40
+LOGIN_PORT => integer
 
+LOGIN_IP가 null 이면 로그인 상태가 아닌 것임
 
 
 table name: SESSION_TB / key: SESSION_ID + CREATOR_ID

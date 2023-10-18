@@ -95,6 +95,8 @@ class TCPClient
     void CancelRequest(unsigned int request_id);
 
     void Close();
+
+    unsigned int MakeRequestID();
 };
 
 #endif /* HEADER__FILE__TCPCLIENT */

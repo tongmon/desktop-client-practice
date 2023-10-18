@@ -18,8 +18,8 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-MessengerService::MessengerService(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
-    : Service(sock)
+MessengerService::MessengerService(std::shared_ptr<TCPClient> peer, std::shared_ptr<boost::asio::ip::tcp::socket> sock)
+    : Service(peer, sock)
 {
     m_sql = std::make_unique<soci::session>(DBConnectionPool::Get());
 }
@@ -34,7 +34,7 @@ void MessengerService::LoginHandling()
 {
     std::vector<std::string> parsed;
     boost::split(parsed, m_client_request, boost::is_any_of("|"));
-    std::string login_ip = parsed[0], login_port = parsed[1], id = parsed[2], pw = parsed[3];
+    std::string ip = parsed[0], port = parsed[1], id = parsed[2], pw = parsed[3];
 
     std::cout << "ID: " << id << "  Password: " << pw << "\n";
 
@@ -46,6 +46,11 @@ void MessengerService::LoginHandling()
         m_request = {char(pw_from_db == pw ? 1 : 0)};
     else
         m_request = {0};
+
+    // 로그인한 사람의 ip, port 정보 갱신
+    if (m_request[0])
+        *m_sql << "update user_tb set login_ip = :ip, login_port = :port where user_id = :id",
+            soci::use(ip), soci::use(port), soci::use(id);
 
     TCPHeader header(LOGIN_CONNECTION_TYPE, m_request.size());
     m_request = header.GetHeaderBuffer() + m_request;
@@ -66,26 +71,44 @@ void MessengerService::MessageHandling()
 {
     std::vector<std::string> parsed;
     boost::split(parsed, m_client_request, boost::is_any_of("|"));
-    std::string user_id = parsed[0], room_id = parsed[1], content = DecodeBase64(parsed[2]), session_id, creator_id;
+    std::string user_id = parsed[0], room_id = parsed[1], content = parsed[2], session_id, creator_id;
 
     parsed.clear();
     boost::split(parsed, room_id, boost::is_any_of("_"));
     session_id = parsed[0], creator_id = parsed[1];
+
+    // m_client_server = std::make_shared<TCPClient>(2);
 
     soci::rowset<soci::row> rs = (m_sql->prepare << "select user_id from session_user_relation_tb where sessoin_id=:sid and creator_id=:cid",
                                   soci::use(session_id, "sid"), soci::use(creator_id, "cid"));
 
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
-        std::string participant_id = it->get<std::string>(0);
+        std::string participant_id = it->get<std::string>(0), login_ip;
+        int login_port;
 
         // 보낸 사람은 제외
         if (participant_id == user_id)
             continue;
 
-        // 채팅방의 사용자가 로그인된 상태면 해당 ip로 메시지를 write함
-        // 채팅방의 사용자가 로그인이 안되면 상태면 굳이 보낼 필요 없고 이 경우 ChatRoomListInitHandling() 함수에서 처리해야 함
+        *m_sql << "select login_ip, login_port from user_tb where user_id=:id",
+            soci::into(login_ip), soci::into(login_port);
+
+        auto request_id = m_peer->MakeRequestID();
+        m_peer->AsyncConnect(login_ip, login_port, request_id);
+
+        TCPHeader header(TEXTCHAT_CONNECTION_TYPE, content.size());
+        std::string request = header.GetHeaderBuffer() + content;
+
+        m_peer->AsyncWrite(request_id, request, [peer = m_peer](std::shared_ptr<Session> session) -> void {
+            if (!session.get() || !session->IsValid())
+                return;
+
+            peer->CloseRequest(session->GetID());
+        });
     }
+
+    delete this;
 }
 
 void MessengerService::ChatRoomListInitHandling()

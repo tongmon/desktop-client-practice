@@ -32,7 +32,6 @@ bool TCPClient::AsyncConnect(const std::string &raw_ip_address,
         session = std::make_shared<Session>(m_ios, raw_ip_address, port_num, "", request_id);
     else
         return false;
-        
     m_active_sessions[request_id] = session;
 
     lock.unlock();
@@ -223,4 +222,10 @@ void TCPClient::Close()
     m_ios.stop();
     for (auto &thread : m_threads)
         thread->join();
+}
+
+unsigned int TCPClient::MakeRequestID()
+{
+    static unsigned int request_id = 0;
+    return request_id++ % USHRT_MAX;
 }

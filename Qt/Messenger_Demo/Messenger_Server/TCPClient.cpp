@@ -223,3 +223,9 @@ void TCPClient::Close()
     for (auto &thread : m_threads)
         thread->join();
 }
+
+unsigned int TCPClient::MakeRequestID()
+{
+    static unsigned int request_id = 0;
+    return request_id++ % USHRT_MAX;
+}
