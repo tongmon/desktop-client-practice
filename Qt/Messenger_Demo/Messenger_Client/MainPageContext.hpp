@@ -11,9 +11,6 @@ class MainPageContext : public QObject
     Q_OBJECT
 
     WinQuickWindow *m_window;
-    int m_recieve_id;
-
-    int GetRequestID();
 
   public:
     MainPageContext(WinQuickWindow *window = nullptr);

@@ -1,5 +1,6 @@
 ﻿#include "LoginPageContext.hpp"
 #include "NetworkDefinition.hpp"
+#include "TCPClient.hpp"
 #include "WinQuickWindow.hpp"
 
 #include <QMetaObject>
@@ -15,20 +16,22 @@ LoginPageContext::~LoginPageContext()
 
 void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 {
-    auto &network_handle = m_window->GetNetworkHandle();
+    auto &central_server = m_window->GetServerHandle();
 
-    int request_id = 0;
-    network_handle.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
+    int request_id = central_server.MakeRequestID();
+    central_server.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
 
-    std::string request = id.toStdString() + "|" + pw.toStdString();
+    std::string request = m_window->GetIPAddress() + "|" + std::to_string(m_window->GetPortNumber()) + "|" +
+                          id.toStdString() + "|" + pw.toStdString();
+
     TCPHeader header(LOGIN_CONNECTION_TYPE, request.size());
     request = header.GetHeaderBuffer() + request;
 
-    network_handle.AsyncWrite(request_id, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+    central_server.AsyncWrite(request_id, request, [&central_server, this](std::shared_ptr<Session> session) -> void {
         if (!session.get() || !session->IsValid())
             return;
 
-        network_handle.AsyncRead(session->GetID(), TCP_HEADER_SIZE, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+        central_server.AsyncRead(session->GetID(), TCP_HEADER_SIZE, [&central_server, this](std::shared_ptr<Session> session) -> void {
             if (!session.get() || !session->IsValid())
                 return;
 
@@ -39,11 +42,11 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
 
             if (connection_type != LOGIN_CONNECTION_TYPE)
             {
-                network_handle.CloseRequest(session->GetID());
+                central_server.CloseRequest(session->GetID());
                 return;
             }
 
-            network_handle.AsyncRead(session->GetID(), data_size, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+            central_server.AsyncRead(session->GetID(), data_size, [&central_server, this](std::shared_ptr<Session> session) -> void {
                 if (!session.get() || !session->IsValid())
                     return;
 
@@ -55,7 +58,7 @@ void LoginPageContext::tryLogin(const QString &id, const QString &pw)
                     // 로그인 실패시 로직
                 }
 
-                network_handle.CloseRequest(session->GetID());
+                central_server.CloseRequest(session->GetID());
             });
         });
     });

@@ -85,6 +85,16 @@ void WinQuickWindow::OnScreenChanged(QScreen *screen)
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 }
 
+std::string WinQuickWindow::GetIPAddress()
+{
+    return m_local_server->GetIPAddress();
+}
+
+unsigned short WinQuickWindow::GetPortNumber()
+{
+    return m_local_server->GetPortNumber();
+}
+
 bool WinQuickWindow::eventFilter(QObject *obj, QEvent *evt)
 {
     switch (evt->type())
