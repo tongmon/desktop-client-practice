@@ -5,21 +5,24 @@
 // #define _WIN32_WINNT _WIN32_WINNT_WIN7
 
 #include <boost/asio.hpp>
+#include <memory>
+#include <string>
 
-class TCPClient;
+class WinQuickWindow;
 
 class Service
 {
-  protected:
     std::shared_ptr<boost::asio::ip::tcp::socket> m_sock;
-    std::shared_ptr<TCPClient> m_peer;
+    WinQuickWindow &m_window;
+
+    std::string m_request;
+    std::string m_server_request;
+    boost::asio::streambuf m_server_request_buf;
 
   public:
-    Service(std::shared_ptr<TCPClient> peer, std::shared_ptr<boost::asio::ip::tcp::socket> sock)
-        : m_peer{peer}, m_sock{sock}
-    {
-    }
-    virtual void StartHandling() = 0;
+    Service(WinQuickWindow &window, std::shared_ptr<boost::asio::ip::tcp::socket> sock);
+
+    void StartHandling();
 };
 
 #endif /* HEADER__FILE__SERVICE */

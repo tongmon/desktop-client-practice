@@ -1,8 +1,9 @@
 ﻿#include "WinQuickWindow.hpp"
 #include "LoginPageContext.hpp"
 #include "MainPageContext.hpp"
-#include "MessengerService.hpp"
 #include "NetworkDefinition.hpp"
+#include "TCPClient.hpp"
+#include "TCPServer.hpp"
 
 #include <QMetaObject>
 #include <QOpenGLContext>
@@ -71,7 +72,7 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
         engine.rootContext()->setContextProperty(prop.first.c_str(), prop.second.get());
 
     m_central_server = std::make_shared<TCPClient>(2);
-    m_local_server = std::make_unique<TCPServer<MessengerService>>(m_central_server, 0, 2);
+    m_local_server = std::make_unique<TCPServer>(*this, 0, 2);
 
     return true;
 }

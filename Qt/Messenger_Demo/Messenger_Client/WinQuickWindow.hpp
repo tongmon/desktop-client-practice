@@ -1,9 +1,6 @@
 ﻿#ifndef HEADER__FILE__WINQUICKWINDOW
 #define HEADER__FILE__WINQUICKWINDOW
 
-#include "TCPClient.hpp"
-#include "TCPServer.hpp"
-
 #include <QAbstractNativeEventFilter>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
@@ -13,7 +10,8 @@
 #include <tuple>
 #include <vector>
 
-class MessengerService;
+class TCPServer;
+class TCPClient;
 
 class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
 {
@@ -26,7 +24,7 @@ class WinQuickWindow : public QObject, public QAbstractNativeEventFilter
     std::vector<std::pair<std::string, std::unique_ptr<QObject>>> m_context_properties;
 
     std::shared_ptr<TCPClient> m_central_server;
-    std::unique_ptr<TCPServer<MessengerService>> m_local_server;
+    std::unique_ptr<TCPServer> m_local_server;
 
   public:
     WinQuickWindow(QQmlApplicationEngine *engine = nullptr);
