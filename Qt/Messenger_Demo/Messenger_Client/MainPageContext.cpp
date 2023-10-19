@@ -15,6 +15,10 @@ MainPageContext::~MainPageContext()
 {
 }
 
+void MainPageContext::RecieveTextChat(const std::string &content)
+{
+}
+
 void MainPageContext::trySendTextChat(const QString &room_id, const QString &content)
 {
     auto &central_server = m_window->GetServerHandle();
@@ -30,7 +34,7 @@ void MainPageContext::trySendTextChat(const QString &room_id, const QString &con
         if (!session.get() || !session->IsValid())
             return;
 
-        network_handle.CloseRequest(session->GetID());
+        central_server.CloseRequest(session->GetID());
     });
 
     return;
@@ -38,20 +42,20 @@ void MainPageContext::trySendTextChat(const QString &room_id, const QString &con
 
 void MainPageContext::initialChatRoomList(const QString &user_id)
 {
-    auto &network_handle = m_window->GetNetworkHandle();
+    auto &central_server = m_window->GetServerHandle();
 
-    int request_id = GetRequestID();
-    network_handle.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
+    int request_id = central_server.MakeRequestID();
+    central_server.AsyncConnect(SERVER_IP, SERVER_PORT, request_id);
 
     std::string request = user_id.toStdString();
     TCPHeader header(CHATROOMLIST_INITIAL_TYPE, request.size());
     request = header.GetHeaderBuffer() + request;
 
-    network_handle.AsyncWrite(request_id, request, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+    central_server.AsyncWrite(request_id, request, [&central_server, this](std::shared_ptr<Session> session) -> void {
         if (!session.get() || !session->IsValid())
             return;
 
-        network_handle.AsyncRead(session->GetID(), TCP_HEADER_SIZE, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+        central_server.AsyncRead(session->GetID(), TCP_HEADER_SIZE, [&central_server, this](std::shared_ptr<Session> session) -> void {
             if (!session.get() || !session->IsValid())
                 return;
 
@@ -62,11 +66,11 @@ void MainPageContext::initialChatRoomList(const QString &user_id)
 
             if (connection_type != CHATROOMLIST_INITIAL_TYPE)
             {
-                network_handle.CloseRequest(session->GetID());
+                central_server.CloseRequest(session->GetID());
                 return;
             }
 
-            network_handle.AsyncRead(session->GetID(), data_size, [&network_handle, this](std::shared_ptr<Session> session) -> void {
+            central_server.AsyncRead(session->GetID(), data_size, [&central_server, this](std::shared_ptr<Session> session) -> void {
                 if (!session.get() || !session->IsValid())
                     return;
 
@@ -106,7 +110,7 @@ void MainPageContext::initialChatRoomList(const QString &user_id)
                     }
                 }
 
-                network_handle.CloseRequest(session->GetID());
+                central_server.CloseRequest(session->GetID());
             });
         });
     });

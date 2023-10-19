@@ -1,4 +1,6 @@
 ﻿#include "Service.hpp"
+#include "LoginPageContext.hpp"
+#include "MainPageContext.hpp"
 #include "NetworkDefinition.hpp"
 #include "TCPClient.hpp"
 #include "Utility.hpp"
@@ -10,7 +12,6 @@
 #include <boost/json.hpp>
 #include <chrono>
 #include <ctime>
-#include <format>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -60,6 +61,7 @@ void Service::StartHandling()
                                                             case LOGIN_CONNECTION_TYPE:
                                                                 break;
                                                             case TEXTCHAT_CONNECTION_TYPE:
+                                                                m_window.GetContextProperty<MainPageContext *>()->RecieveTextChat(m_server_request);
                                                                 break;
                                                             case CHATROOMLIST_INITIAL_TYPE:
                                                                 break;

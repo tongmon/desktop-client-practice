@@ -16,6 +16,8 @@ class MainPageContext : public QObject
     MainPageContext(WinQuickWindow *window = nullptr);
     ~MainPageContext();
 
+    void RecieveTextChat(const std::string &content);
+
     Q_INVOKABLE void trySendTextChat(const QString &room_id, const QString &content);
     Q_INVOKABLE void initialChatRoomList(const QString &user_id);
 };

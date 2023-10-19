@@ -63,10 +63,10 @@ bool WinQuickWindow::InitWindow(QQmlApplicationEngine &engine)
     engine.rootContext()->setContextProperty("mainWindowContext", this);
 
     // qml에 loginPageContext 객체를 등록하기 위해 사전에 m_context_properties 등록
-    m_context_properties.push_back({"loginPageContext", std::make_unique<LoginPageContext>(this)});
+    m_context_properties["loginPageContext"] = std::make_unique<LoginPageContext>(this);
 
     // qml에 mainPageContext 객체를 등록하기 위해 사전에 m_context_properties 등록
-    m_context_properties.push_back({"mainPageContext", std::make_unique<MainPageContext>(this)});
+    m_context_properties["mainPageContext"] = std::make_unique<MainPageContext>(this);
 
     for (const auto &prop : m_context_properties)
         engine.rootContext()->setContextProperty(prop.first.c_str(), prop.second.get());
