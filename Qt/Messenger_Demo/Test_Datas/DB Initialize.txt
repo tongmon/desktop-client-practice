@@ -1,0 +1,65 @@
+# 테스트 데이터를 위한 Postgre DB 초기화 데이터
+
+-- MongoDB
+Port: 27017
+
+-- Postgre
+Port: 3000
+
+
+## Postgre 테이블 생성
+
+### USER_TB
+설명: 유저 정보가 담기는 table
+
+CREATE TABLE USER_TB
+(
+    USER_ID			VARCHAR(50) NOT NULL,
+    USER_NM			VARCHAR(50) NOT NULL,
+	PASSWORD		VARCHAR(50) NOT NULL,
+	IMAGE_PATH		VARCHAR(255) NOT NULL,
+	FRIEND_LIST 	TEXT,
+	LOGIN_IP		VARCHAR(40),
+	LOGIN_PORT		INTEGER,
+	PROFILE_INFO	TEXT,
+    PRIMARY KEY (USER_ID)
+)
+
+
+### CHATROOM_TB
+설명: 채팅방 관련 테이블
+
+CREATE TABLE CHATROOM_TB
+(
+    SESSION_ID	VARCHAR(16) NOT NULL,
+    CREATOR_ID	VARCHAR(50) NOT NULL,
+	SESSION_NM	VARCHAR(255) NOT NULL,
+    PRIMARY KEY (SESSION_ID, CREATOR_ID)
+)
+
+
+### CHATROOM_USER_RELATION_TB
+설명: 유저와 채팅방 사이 관계 정의 테이블
+
+CREATE TABLE CHATROOM_USER_RELATION_TB
+(
+    SESSION_ID	VARCHAR(16) NOT NULL,
+    CREATOR_ID	VARCHAR(50) NOT NULL,
+	USER_ID		VARCHAR(50) NOT NULL,
+    PRIMARY KEY (SESSION_ID, CREATOR_ID, USER_ID)
+)
+
+
+## MongoDB 컬렉션 생성
+
+### [SESSION_ID]_[CREATOR_ID]_LOG 구조 / SESSION_ID, CREATOR_ID에 따라 동적으로 생성됨
+
+{
+	"sender_id": 	"보낸 사람 USER_ID"
+	"send_year": 	"2023",
+	"send_month": 	"10",
+	"send_day": 	"19",
+	"send_time": 	"13:21:40::11"
+	"content_type": "text"
+	"content": 		"7LGE7YyF7J2EIOyzkOuztOyekH4"
+}

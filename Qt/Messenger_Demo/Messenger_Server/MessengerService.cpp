@@ -77,8 +77,6 @@ void MessengerService::MessageHandling()
     boost::split(parsed, room_id, boost::is_any_of("_"));
     session_id = parsed[0], creator_id = parsed[1];
 
-    // m_client_server = std::make_shared<TCPClient>(2);
-
     soci::rowset<soci::row> rs = (m_sql->prepare << "select user_id from session_user_relation_tb where sessoin_id=:sid and creator_id=:cid",
                                   soci::use(session_id, "sid"), soci::use(creator_id, "cid"));
 
@@ -108,6 +106,8 @@ void MessengerService::MessageHandling()
         });
     }
 
+    // 해당되는 room_id의 json 파일 수정 요망
+
     delete this;
 }
 
@@ -123,8 +123,7 @@ void MessengerService::ChatRoomListInitHandling()
         const soci::row &r = *it;
         std::string creator_id = r.get<std::string>(0),
                     session_id = r.get<std::string>(1),
-                    id = creator_id + "_" + session_id,
-                    chat_room_path = boost::dll::program_location().parent_path().string() + "/" + id;
+                    chat_room_path = boost::dll::program_location().parent_path().string() + "/" + creator_id + "/" + session_id;
 
         // session 정보 json 파일 읽기
         std::stringstream str_buf;
@@ -178,7 +177,7 @@ void MessengerService::ChatRoomListInitHandling()
                     session_info.close();
 
                     boost::json::object chat_content;
-                    chat_content["chat_date"] = std::format("{}-{}-{}", year, month + 1, day + 1);
+                    chat_content["chat_date"] = std::format("{}/{}/{}", year, month + 1, day + 1);
                     chat_content["content"] = str_buf.str();
                     content_array.push_back(chat_content);
 

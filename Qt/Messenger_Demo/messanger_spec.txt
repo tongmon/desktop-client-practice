@@ -37,8 +37,8 @@ LOGIN_IP가 null 이면 로그인 상태가 아닌 것임
 
 
 table name: SESSION_TB / key: SESSION_ID + CREATOR_ID
-SESSION_ID => 세션 생성일 + '_' + 6자리 -> 16자리 varchar
-CREATOR_ID
+SESSION_ID => 세션 생성일 + '-' + 6자리 -> 16자리 varchar
+CREATOR_ID => USER_TB의 USER_ID와 동일
 SESSION_NM => varchar 255
 
 CREATE TABLE SESSION_TB
@@ -55,12 +55,13 @@ CREATE TABLE SESSION_TB
 SESSION_ID + '_' + CREATOR_ID 폴더명에는 세션에 대한 정보를 담고 있는 'session_info.json' 파일도 존재함
 
 폴더 계층을 보면 밑과 같음
-~ SESSION_ID + '_' + CREATOR_ID 폴더
-	session_info.json
-	session_img.png
-	L 년
-		L 월
-			L 일짜.json
+~ CREATOR_ID 폴더
+	L SESSION_ID 폴더
+		session_info.json
+		session_img.png
+		L 년
+			L 월
+				L 일짜.json
 
 - 'session_info.json' 포맷
 {
