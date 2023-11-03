@@ -136,15 +136,15 @@ void ViewComponent::SetScale(float scale)
 // Update the bounds of the WebView window to fit available space.
 void ViewComponent::ResizeWebView()
 {
-	SIZE webViewSize = {
+	SIZE webview_size = {
 			LONG((m_webview_bounds.right - m_webview_bounds.left) * m_webview_ratio * m_webview_scale),
 			LONG((m_webview_bounds.bottom - m_webview_bounds.top) * m_webview_ratio * m_webview_scale) };
 
 	RECT desired_bounds = m_webview_bounds;
 	desired_bounds.bottom = LONG(
-		webViewSize.cy + m_webview_bounds.top);
+		webview_size.cy + m_webview_bounds.top);
 	desired_bounds.right = LONG(
-		webViewSize.cx + m_webview_bounds.left);
+		webview_size.cx + m_webview_bounds.left);
 
 	m_controller->put_Bounds(desired_bounds);
 }
@@ -209,18 +209,18 @@ bool ViewComponent::OnMouseMessage(UINT message, WPARAM wparam, LPARAM lparam)
 		bool is_mouse_in_webview = PtInRect(&m_webview_bounds, point);
 		if (is_mouse_in_webview || message == WM_MOUSELEAVE || m_is_capturing_mouse)
 		{
-			DWORD mouseData = 0;
+			DWORD mouse_data = 0;
 
 			switch (message)
 			{
 			case WM_MOUSEWHEEL:
 			case WM_MOUSEHWHEEL:
-				mouseData = GET_WHEEL_DELTA_WPARAM(wparam);
+				mouse_data = GET_WHEEL_DELTA_WPARAM(wparam);
 				break;
 			case WM_XBUTTONDBLCLK:
 			case WM_XBUTTONDOWN:
 			case WM_XBUTTONUP:
-				mouseData = GET_XBUTTON_WPARAM(wparam);
+				mouse_data = GET_XBUTTON_WPARAM(wparam);
 				break;
 			case WM_MOUSEMOVE:
 				if (!m_is_tracking_mouse)
@@ -304,17 +304,17 @@ bool ViewComponent::OnPointerMessage(UINT message, WPARAM wparam, LPARAM lparam)
 
 		::ScreenToClient(m_app_window->GetMainWindow(), &point);
 
-		// bool pointerStartedInWebView = m_pointerIdsStartingInWebView.find(pointerId) !=  m_pointerIdsStartingInWebView.end();
+		// bool pointerStartedInWebView = m_pointer_ids_starting_in_webview.find(pointerId) !=  m_pointer_ids_starting_in_webview.end();
 
 	}
 	return handled;
 }
 
-void ViewComponent::TrackMouseEvents(DWORD mouseTrackingFlags)
+void ViewComponent::TrackMouseEvents(DWORD mouse_tracking_flags)
 {
 	TRACKMOUSEEVENT tme;
 	tme.cbSize = sizeof(tme);
-	tme.dwFlags = mouseTrackingFlags;
+	tme.dwFlags = mouse_tracking_flags;
 	tme.hwndTrack = m_app_window->GetMainWindow();
 	tme.dwHoverTime = 0;
 	::TrackMouseEvent(&tme);
@@ -323,30 +323,30 @@ void ViewComponent::TrackMouseEvents(DWORD mouseTrackingFlags)
 void ViewComponent::BuildDCompTreeUsingVisual()
 {
 
-	if (m_dcompWebViewVisual == nullptr)
+	if (m_dcomp_webview_visual == nullptr)
 	{
 		m_dcomp_device->CreateTargetForHwnd(
-			m_app_window->GetMainWindow(), TRUE, &m_dcompHwndTarget);
-		m_dcomp_device->CreateVisual(&m_dcompRootVisual);
-		m_dcompHwndTarget->SetRoot(m_dcompRootVisual.get());
-		m_dcomp_device->CreateVisual(&m_dcompWebViewVisual);
-		m_dcompRootVisual->AddVisual(m_dcompWebViewVisual.get(), TRUE, nullptr);
+			m_app_window->GetMainWindow(), TRUE, &m_dcomp_hwnd_target);
+		m_dcomp_device->CreateVisual(&m_dcomp_root_visual);
+		m_dcomp_hwnd_target->SetRoot(m_dcomp_root_visual.get());
+		m_dcomp_device->CreateVisual(&m_dcomp_webview_visual);
+		m_dcomp_root_visual->AddVisual(m_dcomp_webview_visual.get(), TRUE, nullptr);
 	}
 }
 //! [BuildDCompTree]
 
 void ViewComponent::DestroyDCompVisualTree()
 {
-	if (m_dcompWebViewVisual)
+	if (m_dcomp_webview_visual)
 	{
-		m_dcompWebViewVisual->RemoveAllVisuals();
-		m_dcompWebViewVisual.reset();
+		m_dcomp_webview_visual->RemoveAllVisuals();
+		m_dcomp_webview_visual.reset();
 
-		m_dcompRootVisual->RemoveAllVisuals();
-		m_dcompRootVisual.reset();
+		m_dcomp_root_visual->RemoveAllVisuals();
+		m_dcomp_root_visual.reset();
 
-		m_dcompHwndTarget->SetRoot(nullptr);
-		m_dcompHwndTarget.reset();
+		m_dcomp_hwnd_target->SetRoot(nullptr);
+		m_dcomp_hwnd_target.reset();
 
 		m_dcomp_device->Commit();
 	}

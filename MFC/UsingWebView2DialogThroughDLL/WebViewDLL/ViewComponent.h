@@ -31,14 +31,14 @@ public:
 #ifdef USE_WEBVIEW2_WIN10
 		winrtComp::Compositor wincomp_compositor,
 #endif
-		bool isDCompTargetMode
+		bool is_dcomp_targetmode
 	);
 
 	bool HandleWindowMessage(
-		HWND hWnd,
+		HWND hwnd,
 		UINT message,
-		WPARAM wParam,
-		LPARAM lParam,
+		WPARAM wparam,
+		LPARAM lparam,
 		LRESULT* result) override;
 
 	void SetBounds(RECT bounds);
@@ -58,7 +58,7 @@ private:
 	void SetSizeRatio(float ratio);
 	void SetZoomFactor(float zoom);
 	void SetScale(float scale);
-	void SetTransform(TransformType transformType);
+	void SetTransform(TransformType transform_type);
 	void ShowWebViewBounds();
 	void ShowWebViewZoom();
 
@@ -75,23 +75,23 @@ private:
 	bool m_useCursorId = false;
 	EventRegistrationToken m_zoom_factor_changed_token = {};
 
-	bool OnMouseMessage(UINT message, WPARAM wParam, LPARAM lParam);
-	bool OnPointerMessage(UINT message, WPARAM wParam, LPARAM lParam);
-	void TrackMouseEvents(DWORD mouseTrackingFlags);
+	bool OnMouseMessage(UINT message, WPARAM wparam, LPARAM lparam);
+	bool OnPointerMessage(UINT message, WPARAM wparam, LPARAM lparam);
+	void TrackMouseEvents(DWORD mouse_tracking_flags);
 
 	//wil::com_ptr<ICoreWebView2ExperimentalCompositionController> m_compositionController;
 	bool m_is_tracking_mouse = false;
 	bool m_is_capturing_mouse = false;
-	std::unordered_set<UINT> m_pointerIdsStartingInWebView;
+	std::unordered_set<UINT> m_pointer_ids_starting_in_webview;
 	//D2D1_MATRIX_4X4_F m_webViewTransformMatrix = D2D1::Matrix4x4F();
 
 	void BuildDCompTreeUsingVisual();
 	void DestroyDCompVisualTree();
 
 	wil::com_ptr<IDCompositionDevice> m_dcomp_device;
-	wil::com_ptr<IDCompositionTarget> m_dcompHwndTarget;
-	wil::com_ptr<IDCompositionVisual> m_dcompRootVisual;
-	wil::com_ptr<IDCompositionVisual> m_dcompWebViewVisual;
+	wil::com_ptr<IDCompositionTarget> m_dcomp_hwnd_target;
+	wil::com_ptr<IDCompositionVisual> m_dcomp_root_visual;
+	wil::com_ptr<IDCompositionVisual> m_dcomp_webview_visual;
 
 #ifdef USE_WEBVIEW2_WIN10
 	void BuildWinCompVisualTree();
@@ -107,5 +107,5 @@ private:
 	// Distinct/unrelated to the dcompHwndTarget
    // wil::com_ptr<DCompTargetImpl> m_dcompTarget;
 
-	EventRegistrationToken m_cursorChangedToken = {};
+	EventRegistrationToken m_cursor_changed_token = {};
 };

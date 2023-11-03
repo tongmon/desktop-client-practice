@@ -12,10 +12,10 @@ class ComponentBase
 public:
 	// *result defaults to 0
 	virtual bool HandleWindowMessage(
-		HWND hWnd,
+		HWND hwnd,
 		UINT message,
-		WPARAM wParam,
-		LPARAM lParam,
+		WPARAM wparam,
+		LPARAM lparam,
 		LRESULT* result)
 	{
 		return false;
