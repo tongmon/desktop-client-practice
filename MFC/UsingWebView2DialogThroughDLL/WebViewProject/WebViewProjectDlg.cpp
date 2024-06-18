@@ -135,9 +135,11 @@ void CWebViewProjectDlg::OnWebViewButtonClicked()
 	// 스크립트 수행 함수
 	ExecuteScript fn_executescript = reinterpret_cast<ExecuteScript>(GetProcAddress(h_instance, "ExecuteScript"));
 
-
-	if (!fn_runwebview)
+	if (!fn_runwebview || !fn_executescript)
+	{
+		FreeLibrary(h_instance);
 		return;
+	}
 
 	WebViewParam wvp
 	{
